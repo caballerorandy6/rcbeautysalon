@@ -1,0 +1,392 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// AUTHENTICATION
+// ============================================
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          UserRole  @default(CLIENTE)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts     Account[]
+  sessions     Session[]
+  appointments Appointment[]
+  orders       Order[]
+}
+
+enum UserRole {
+  ADMIN
+  STAFF
+  CLIENTE
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ============================================
+// SALON BRANDING & CONFIGURATION
+// ============================================
+
+model SalonConfig {
+  id   String @id @default("salon_config")
+  name String @default("Beauty Salon")
+  logo String?
+
+  // Branding colors
+  primaryColor   String @default("#000000")
+  secondaryColor String @default("#ffffff")
+  accentColor    String @default("#d4af37")
+
+  // Contact
+  email   String?
+  phone   String?
+  address String?
+  city    String?
+  state   String?
+  zipCode String?
+  country String @default("US")
+
+  // Business hours
+  timezone String @default("America/New_York")
+  currency String @default("USD")
+  locale   String @default("en")
+
+  // Booking settings
+  bookingDeposit      Decimal @default(50.00) @db.Decimal(10, 2)
+  depositRefundable   Boolean @default(false)
+  minBookingAdvance   Int     @default(24) // hours
+  maxBookingAdvance   Int     @default(30) // days
+  cancellationPolicy  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ============================================
+// SERVICES
+// ============================================
+
+model Category {
+  id   String @id @default(cuid())
+  name String
+  slug String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  services Service[]
+  products Product[]
+
+  @@index([slug])
+}
+
+model Service {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  duration    Int // minutes
+  price       Decimal @db.Decimal(10, 2)
+  image       String?
+  isActive    Boolean @default(true)
+
+  categoryId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  category         Category?            @relation(fields: [categoryId], references: [id])
+  appointmentServices AppointmentService[]
+  staffServices    StaffService[]
+
+  @@index([categoryId])
+  @@index([isActive])
+}
+
+// ============================================
+// STAFF
+// ============================================
+
+model Staff {
+  id       String  @id @default(cuid())
+  name     String
+  email    String?
+  phone    String?
+  bio      String?
+  image    String?
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  services     StaffService[]
+  appointments Appointment[]
+  workingHours WorkingHours[]
+
+  @@index([isActive])
+}
+
+model StaffService {
+  id        String @id @default(cuid())
+  staffId   String
+  serviceId String
+
+  staff   Staff   @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@unique([staffId, serviceId])
+  @@index([staffId])
+  @@index([serviceId])
+}
+
+model WorkingHours {
+  id        String  @id @default(cuid())
+  staffId   String
+  dayOfWeek Int // 0-6 (Sunday-Saturday)
+  startTime String // "09:00"
+  endTime   String // "17:00"
+  isActive  Boolean @default(true)
+
+  staff Staff @relation(fields: [staffId], references: [id], onDelete: Cascade)
+
+  @@unique([staffId, dayOfWeek])
+  @@index([staffId])
+}
+
+// ============================================
+// CUSTOMERS
+// ============================================
+
+model Customer {
+  id    String  @id @default(cuid())
+  name  String
+  email String?
+  phone String?
+  notes String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  appointments Appointment[]
+  orders       Order[]
+
+  @@index([email])
+  @@index([phone])
+}
+
+// ============================================
+// APPOINTMENTS (BOOKING)
+// ============================================
+
+model Appointment {
+  id         String            @id @default(cuid())
+  customerId String?
+  staffId    String
+  userId     String?
+
+  // Walk-in customer
+  guestName  String?
+  guestEmail String?
+  guestPhone String?
+
+  startTime DateTime
+  endTime   DateTime
+  status    AppointmentStatus @default(PENDING)
+  notes     String?
+
+  // Payment ($50 non-refundable deposit)
+  totalPrice         Decimal @db.Decimal(10, 2)
+  depositAmount      Decimal @default(50.00) @db.Decimal(10, 2)
+  depositPaid        Boolean @default(false)
+  stripePaymentId    String?
+
+  // Notifications
+  reminderSentAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  customer Customer?            @relation(fields: [customerId], references: [id])
+  staff    Staff                @relation(fields: [staffId], references: [id])
+  user     User?                @relation(fields: [userId], references: [id])
+  services AppointmentService[]
+
+  @@index([customerId])
+  @@index([staffId])
+  @@index([userId])
+  @@index([startTime])
+  @@index([status])
+}
+
+model AppointmentService {
+  id            String @id @default(cuid())
+  appointmentId String
+  serviceId     String
+
+  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  service     Service     @relation(fields: [serviceId], references: [id])
+
+  @@unique([appointmentId, serviceId])
+  @@index([appointmentId])
+  @@index([serviceId])
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+// ============================================
+// PRODUCTS & SHOP
+// ============================================
+
+model Product {
+  id             String   @id @default(cuid())
+  name           String
+  description    String?
+  price          Decimal  @db.Decimal(10, 2)
+  compareAtPrice Decimal? @db.Decimal(10, 2)
+  sku            String?
+
+  // Inventory
+  trackInventory Boolean @default(true)
+  stockQuantity  Int     @default(0)
+
+  // Images
+  images String[]
+
+  // Category
+  categoryId String?
+
+  isActive   Boolean @default(true)
+  isFeatured Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  category   Category?   @relation(fields: [categoryId], references: [id])
+  orderItems OrderItem[]
+
+  @@index([categoryId])
+  @@index([isActive])
+  @@index([isFeatured])
+}
+
+model Order {
+  id         String  @id @default(cuid())
+  customerId String?
+  userId     String?
+
+  // Guest checkout
+  guestEmail String?
+  guestPhone String?
+  guestName  String?
+
+  // Totals
+  subtotal Decimal @db.Decimal(10, 2)
+  tax      Decimal @default(0) @db.Decimal(10, 2)
+  shipping Decimal @default(0) @db.Decimal(10, 2)
+  total    Decimal @db.Decimal(10, 2)
+
+  status OrderStatus @default(PENDING)
+
+  // Payment
+  stripePaymentIntentId String?
+
+  // Shipping
+  shippingName    String?
+  shippingAddress String?
+  shippingCity    String?
+  shippingState   String?
+  shippingZip     String?
+  shippingCountry String?
+
+  notes String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  customer Customer?   @relation(fields: [customerId], references: [id])
+  user     User?       @relation(fields: [userId], references: [id])
+  items    OrderItem[]
+
+  @@index([customerId])
+  @@index([userId])
+  @@index([status])
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String
+  quantity  Int
+  price     Decimal @db.Decimal(10, 2)
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
