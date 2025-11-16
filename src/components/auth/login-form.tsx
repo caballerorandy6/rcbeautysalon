@@ -135,9 +135,21 @@ export function LoginForm() {
             </div>
 
             <div className="rounded-lg bg-muted p-3 text-xs text-muted-foreground">
-              <p className="font-semibold">Demo Credentials:</p>
-              <p>Email: admin@rcbeautysalon.org</p>
-              <p>Password: admin123</p>
+              <p className="font-semibold mb-2">Demo Credentials:</p>
+              <div className="space-y-2">
+                <div>
+                  <p className="font-medium text-foreground">Admin (Full Access):</p>
+                  <p>admin@rcbeautysalon.org / admin123</p>
+                </div>
+                <div>
+                  <p className="font-medium text-foreground">Staff (Staff Portal):</p>
+                  <p>staff@rcbeautysalon.org / staff123</p>
+                </div>
+                <div>
+                  <p className="font-medium text-foreground">Client (My Account):</p>
+                  <p>cliente@rcbeautysalon.org / cliente123</p>
+                </div>
+              </div>
             </div>
           </CardFooter>
         </form>

@@ -1,7 +1,9 @@
 "use client"
 
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,7 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useSession, signOut } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import { Menu, Bell, LogOut, User, Settings } from "lucide-react"
+import { Menu, Bell, LogOut, User, Settings, LayoutDashboard, Users2 } from "lucide-react"
 
 export function AdminHeader() {
   const router = useRouter()
@@ -29,6 +31,20 @@ export function AdminHeader() {
     .map((n) => n[0])
     .join("")
     .toUpperCase() || "U"
+
+  const userRole = session?.user?.role || "CLIENTE"
+  const isAdmin = userRole === "ADMIN"
+
+  const getRoleBadgeVariant = () => {
+    switch (userRole) {
+      case "ADMIN":
+        return "default"
+      case "STAFF":
+        return "secondary"
+      default:
+        return "outline"
+    }
+  }
 
   return (
     <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
@@ -54,16 +70,40 @@ export function AdminHeader() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel className="font-normal">
-                <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    {session?.user?.name || "User"}
-                  </p>
+                <div className="flex flex-col space-y-2">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium leading-none">
+                      {session?.user?.name || "User"}
+                    </p>
+                    <Badge variant={getRoleBadgeVariant()} className="ml-2">
+                      {userRole}
+                    </Badge>
+                  </div>
                   <p className="text-xs leading-none text-muted-foreground">
                     {session?.user?.email}
                   </p>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
+
+              {isAdmin && (
+                <>
+                  <DropdownMenuItem asChild>
+                    <Link href="/staff-portal">
+                      <Users2 className="mr-2 h-4 w-4" />
+                      Staff Portal
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/my-account">
+                      <User className="mr-2 h-4 w-4" />
+                      Client View
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                </>
+              )}
+
               <DropdownMenuItem>
                 <User className="mr-2 h-4 w-4" />
                 Profile

@@ -52,6 +52,38 @@ async function main() {
   })
   console.log('✅ Admin user created (email: admin@rcbeautysalon.org, password: admin123)')
 
+  // 2.2. Crear usuario staff de prueba
+  console.log('Creating staff user...')
+  const staffPassword = await hash('staff123', 12)
+  const staffUser = await prisma.user.upsert({
+    where: { email: 'staff@rcbeautysalon.org' },
+    update: {},
+    create: {
+      name: 'Staff Member',
+      email: 'staff@rcbeautysalon.org',
+      password: staffPassword,
+      role: 'STAFF',
+      emailVerified: new Date(),
+    },
+  })
+  console.log('✅ Staff user created (email: staff@rcbeautysalon.org, password: staff123)')
+
+  // 2.3. Crear usuario cliente de prueba
+  console.log('Creating client user...')
+  const clientPassword = await hash('cliente123', 12)
+  const clientUser = await prisma.user.upsert({
+    where: { email: 'cliente@rcbeautysalon.org' },
+    update: {},
+    create: {
+      name: 'Test Client',
+      email: 'cliente@rcbeautysalon.org',
+      password: clientPassword,
+      role: 'CLIENTE',
+      emailVerified: new Date(),
+    },
+  })
+  console.log('✅ Client user created (email: cliente@rcbeautysalon.org, password: cliente123)')
+
   // 3. Crear categorías
   console.log('Creating categories...')
   const hairCategory = await prisma.category.upsert({
@@ -287,10 +319,14 @@ async function main() {
   console.log('✨ Seeding completed successfully!')
   console.log('\n📋 Summary:')
   console.log(`  - Salon: ${salonConfig.name}`)
+  console.log(`  \n👥 Users:`)
   console.log(`  - Admin: ${admin.email} (password: admin123)`)
+  console.log(`  - Staff: ${staffUser.email} (password: staff123)`)
+  console.log(`  - Client: ${clientUser.email} (password: cliente123)`)
+  console.log(`  \n📊 Data:`)
   console.log(`  - Categories: 4`)
   console.log(`  - Services: 5`)
-  console.log(`  - Staff: 3`)
+  console.log(`  - Staff Members: 3`)
   console.log(`  - Products: 4`)
   console.log(`  - Customers: 1`)
 }
