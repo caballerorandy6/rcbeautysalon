@@ -1,6 +1,5 @@
 "use client"
 
-import { Suspense } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { signIn } from "next-auth/react"
@@ -14,9 +13,8 @@ import Link from "next/link"
 import { Sparkles, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { loginSchema, type LoginInput } from "@/lib/validations/auth"
-import { LoginSkeleton } from "@/components/skeletons/login-skeleton"
 
-function LoginForm() {
+export function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get("callbackUrl") || "/dashboard"
@@ -49,6 +47,7 @@ function LoginForm() {
         router.refresh()
       }
     } catch (error) {
+      console.log("Login error:", error)
       toast.error("Login failed", {
         description: "Something went wrong. Please try again.",
       })
@@ -144,13 +143,5 @@ function LoginForm() {
         </form>
       </Card>
     </div>
-  )
-}
-
-export default function LoginPage() {
-  return (
-    <Suspense fallback={<LoginSkeleton />}>
-      <LoginForm />
-    </Suspense>
   )
 }
