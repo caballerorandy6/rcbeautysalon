@@ -52,10 +52,15 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  accounts     Account[]
-  sessions     Session[]
-  appointments Appointment[]
-  orders       Order[]
+  accounts Account[]
+  sessions Session[]
+
+  // RELACIONES one-to-one con perfiles de negocio
+  staff    Staff?    // Si role=STAFF, DEBE existir
+  customer Customer? // Si role=CLIENTE, DEBE existir
+
+  @@index([email])
+  @@index([role])
 }
 
 enum UserRole {
@@ -101,11 +106,11 @@ model SalonConfig {
   locale   String @default("en")
 
   // Booking settings
-  bookingDeposit      Decimal @default(50.00) @db.Decimal(10, 2)
-  depositRefundable   Boolean @default(false)
-  minBookingAdvance   Int     @default(24) // hours
-  maxBookingAdvance   Int     @default(30) // days
-  cancellationPolicy  String?
+  bookingDeposit     Decimal @default(50.00) @db.Decimal(10, 2)
+  depositRefundable  Boolean @default(false)
+  minBookingAdvance  Int     @default(24) // hours
+  maxBookingAdvance  Int     @default(30) // days
+  cancellationPolicy String? @db.Text
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -132,7 +137,7 @@ model Category {
 model Service {
   id          String  @id @default(cuid())
   name        String
-  description String?
+  description String? @db.Text
   duration    Int // minutes
   price       Decimal @db.Decimal(10, 2)
   image       String?
@@ -143,9 +148,9 @@ model Service {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  category         Category?            @relation(fields: [categoryId], references: [id])
+  category            Category?            @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   appointmentServices AppointmentService[]
-  staffServices    StaffService[]
+  staffServices       StaffService[]
 
   @@index([categoryId])
   @@index([isActive])
@@ -160,9 +165,13 @@ model Staff {
   name     String
   email    String?
   phone    String?
-  bio      String?
+  bio      String? @db.Text
   image    String?
   isActive Boolean @default(true)
+
+  // Relación one-to-one OPCIONAL con User
+  userId String? @unique
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -171,7 +180,9 @@ model Staff {
   appointments Appointment[]
   workingHours WorkingHours[]
 
+  @@index([userId])
   @@index([isActive])
+  @@index([email])
 }
 
 model StaffService {
@@ -210,7 +221,11 @@ model Customer {
   name  String
   email String?
   phone String?
-  notes String?
+  notes String? @db.Text
+
+  // Relación one-to-one OPCIONAL con User
+  userId String? @unique
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -218,6 +233,7 @@ model Customer {
   appointments Appointment[]
   orders       Order[]
 
+  @@index([userId])
   @@index([email])
   @@index([phone])
 }
@@ -228,11 +244,10 @@ model Customer {
 
 model Appointment {
   id         String            @id @default(cuid())
-  customerId String?
   staffId    String
-  userId     String?
+  customerId String?
 
-  // Walk-in customer
+  // Walk-in customer sin Customer registrado
   guestName  String?
   guestEmail String?
   guestPhone String?
@@ -240,30 +255,30 @@ model Appointment {
   startTime DateTime
   endTime   DateTime
   status    AppointmentStatus @default(PENDING)
-  notes     String?
+  notes     String? @db.Text
 
   // Payment ($50 non-refundable deposit)
-  totalPrice         Decimal @db.Decimal(10, 2)
-  depositAmount      Decimal @default(50.00) @db.Decimal(10, 2)
-  depositPaid        Boolean @default(false)
-  stripePaymentId    String?
+  totalPrice      Decimal @db.Decimal(10, 2)
+  depositAmount   Decimal @default(50.00) @db.Decimal(10, 2)
+  depositPaid     Boolean @default(false)
+  stripePaymentId String?
 
   // Notifications
-  reminderSentAt DateTime?
+  reminderSentAt     DateTime?
+  confirmationSentAt DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  customer Customer?            @relation(fields: [customerId], references: [id])
-  staff    Staff                @relation(fields: [staffId], references: [id])
-  user     User?                @relation(fields: [userId], references: [id])
+  staff    Staff                @relation(fields: [staffId], references: [id], onDelete: Restrict)
+  customer Customer?            @relation(fields: [customerId], references: [id], onDelete: SetNull)
   services AppointmentService[]
 
-  @@index([customerId])
   @@index([staffId])
-  @@index([userId])
+  @@index([customerId])
   @@index([startTime])
   @@index([status])
+  @@index([depositPaid])
 }
 
 model AppointmentService {
@@ -272,7 +287,7 @@ model AppointmentService {
   serviceId     String
 
   appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
-  service     Service     @relation(fields: [serviceId], references: [id])
+  service     Service     @relation(fields: [serviceId], references: [id], onDelete: Restrict)
 
   @@unique([appointmentId, serviceId])
   @@index([appointmentId])
@@ -295,10 +310,10 @@ enum AppointmentStatus {
 model Product {
   id             String   @id @default(cuid())
   name           String
-  description    String?
+  description    String?  @db.Text
   price          Decimal  @db.Decimal(10, 2)
   compareAtPrice Decimal? @db.Decimal(10, 2)
-  sku            String?
+  sku            String?  @unique
 
   // Inventory
   trackInventory Boolean @default(true)
@@ -316,23 +331,23 @@ model Product {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  category   Category?   @relation(fields: [categoryId], references: [id])
+  category   Category?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   orderItems OrderItem[]
 
   @@index([categoryId])
   @@index([isActive])
   @@index([isFeatured])
+  @@index([sku])
 }
 
 model Order {
   id         String  @id @default(cuid())
   customerId String?
-  userId     String?
 
-  // Guest checkout
+  // Guest checkout sin Customer registrado
+  guestName  String?
   guestEmail String?
   guestPhone String?
-  guestName  String?
 
   // Totals
   subtotal Decimal @db.Decimal(10, 2)
@@ -351,20 +366,19 @@ model Order {
   shippingCity    String?
   shippingState   String?
   shippingZip     String?
-  shippingCountry String?
+  shippingCountry String @default("US")
 
-  notes String?
+  notes String? @db.Text
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  customer Customer?   @relation(fields: [customerId], references: [id])
-  user     User?       @relation(fields: [userId], references: [id])
+  customer Customer?   @relation(fields: [customerId], references: [id], onDelete: SetNull)
   items    OrderItem[]
 
   @@index([customerId])
-  @@index([userId])
   @@index([status])
+  @@index([createdAt])
 }
 
 model OrderItem {
@@ -375,7 +389,7 @@ model OrderItem {
   price     Decimal @db.Decimal(10, 2)
 
   order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id])
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
 
   @@index([orderId])
   @@index([productId])

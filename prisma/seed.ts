@@ -36,55 +36,82 @@ async function main() {
   })
   console.log('✅ Salon configuration created')
 
-  // 2. Crear usuario admin
+  // 2. ADMIN USER (solo User, sin perfil adicional)
   console.log('Creating admin user...')
   const adminPassword = await hash('admin123', 12)
   const admin = await prisma.user.upsert({
     where: { email: 'admin@rcbeautysalon.org' },
     update: {},
     create: {
-      name: 'Admin',
+      name: 'Admin RC Beauty',
       email: 'admin@rcbeautysalon.org',
       password: adminPassword,
       role: 'ADMIN',
       emailVerified: new Date(),
     },
   })
-  console.log('✅ Admin user created (email: admin@rcbeautysalon.org, password: admin123)')
+  console.log('✅ Admin user created')
 
-  // 2.2. Crear usuario staff de prueba
-  console.log('Creating staff user...')
+  // 3. STAFF USER + STAFF PROFILE (puede hacer login)
+  console.log('Creating staff user with profile...')
   const staffPassword = await hash('staff123', 12)
   const staffUser = await prisma.user.upsert({
     where: { email: 'staff@rcbeautysalon.org' },
     update: {},
     create: {
-      name: 'Staff Member',
+      name: 'Laura Thompson',
       email: 'staff@rcbeautysalon.org',
       password: staffPassword,
       role: 'STAFF',
       emailVerified: new Date(),
     },
   })
-  console.log('✅ Staff user created (email: staff@rcbeautysalon.org, password: staff123)')
 
-  // 2.3. Crear usuario cliente de prueba
-  console.log('Creating client user...')
+  // Crear Staff profile vinculado al User
+  const staffProfile = await prisma.staff.upsert({
+    where: { userId: staffUser.id },
+    update: {},
+    create: {
+      name: 'Laura Thompson',
+      email: 'staff@rcbeautysalon.org',
+      phone: '+1 (555) 100-1001',
+      bio: 'Staff member with login access to manage appointments',
+      userId: staffUser.id,
+      isActive: true,
+    },
+  })
+  console.log('✅ Staff user + profile created')
+
+  // 4. CLIENT USER + CUSTOMER PROFILE (puede hacer login)
+  console.log('Creating client user with profile...')
   const clientPassword = await hash('cliente123', 12)
   const clientUser = await prisma.user.upsert({
     where: { email: 'cliente@rcbeautysalon.org' },
     update: {},
     create: {
-      name: 'Test Client',
+      name: 'John Doe',
       email: 'cliente@rcbeautysalon.org',
       password: clientPassword,
       role: 'CLIENTE',
       emailVerified: new Date(),
     },
   })
-  console.log('✅ Client user created (email: cliente@rcbeautysalon.org, password: cliente123)')
 
-  // 3. Crear categorías
+  // Crear Customer profile vinculado al User
+  const customerProfile = await prisma.customer.upsert({
+    where: { userId: clientUser.id },
+    update: {},
+    create: {
+      name: 'John Doe',
+      email: 'cliente@rcbeautysalon.org',
+      phone: '+1 (555) 200-2002',
+      notes: 'Regular customer with account access',
+      userId: clientUser.id,
+    },
+  })
+  console.log('✅ Client user + profile created')
+
+  // 5. Crear categorías
   console.log('Creating categories...')
   const hairCategory = await prisma.category.upsert({
     where: { slug: 'hair' },
@@ -123,7 +150,7 @@ async function main() {
   })
   console.log('✅ Categories created')
 
-  // 4. Crear servicios
+  // 6. Crear servicios
   console.log('Creating services...')
   const haircut = await prisma.service.create({
     data: {
@@ -181,14 +208,15 @@ async function main() {
   })
   console.log('✅ Services created')
 
-  // 5. Crear staff
-  console.log('Creating staff members...')
+  // 7. STAFF MEMBERS SIN LOGIN (solo trabajan, no acceden al sistema)
+  console.log('Creating staff members without login...')
   const maria = await prisma.staff.create({
     data: {
       name: 'Maria Rodriguez',
       email: 'maria@rcbeautysalon.org',
       phone: '+1 (555) 111-2222',
       bio: 'Expert hair stylist with 10+ years of experience',
+      userId: null, // NO tiene cuenta de usuario
       isActive: true,
     },
   })
@@ -199,6 +227,7 @@ async function main() {
       email: 'sofia@rcbeautysalon.org',
       phone: '+1 (555) 333-4444',
       bio: 'Certified nail technician and beauty specialist',
+      userId: null, // NO tiene cuenta de usuario
       isActive: true,
     },
   })
@@ -209,15 +238,20 @@ async function main() {
       email: 'ana@rcbeautysalon.org',
       phone: '+1 (555) 555-6666',
       bio: 'Licensed esthetician specializing in facial treatments',
+      userId: null, // NO tiene cuenta de usuario
       isActive: true,
     },
   })
-  console.log('✅ Staff members created')
+  console.log('✅ Staff members (without login) created')
 
-  // 6. Asignar servicios a staff
+  // 8. Asignar servicios a staff (incluyendo Laura que tiene login)
   console.log('Assigning services to staff...')
   await prisma.staffService.createMany({
     data: [
+      // Laura (con login) - All services
+      { staffId: staffProfile.id, serviceId: haircut.id },
+      { staffId: staffProfile.id, serviceId: manicure.id },
+      { staffId: staffProfile.id, serviceId: facial.id },
       // Maria - Hair services
       { staffId: maria.id, serviceId: haircut.id },
       { staffId: maria.id, serviceId: coloring.id },
@@ -230,12 +264,12 @@ async function main() {
   })
   console.log('✅ Services assigned to staff')
 
-  // 7. Crear horarios de trabajo (Lunes a Viernes, 9am-6pm)
+  // 9. Crear horarios de trabajo (Lunes a Viernes, 9am-6pm)
   console.log('Creating working hours...')
   const workingHoursData = []
-  const staffMembers = [maria, sofia, ana]
+  const allStaff = [staffProfile, maria, sofia, ana]
 
-  for (const staff of staffMembers) {
+  for (const staff of allStaff) {
     // Lunes (1) a Viernes (5)
     for (let day = 1; day <= 5; day++) {
       workingHoursData.push({
@@ -253,7 +287,7 @@ async function main() {
   })
   console.log('✅ Working hours created')
 
-  // 8. Crear productos de ejemplo
+  // 10. Crear productos de ejemplo
   console.log('Creating products...')
   await prisma.product.createMany({
     data: [
@@ -304,31 +338,39 @@ async function main() {
   })
   console.log('✅ Products created')
 
-  // 9. Crear un cliente de ejemplo
-  console.log('Creating sample customer...')
-  const customer = await prisma.customer.create({
+  // 11. WALK-IN CUSTOMER SIN LOGIN
+  console.log('Creating walk-in customers...')
+  const walkinCustomer = await prisma.customer.create({
     data: {
       name: 'Jessica Smith',
       email: 'jessica@example.com',
       phone: '+1 (555) 777-8888',
-      notes: 'Prefers morning appointments',
+      notes: 'Walk-in customer, prefers morning appointments',
+      userId: null, // NO tiene cuenta de usuario
     },
   })
-  console.log('✅ Sample customer created')
+  console.log('✅ Walk-in customer created')
 
-  console.log('✨ Seeding completed successfully!')
+  console.log('\n✨ Seeding completed successfully!')
   console.log('\n📋 Summary:')
   console.log(`  - Salon: ${salonConfig.name}`)
-  console.log(`  \n👥 Users:`)
-  console.log(`  - Admin: ${admin.email} (password: admin123)`)
-  console.log(`  - Staff: ${staffUser.email} (password: staff123)`)
-  console.log(`  - Client: ${clientUser.email} (password: cliente123)`)
-  console.log(`  \n📊 Data:`)
+  console.log(`\n👥 Users (can login):`)
+  console.log(`  - Admin: ${admin.email} / admin123 (FULL ACCESS)`)
+  console.log(`  - Staff: ${staffUser.email} / staff123 (${staffProfile.name})`)
+  console.log(`  - Client: ${clientUser.email} / cliente123 (${customerProfile.name})`)
+  console.log(`\n👷 Staff Members (work only, no login):`)
+  console.log(`  - ${maria.name} (${maria.email})`)
+  console.log(`  - ${sofia.name} (${sofia.email})`)
+  console.log(`  - ${ana.name} (${ana.email})`)
+  console.log(`\n🛍️ Customers:`)
+  console.log(`  - ${customerProfile.name} (has account)`)
+  console.log(`  - ${walkinCustomer.name} (walk-in, no account)`)
+  console.log(`\n📊 Data:`)
   console.log(`  - Categories: 4`)
   console.log(`  - Services: 5`)
-  console.log(`  - Staff Members: 3`)
+  console.log(`  - Total Staff: 4 (1 with login, 3 without)`)
   console.log(`  - Products: 4`)
-  console.log(`  - Customers: 1`)
+  console.log(`  - Total Customers: 2 (1 with account, 1 walk-in)`)
 }
 
 main()
