@@ -6,7 +6,9 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('🌱 Seeding database...')
 
-  // 1. Crear configuración del salón
+  // ============================================
+  // 1. SALON CONFIGURATION
+  // ============================================
   console.log('Creating salon configuration...')
   const salonConfig = await prisma.salonConfig.upsert({
     where: { id: 'salon_config' },
@@ -27,19 +29,24 @@ async function main() {
       primaryColor: '#000000',
       secondaryColor: '#ffffff',
       accentColor: '#d4af37',
-      bookingDeposit: 50.00,
+      bookingDeposit: 50.0,
       depositRefundable: false,
       minBookingAdvance: 24,
       maxBookingAdvance: 30,
-      cancellationPolicy: 'Cancellations must be made at least 24 hours in advance. The $50 deposit is non-refundable.',
+      cancellationPolicy:
+        'Cancellations must be made at least 24 hours in advance. The $50 deposit is non-refundable.',
     },
   })
-  console.log('✅ Salon configuration created')
+  console.log(`✅ Salon: ${salonConfig.name}`)
 
-  // 2. ADMIN USER (solo User, sin perfil adicional)
-  console.log('Creating admin user...')
+  // ============================================
+  // 2. USERS (Authentication)
+  // ============================================
+  console.log('\nCreating users...')
+
+  // ADMIN (no staff/customer profile)
   const adminPassword = await hash('admin123', 12)
-  const admin = await prisma.user.upsert({
+  const adminUser = await prisma.user.upsert({
     where: { email: 'admin@rcbeautysalon.org' },
     update: {},
     create: {
@@ -50,10 +57,9 @@ async function main() {
       emailVerified: new Date(),
     },
   })
-  console.log('✅ Admin user created')
+  console.log(`✅ Admin: ${adminUser.email}`)
 
-  // 3. STAFF USER + STAFF PROFILE (puede hacer login)
-  console.log('Creating staff user with profile...')
+  // STAFF USER (con Staff profile)
   const staffPassword = await hash('staff123', 12)
   const staffUser = await prisma.user.upsert({
     where: { email: 'staff@rcbeautysalon.org' },
@@ -66,24 +72,9 @@ async function main() {
       emailVerified: new Date(),
     },
   })
+  console.log(`✅ Staff User: ${staffUser.email}`)
 
-  // Crear Staff profile vinculado al User
-  const staffProfile = await prisma.staff.upsert({
-    where: { userId: staffUser.id },
-    update: {},
-    create: {
-      name: 'Laura Thompson',
-      email: 'staff@rcbeautysalon.org',
-      phone: '+1 (555) 100-1001',
-      bio: 'Staff member with login access to manage appointments',
-      userId: staffUser.id,
-      isActive: true,
-    },
-  })
-  console.log('✅ Staff user + profile created')
-
-  // 4. CLIENT USER + CUSTOMER PROFILE (puede hacer login)
-  console.log('Creating client user with profile...')
+  // CLIENT USER (con Customer profile)
   const clientPassword = await hash('cliente123', 12)
   const clientUser = await prisma.user.upsert({
     where: { email: 'cliente@rcbeautysalon.org' },
@@ -96,12 +87,184 @@ async function main() {
       emailVerified: new Date(),
     },
   })
+  console.log(`✅ Client User: ${clientUser.email}`)
 
-  // Crear Customer profile vinculado al User
-  const customerProfile = await prisma.customer.upsert({
-    where: { userId: clientUser.id },
+  // ============================================
+  // 3. CATEGORIES
+  // ============================================
+  console.log('\nCreating categories...')
+  const hairCategory = await prisma.category.upsert({
+    where: { slug: 'hair' },
+    update: {},
+    create: { name: 'Hair Services', slug: 'hair' },
+  })
+
+  const nailsCategory = await prisma.category.upsert({
+    where: { slug: 'nails' },
+    update: {},
+    create: { name: 'Nails', slug: 'nails' },
+  })
+
+  const facialCategory = await prisma.category.upsert({
+    where: { slug: 'facial' },
+    update: {},
+    create: { name: 'Facial & Skin', slug: 'facial' },
+  })
+
+  const productsCategory = await prisma.category.upsert({
+    where: { slug: 'products' },
+    update: {},
+    create: { name: 'Beauty Products', slug: 'products' },
+  })
+  console.log('✅ Categories: 4')
+
+  // ============================================
+  // 4. SERVICES
+  // ============================================
+  console.log('\nCreating services...')
+  const haircut = await prisma.service.upsert({
+    where: { id: 'service_haircut' },
     update: {},
     create: {
+      id: 'service_haircut',
+      name: 'Haircut & Style',
+      description: 'Professional haircut with styling',
+      duration: 60,
+      price: 75.0,
+      categoryId: hairCategory.id,
+      isActive: true,
+    },
+  })
+
+  const coloring = await prisma.service.upsert({
+    where: { id: 'service_coloring' },
+    update: {},
+    create: {
+      id: 'service_coloring',
+      name: 'Hair Coloring',
+      description: 'Full hair coloring service',
+      duration: 120,
+      price: 150.0,
+      categoryId: hairCategory.id,
+      isActive: true,
+    },
+  })
+
+  const manicure = await prisma.service.upsert({
+    where: { id: 'service_manicure' },
+    update: {},
+    create: {
+      id: 'service_manicure',
+      name: 'Manicure',
+      description: 'Classic manicure with polish',
+      duration: 45,
+      price: 35.0,
+      categoryId: nailsCategory.id,
+      isActive: true,
+    },
+  })
+
+  const pedicure = await prisma.service.upsert({
+    where: { id: 'service_pedicure' },
+    update: {},
+    create: {
+      id: 'service_pedicure',
+      name: 'Pedicure',
+      description: 'Relaxing pedicure with massage',
+      duration: 60,
+      price: 50.0,
+      categoryId: nailsCategory.id,
+      isActive: true,
+    },
+  })
+
+  const facial = await prisma.service.upsert({
+    where: { id: 'service_facial' },
+    update: {},
+    create: {
+      id: 'service_facial',
+      name: 'Facial Treatment',
+      description: 'Deep cleansing facial',
+      duration: 90,
+      price: 120.0,
+      categoryId: facialCategory.id,
+      isActive: true,
+    },
+  })
+  console.log('✅ Services: 5')
+
+  // ============================================
+  // 5. STAFF PROFILES
+  // ============================================
+  console.log('\nCreating staff profiles...')
+
+  // Staff CON login (conectado a staffUser)
+  const staffLaura = await prisma.staff.upsert({
+    where: { id: 'staff_laura' },
+    update: {},
+    create: {
+      id: 'staff_laura',
+      name: 'Laura Thompson',
+      email: 'staff@rcbeautysalon.org',
+      phone: '+1 (555) 100-1001',
+      bio: 'Staff member with login access to manage appointments',
+      isActive: true,
+      userId: staffUser.id,
+    },
+  })
+
+  // Staff SIN login
+  const staffMaria = await prisma.staff.upsert({
+    where: { id: 'staff_maria' },
+    update: {},
+    create: {
+      id: 'staff_maria',
+      name: 'Maria Rodriguez',
+      email: 'maria@rcbeautysalon.org',
+      phone: '+1 (555) 111-2222',
+      bio: 'Expert hair stylist with 10+ years of experience',
+      isActive: true,
+    },
+  })
+
+  const staffSofia = await prisma.staff.upsert({
+    where: { id: 'staff_sofia' },
+    update: {},
+    create: {
+      id: 'staff_sofia',
+      name: 'Sofia Martinez',
+      email: 'sofia@rcbeautysalon.org',
+      phone: '+1 (555) 333-4444',
+      bio: 'Certified nail technician and beauty specialist',
+      isActive: true,
+    },
+  })
+
+  const staffAna = await prisma.staff.upsert({
+    where: { id: 'staff_ana' },
+    update: {},
+    create: {
+      id: 'staff_ana',
+      name: 'Ana Garcia',
+      email: 'ana@rcbeautysalon.org',
+      phone: '+1 (555) 555-6666',
+      bio: 'Licensed esthetician specializing in facial treatments',
+      isActive: true,
+    },
+  })
+  console.log('✅ Staff: 4 (1 with login, 3 without)')
+
+  // ============================================
+  // 6. CUSTOMER PROFILES
+  // ============================================
+  console.log('\nCreating customer profiles...')
+
+  // Customer CON cuenta (conectado a clientUser)
+  const customerJohn = await prisma.customer.upsert({
+    where: { id: 'customer_john' },
+    update: {},
+    create: {
+      id: 'customer_john',
       name: 'John Doe',
       email: 'cliente@rcbeautysalon.org',
       phone: '+1 (555) 200-2002',
@@ -109,168 +272,72 @@ async function main() {
       userId: clientUser.id,
     },
   })
-  console.log('✅ Client user + profile created')
 
-  // 5. Crear categorías
-  console.log('Creating categories...')
-  const hairCategory = await prisma.category.upsert({
-    where: { slug: 'hair' },
+  // Customer SIN cuenta (walk-in)
+  const customerJessica = await prisma.customer.upsert({
+    where: { id: 'customer_jessica' },
     update: {},
     create: {
-      name: 'Hair Services',
-      slug: 'hair',
+      id: 'customer_jessica',
+      name: 'Jessica Smith',
+      email: 'jessica@example.com',
+      phone: '+1 (555) 777-8888',
+      notes: 'Walk-in customer, prefers morning appointments',
+    },
+  })
+  console.log('✅ Customers: 2 (1 with account, 1 walk-in)')
+
+  // ============================================
+  // 7. STAFF SERVICES (assign services to staff)
+  // ============================================
+  console.log('\nAssigning services to staff...')
+
+  // Limpiar asignaciones existentes
+  await prisma.staffService.deleteMany({
+    where: {
+      staffId: {
+        in: [staffLaura.id, staffMaria.id, staffSofia.id, staffAna.id],
+      },
     },
   })
 
-  const nailsCategory = await prisma.category.upsert({
-    where: { slug: 'nails' },
-    update: {},
-    create: {
-      name: 'Nails',
-      slug: 'nails',
-    },
-  })
-
-  const facialCategory = await prisma.category.upsert({
-    where: { slug: 'facial' },
-    update: {},
-    create: {
-      name: 'Facial & Skin',
-      slug: 'facial',
-    },
-  })
-
-  const productsCategory = await prisma.category.upsert({
-    where: { slug: 'products' },
-    update: {},
-    create: {
-      name: 'Beauty Products',
-      slug: 'products',
-    },
-  })
-  console.log('✅ Categories created')
-
-  // 6. Crear servicios
-  console.log('Creating services...')
-  const haircut = await prisma.service.create({
-    data: {
-      name: 'Haircut & Style',
-      description: 'Professional haircut with styling',
-      duration: 60,
-      price: 75.00,
-      categoryId: hairCategory.id,
-      isActive: true,
-    },
-  })
-
-  const coloring = await prisma.service.create({
-    data: {
-      name: 'Hair Coloring',
-      description: 'Full hair coloring service',
-      duration: 120,
-      price: 150.00,
-      categoryId: hairCategory.id,
-      isActive: true,
-    },
-  })
-
-  const manicure = await prisma.service.create({
-    data: {
-      name: 'Manicure',
-      description: 'Classic manicure with polish',
-      duration: 45,
-      price: 35.00,
-      categoryId: nailsCategory.id,
-      isActive: true,
-    },
-  })
-
-  const pedicure = await prisma.service.create({
-    data: {
-      name: 'Pedicure',
-      description: 'Relaxing pedicure with massage',
-      duration: 60,
-      price: 50.00,
-      categoryId: nailsCategory.id,
-      isActive: true,
-    },
-  })
-
-  const facial = await prisma.service.create({
-    data: {
-      name: 'Facial Treatment',
-      description: 'Deep cleansing facial',
-      duration: 90,
-      price: 120.00,
-      categoryId: facialCategory.id,
-      isActive: true,
-    },
-  })
-  console.log('✅ Services created')
-
-  // 7. STAFF MEMBERS SIN LOGIN (solo trabajan, no acceden al sistema)
-  console.log('Creating staff members without login...')
-  const maria = await prisma.staff.create({
-    data: {
-      name: 'Maria Rodriguez',
-      email: 'maria@rcbeautysalon.org',
-      phone: '+1 (555) 111-2222',
-      bio: 'Expert hair stylist with 10+ years of experience',
-      userId: null, // NO tiene cuenta de usuario
-      isActive: true,
-    },
-  })
-
-  const sofia = await prisma.staff.create({
-    data: {
-      name: 'Sofia Martinez',
-      email: 'sofia@rcbeautysalon.org',
-      phone: '+1 (555) 333-4444',
-      bio: 'Certified nail technician and beauty specialist',
-      userId: null, // NO tiene cuenta de usuario
-      isActive: true,
-    },
-  })
-
-  const ana = await prisma.staff.create({
-    data: {
-      name: 'Ana Garcia',
-      email: 'ana@rcbeautysalon.org',
-      phone: '+1 (555) 555-6666',
-      bio: 'Licensed esthetician specializing in facial treatments',
-      userId: null, // NO tiene cuenta de usuario
-      isActive: true,
-    },
-  })
-  console.log('✅ Staff members (without login) created')
-
-  // 8. Asignar servicios a staff (incluyendo Laura que tiene login)
-  console.log('Assigning services to staff...')
   await prisma.staffService.createMany({
     data: [
-      // Laura (con login) - All services
-      { staffId: staffProfile.id, serviceId: haircut.id },
-      { staffId: staffProfile.id, serviceId: manicure.id },
-      { staffId: staffProfile.id, serviceId: facial.id },
+      // Laura - All services
+      { staffId: staffLaura.id, serviceId: haircut.id },
+      { staffId: staffLaura.id, serviceId: manicure.id },
+      { staffId: staffLaura.id, serviceId: facial.id },
       // Maria - Hair services
-      { staffId: maria.id, serviceId: haircut.id },
-      { staffId: maria.id, serviceId: coloring.id },
+      { staffId: staffMaria.id, serviceId: haircut.id },
+      { staffId: staffMaria.id, serviceId: coloring.id },
       // Sofia - Nail services
-      { staffId: sofia.id, serviceId: manicure.id },
-      { staffId: sofia.id, serviceId: pedicure.id },
+      { staffId: staffSofia.id, serviceId: manicure.id },
+      { staffId: staffSofia.id, serviceId: pedicure.id },
       // Ana - Facial services
-      { staffId: ana.id, serviceId: facial.id },
+      { staffId: staffAna.id, serviceId: facial.id },
     ],
   })
-  console.log('✅ Services assigned to staff')
+  console.log('✅ Staff services assigned')
 
-  // 9. Crear horarios de trabajo (Lunes a Viernes, 9am-6pm)
-  console.log('Creating working hours...')
+  // ============================================
+  // 8. WORKING HOURS (Monday-Friday, 9am-6pm)
+  // ============================================
+  console.log('\nCreating working hours...')
+
+  // Limpiar horarios existentes
+  await prisma.workingHours.deleteMany({
+    where: {
+      staffId: {
+        in: [staffLaura.id, staffMaria.id, staffSofia.id, staffAna.id],
+      },
+    },
+  })
+
   const workingHoursData = []
-  const allStaff = [staffProfile, maria, sofia, ana]
+  const allStaff = [staffLaura, staffMaria, staffSofia, staffAna]
 
   for (const staff of allStaff) {
-    // Lunes (1) a Viernes (5)
+    // Monday (1) to Friday (5)
     for (let day = 1; day <= 5; day++) {
       workingHoursData.push({
         staffId: staff.id,
@@ -285,17 +352,29 @@ async function main() {
   await prisma.workingHours.createMany({
     data: workingHoursData,
   })
-  console.log('✅ Working hours created')
+  console.log('✅ Working hours: 20 entries (4 staff x 5 days)')
 
-  // 10. Crear productos de ejemplo
-  console.log('Creating products...')
+  // ============================================
+  // 9. PRODUCTS
+  // ============================================
+  console.log('\nCreating products...')
+
+  // Limpiar productos existentes para evitar duplicados
+  await prisma.product.deleteMany({
+    where: {
+      sku: {
+        in: ['SHP-001', 'CND-001', 'SRM-001', 'NPL-001'],
+      },
+    },
+  })
+
   await prisma.product.createMany({
     data: [
       {
         name: 'Premium Shampoo',
         description: 'Professional grade shampoo for all hair types',
-        price: 28.00,
-        compareAtPrice: 35.00,
+        price: 28.0,
+        compareAtPrice: 35.0,
         sku: 'SHP-001',
         stockQuantity: 50,
         categoryId: productsCategory.id,
@@ -305,8 +384,8 @@ async function main() {
       {
         name: 'Hair Conditioner',
         description: 'Deep conditioning treatment',
-        price: 32.00,
-        compareAtPrice: 40.00,
+        price: 32.0,
+        compareAtPrice: 40.0,
         sku: 'CND-001',
         stockQuantity: 45,
         categoryId: productsCategory.id,
@@ -316,8 +395,8 @@ async function main() {
       {
         name: 'Facial Serum',
         description: 'Anti-aging facial serum with vitamin C',
-        price: 65.00,
-        compareAtPrice: 80.00,
+        price: 65.0,
+        compareAtPrice: 80.0,
         sku: 'SRM-001',
         stockQuantity: 30,
         categoryId: productsCategory.id,
@@ -327,7 +406,7 @@ async function main() {
       {
         name: 'Nail Polish Set',
         description: 'Set of 5 premium nail polishes',
-        price: 45.00,
+        price: 45.0,
         sku: 'NPL-001',
         stockQuantity: 25,
         categoryId: productsCategory.id,
@@ -336,41 +415,42 @@ async function main() {
       },
     ],
   })
-  console.log('✅ Products created')
+  console.log('✅ Products: 4')
 
-  // 11. WALK-IN CUSTOMER SIN LOGIN
-  console.log('Creating walk-in customers...')
-  const walkinCustomer = await prisma.customer.create({
-    data: {
-      name: 'Jessica Smith',
-      email: 'jessica@example.com',
-      phone: '+1 (555) 777-8888',
-      notes: 'Walk-in customer, prefers morning appointments',
-      userId: null, // NO tiene cuenta de usuario
-    },
-  })
-  console.log('✅ Walk-in customer created')
+  // ============================================
+  // SUMMARY
+  // ============================================
+  console.log('\n' + '='.repeat(50))
+  console.log('✨ Seeding completed successfully!')
+  console.log('='.repeat(50))
+  console.log('\n📋 SUMMARY:')
+  console.log(`Salon: ${salonConfig.name}`)
 
-  console.log('\n✨ Seeding completed successfully!')
-  console.log('\n📋 Summary:')
-  console.log(`  - Salon: ${salonConfig.name}`)
-  console.log(`\n👥 Users (can login):`)
-  console.log(`  - Admin: ${admin.email} / admin123 (FULL ACCESS)`)
-  console.log(`  - Staff: ${staffUser.email} / staff123 (${staffProfile.name})`)
-  console.log(`  - Client: ${clientUser.email} / cliente123 (${customerProfile.name})`)
-  console.log(`\n👷 Staff Members (work only, no login):`)
-  console.log(`  - ${maria.name} (${maria.email})`)
-  console.log(`  - ${sofia.name} (${sofia.email})`)
-  console.log(`  - ${ana.name} (${ana.email})`)
-  console.log(`\n🛍️ Customers:`)
-  console.log(`  - ${customerProfile.name} (has account)`)
-  console.log(`  - ${walkinCustomer.name} (walk-in, no account)`)
-  console.log(`\n📊 Data:`)
-  console.log(`  - Categories: 4`)
-  console.log(`  - Services: 5`)
-  console.log(`  - Total Staff: 4 (1 with login, 3 without)`)
-  console.log(`  - Products: 4`)
-  console.log(`  - Total Customers: 2 (1 with account, 1 walk-in)`)
+  console.log('\n👥 USERS (can login):')
+  console.log(`  • Admin: admin@rcbeautysalon.org / admin123`)
+  console.log(`    → Full access to all areas`)
+  console.log(`  • Staff: staff@rcbeautysalon.org / staff123 (${staffLaura.name})`)
+  console.log(`    → Access to /staff-portal only`)
+  console.log(`  • Client: cliente@rcbeautysalon.org / cliente123 (${customerJohn.name})`)
+  console.log(`    → Access to /my-account only`)
+
+  console.log('\n👷 STAFF (no login):')
+  console.log(`  • ${staffMaria.name} (${staffMaria.email})`)
+  console.log(`  • ${staffSofia.name} (${staffSofia.email})`)
+  console.log(`  • ${staffAna.name} (${staffAna.email})`)
+
+  console.log('\n🛍️ CUSTOMERS:')
+  console.log(`  • ${customerJohn.name} (has account) → can login`)
+  console.log(`  • ${customerJessica.name} (walk-in) → no login`)
+
+  console.log('\n📊 DATA:')
+  console.log(`  • Categories: 4`)
+  console.log(`  • Services: 5`)
+  console.log(`  • Staff: 4 (1 with login, 3 without)`)
+  console.log(`  • Customers: 2 (1 with account, 1 walk-in)`)
+  console.log(`  • Products: 4`)
+  console.log(`  • Working Hours: 20 entries`)
+  console.log('')
 }
 
 main()
