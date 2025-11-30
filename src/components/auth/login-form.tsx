@@ -10,8 +10,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
-import { Sparkles, Loader2 } from "lucide-react"
+import { CircleNotch } from "@phosphor-icons/react"
 import { toast } from "sonner"
+import { Logo } from "@/components/ui/logo"
 import { loginSchema, type LoginInput } from "@/lib/validations/auth"
 
 export function LoginForm() {
@@ -58,10 +59,8 @@ export function LoginForm() {
     <div className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <div className="mb-4 flex justify-center">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary">
-              <Sparkles className="h-7 w-7 text-primary-foreground" />
-            </div>
+          <div className="mb-6 flex justify-center">
+            <Logo size={144} />
           </div>
           <CardTitle className="text-center text-2xl">Welcome back</CardTitle>
           <CardDescription className="text-center">
@@ -111,7 +110,7 @@ export function LoginForm() {
             <Button className="w-full" size="lg" type="submit" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <CircleNotch size={16} weight="bold" className="mr-2 animate-spin" />
                   Signing in...
                 </>
               ) : (

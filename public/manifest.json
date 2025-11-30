@@ -1,0 +1,17 @@
+{
+  "name": "BS Beauty Salon",
+  "short_name": "BS Salon",
+  "description": "Professional Beauty Services - Book appointments and shop premium products",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FAF8F5",
+  "theme_color": "#E8C547",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

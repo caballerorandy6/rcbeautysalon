@@ -1,26 +1,282 @@
 @import "tailwindcss";
 
+/* ============================================
+   COLOR SYSTEM - LUXURY BEAUTY SALON
+   ============================================
+   Light Mode: Vibrant rose + Pure white + Gold
+   Dark Mode: Sophisticated black + Luxury gold
+   ============================================ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* ===== LIGHT MODE - Vibrant Elegance ===== */
+
+  /* Base Colors */
+  --background: 15 50% 98%;           /* Nude rosado #FAF7F5 */
+  --foreground: 345 15% 18%;          /* Rose dark #342A2C */
+
+  /* Primary - Vibrant rose */
+  --primary: 345 65% 58%;             /* Vibrant rose #E76D89 */
+  --primary-foreground: 0 0% 100%;    /* White */
+
+  /* Secondary - Blush nude */
+  --secondary: 20 40% 96%;            /* Blush nude muy claro #F9F4F3 */
+  --secondary-foreground: 345 15% 18%; /* Rose dark */
+
+  /* Accent - Bright gold */
+  --accent: 45 90% 55%;               /* Bright gold #F4C430 */
+  --accent-foreground: 30 15% 15%;    /* Dark text */
+
+  /* UI Elements */
+  --muted: 20 30% 92%;                /* Nude beige claro #F3EBE8 */
+  --muted-foreground: 345 12% 45%;    /* Rose gray medium #8B7176 */
+
+  --card: 0 0% 100%;                  /* Blanco puro para contraste #FFFFFF */
+  --card-foreground: 345 15% 18%;     /* Rose dark */
+
+  --popover: 0 0% 100%;               /* Blanco puro #FFFFFF */
+  --popover-foreground: 345 15% 18%;  /* Rose dark */
+
+  --border: 20 25% 88%;               /* Nude border suave #E8DDD9 */
+  --input: 20 25% 88%;                /* Nude input border #E8DDD9 */
+  --ring: 345 65% 58%;                /* Vibrant rose focus */
+
+  /* States */
+  --destructive: 0 70% 50%;           /* Red */
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 142 60% 45%;             /* Green */
+  --success-foreground: 0 0% 100%;
+
+  --warning: 38 85% 55%;              /* Amber */
+  --warning-foreground: 30 15% 15%;
+
+  /* Border Radius */
+  --radius: 0.5rem;
 }
 
+/* ===== DARK MODE - Sophisticated Rose + Luxury Gold ===== */
+.dark {
+  /* Base Colors - Pure black */
+  --background: 0 0% 0%;              /* Pure black #000000 */
+  --foreground: 345 10% 92%;          /* Light rose-tinted cream #F0EAEC */
+
+  /* Primary - Vibrant rose (adjusted for dark) */
+  --primary: 345 70% 65%;             /* Lighter vibrant rose #F18CA0 */
+  --primary-foreground: 0 0% 0%;      /* Pure black for contrast */
+
+  /* Secondary - Dark rose charcoal */
+  --secondary: 345 8% 12%;            /* Dark rose charcoal #1D1A1B */
+  --secondary-foreground: 345 10% 88%; /* Rose cream */
+
+  /* Accent - Brilliant gold (decorative only) */
+  --accent: 45 100% 62%;              /* Brilliant gold #FFD93D */
+  --accent-foreground: 0 0% 0%;       /* Pure black */
+
+  /* UI Elements */
+  --muted: 345 5% 10%;                /* Very dark rose gray #1A1819 */
+  --muted-foreground: 345 8% 60%;     /* Warm rose gray #A19698 */
+
+  --card: 345 6% 8%;                  /* Near black rose card #141213 */
+  --card-foreground: 345 10% 90%;     /* Light rose cream */
+
+  --popover: 345 6% 8%;               /* Near black rose popover */
+  --popover-foreground: 345 10% 90%;  /* Light rose cream */
+
+  --border: 345 8% 18%;               /* Subtle dark rose border #2D2829 */
+  --input: 345 8% 18%;                /* Input border */
+  --ring: 345 70% 65%;                /* Vibrant rose focus */
+
+  /* States */
+  --destructive: 0 65% 50%;           /* Bright red */
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 142 60% 55%;             /* Bright green */
+  --success-foreground: 0 0% 100%;
+
+  --warning: 38 85% 65%;              /* Golden amber */
+  --warning-foreground: 0 0% 0%;
+}
+
+/* Variable mapping to Tailwind */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-success: hsl(var(--success));
+  --color-success-foreground: hsl(var(--success-foreground));
+  --color-warning: hsl(var(--warning));
+  --color-warning-foreground: hsl(var(--warning-foreground));
+  --font-heading: var(--font-rouge-script);
+  --font-body: var(--font-poppins);
+  --radius: var(--radius);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* Base Styles */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: var(--font-body), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-feature-settings: "rlig" 1, "calt" 1;
+}
+
+/* Elegant Typography for Beauty Salon */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading), cursive;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+/* Custom scrollbar - Purple and Pink */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, hsl(var(--primary)), hsl(var(--accent)));
+  border-radius: var(--radius);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary));
+}
+
+/* ============================================
+   PROFESSIONAL HOVER STATES
+   ============================================ */
+
+/* Primary Buttons */
+.bg-primary:hover,
+button.bg-primary:hover {
+  background: hsl(var(--primary) / 0.9);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px hsl(var(--primary) / 0.3);
+  transition: all 0.2s ease;
+}
+
+/* Accent Buttons */
+.bg-accent:hover,
+button.bg-accent:hover {
+  background: hsl(var(--accent) / 0.9);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px hsl(var(--accent) / 0.3);
+  transition: all 0.2s ease;
+}
+
+/* Cards */
+.hover\:shadow-xl:hover {
+  box-shadow: 0 20px 40px hsl(var(--foreground) / 0.08);
+  transition: all 0.3s ease;
+}
+
+.hover\:shadow-lg:hover {
+  box-shadow: 0 10px 25px hsl(var(--foreground) / 0.06);
+  transition: all 0.3s ease;
+}
+
+/* Links and interactive elements */
+.hover\:text-primary:hover {
+  color: hsl(var(--primary));
+  transition: color 0.2s ease;
+}
+
+.hover\:bg-primary\/10:hover {
+  background: hsl(var(--primary) / 0.1);
+  transition: background 0.2s ease;
+}
+
+.hover\:bg-primary\/5:hover {
+  background: hsl(var(--primary) / 0.05);
+  transition: background 0.2s ease;
+}
+
+/* Borders on hover */
+.hover\:border-primary:hover {
+  border-color: hsl(var(--primary));
+  transition: border-color 0.2s ease;
+}
+
+/* Opacity hovers */
+.hover\:opacity-90:hover {
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
+}
+
+/* Scale hovers for images */
+.hover\:scale-110:hover {
+  transform: scale(1.1);
+  transition: transform 0.3s ease;
+}
+
+/* Dark mode specific hovers */
+.dark .hover\:bg-primary:hover,
+.dark button.bg-primary:hover {
+  background: hsl(var(--primary) / 0.95);
+  box-shadow: 0 4px 16px hsl(var(--primary) / 0.4);
+}
+
+.dark .hover\:bg-accent:hover,
+.dark button.bg-accent:hover {
+  background: hsl(var(--accent) / 0.95);
+  box-shadow: 0 4px 16px hsl(var(--accent) / 0.4);
+}
+
+/* Ensure text visibility on hover */
+.dark .hover\:text-primary:hover {
+  color: hsl(var(--primary));
+  text-shadow: 0 0 8px hsl(var(--primary) / 0.3);
+}
+
+/* Enhanced focus states */
+*:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+  transition: outline 0.2s ease;
+}
+
+/* Global smooth transitions */
+button,
+a,
+.card,
+.hover\:scale-110 {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Pointer cursor for interactive elements */
+button,
+a,
+[role="button"],
+[type="button"],
+[type="submit"],
+label[for],
+select,
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Disabled states */
+button:disabled,
+button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
 }

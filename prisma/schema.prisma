@@ -54,10 +54,11 @@ model User {
 
   accounts Account[]
   sessions Session[]
+  reviews  Review[]
 
-  // RELACIONES one-to-one con perfiles de negocio
-  staff    Staff?    // Si role=STAFF, DEBE existir
-  customer Customer? // Si role=CLIENTE, DEBE existir
+  // One-to-one relationships with business profiles
+  staff    Staff?    // If role=STAFF, MUST exist
+  customer Customer? // If role=CLIENTE, MUST exist
 
   @@index([email])
   @@index([role])
@@ -137,11 +138,14 @@ model Category {
 model Service {
   id          String  @id @default(cuid())
   name        String
+  slug        String  @unique // For SEO-friendly URLs: /services/haircut-styling
   description String? @db.Text
   duration    Int // minutes
   price       Decimal @db.Decimal(10, 2)
-  image       String?
+  imageUrl    String? // Cloudinary Public ID (e.g. "services_haircut_ksqpaa")
   isActive    Boolean @default(true)
+  isFeatured  Boolean @default(false) // Display on landing page
+  order       Int     @default(0) // Order of featured services (lower = first)
 
   categoryId String?
 
@@ -151,9 +155,62 @@ model Service {
   category            Category?            @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   appointmentServices AppointmentService[]
   staffServices       StaffService[]
+  reviews             Review[]
+  gallery             ServiceGallery[]
+  faqs                ServiceFAQ[]
 
   @@index([categoryId])
   @@index([isActive])
+  @@index([isFeatured])
+  @@index([slug])
+}
+
+// Service Reviews/Testimonials
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int // 1-5 stars
+  comment   String   @db.Text
+  serviceId String
+  userId    String
+  isActive  Boolean  @default(true) // For moderation
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([serviceId])
+  @@index([userId])
+  @@index([isActive])
+}
+
+// Service Gallery (before/after photos)
+model ServiceGallery {
+  id        String   @id @default(cuid())
+  imageUrl  String // Cloudinary Public ID
+  caption   String?
+  order     Int      @default(0)
+  serviceId String
+  createdAt DateTime @default(now())
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([serviceId])
+}
+
+// Service FAQs
+model ServiceFAQ {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String   @db.Text
+  order     Int      @default(0)
+  serviceId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([serviceId])
 }
 
 // ============================================
@@ -169,9 +226,9 @@ model Staff {
   image    String?
   isActive Boolean @default(true)
 
-  // Relación one-to-one OPCIONAL con User
-  userId String? @unique
-  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  // REQUIRED one-to-one relationship with User (all staff can login)
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -223,7 +280,7 @@ model Customer {
   phone String?
   notes String? @db.Text
 
-  // Relación one-to-one OPCIONAL con User
+  // OPTIONAL one-to-one relationship with User
   userId String? @unique
   user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
@@ -247,7 +304,7 @@ model Appointment {
   staffId    String
   customerId String?
 
-  // Walk-in customer sin Customer registrado
+  // Walk-in customer without registered Customer
   guestName  String?
   guestEmail String?
   guestPhone String?
@@ -344,29 +401,20 @@ model Order {
   id         String  @id @default(cuid())
   customerId String?
 
-  // Guest checkout sin Customer registrado
+  // Guest checkout without registered Customer
   guestName  String?
   guestEmail String?
   guestPhone String?
 
-  // Totals
+  // Totals (in-store pickup only, no shipping)
   subtotal Decimal @db.Decimal(10, 2)
   tax      Decimal @default(0) @db.Decimal(10, 2)
-  shipping Decimal @default(0) @db.Decimal(10, 2)
   total    Decimal @db.Decimal(10, 2)
 
   status OrderStatus @default(PENDING)
 
   // Payment
   stripePaymentIntentId String?
-
-  // Shipping
-  shippingName    String?
-  shippingAddress String?
-  shippingCity    String?
-  shippingState   String?
-  shippingZip     String?
-  shippingCountry String @default("US")
 
   notes String? @db.Text
 
@@ -398,9 +446,7 @@ model OrderItem {
 enum OrderStatus {
   PENDING
   PAID
-  PROCESSING
-  SHIPPED
-  DELIVERED
+  COMPLETED  // Entregado en tienda
   CANCELLED
   REFUNDED
 }

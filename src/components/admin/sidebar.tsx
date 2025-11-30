@@ -4,27 +4,27 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { Logo } from "@/components/ui/logo"
 import {
-  LayoutDashboard,
-  Calendar,
-  Users,
-  Scissors,
-  Package,
-  ShoppingBag,
-  UserCog,
-  Settings,
-  Sparkles,
-} from "lucide-react"
+  LayoutDashboardIcon,
+  CalendarIcon,
+  UsersIcon,
+  ScissorsIcon,
+  PackageIcon,
+  ShoppingBagIcon,
+  UserCogIcon,
+  SettingsIcon,
+} from "@/components/icons"
 
 const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Appointments", href: "/dashboard/citas", icon: Calendar },
-  { name: "Customers", href: "/dashboard/usuarios", icon: Users },
-  { name: "Services", href: "/dashboard/servicios", icon: Scissors },
-  { name: "Products", href: "/dashboard/productos", icon: Package },
-  { name: "Shop Orders", href: "/dashboard/ordenes", icon: ShoppingBag },
-  { name: "Staff", href: "/dashboard/staff", icon: UserCog },
-  { name: "Settings", href: "/dashboard/configuracion", icon: Settings },
+  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboardIcon },
+  { name: "Appointments", href: "/dashboard/appointments", icon: CalendarIcon },
+  { name: "Customers", href: "/dashboard/users", icon: UsersIcon },
+  { name: "Services", href: "/dashboard/services", icon: ScissorsIcon },
+  { name: "Products", href: "/dashboard/products", icon: PackageIcon },
+  { name: "Shop Orders", href: "/dashboard/orders", icon: ShoppingBagIcon },
+  { name: "Staff", href: "/dashboard/staff", icon: UserCogIcon },
+  { name: "Settings", href: "/dashboard/settings", icon: SettingsIcon },
 ]
 
 export function AdminSidebar() {
@@ -34,12 +34,10 @@ export function AdminSidebar() {
     <aside className="hidden w-64 border-r bg-muted/30 lg:block">
       <div className="flex h-full flex-col">
         {/* Logo */}
-        <div className="flex h-16 items-center border-b px-6">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary">
-              <Sparkles className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <span className="font-bold">Beauty Admin</span>
+        <div className="flex h-20 items-center border-b px-6">
+          <Link href="/dashboard" className="flex items-center gap-4">
+            <Logo size={80} />
+            <span className="text-xl font-bold">Beauty Admin</span>
           </Link>
         </div>
 
@@ -47,6 +45,7 @@ export function AdminSidebar() {
         <nav className="flex-1 space-y-1 p-4">
           {navigation.map((item) => {
             const isActive = pathname === item.href
+            const IconComponent = item.icon
             return (
               <Link key={item.name} href={item.href}>
                 <Button
@@ -56,7 +55,7 @@ export function AdminSidebar() {
                     isActive && "bg-secondary font-semibold"
                   )}
                 >
-                  <item.icon className="mr-3 h-4 w-4" />
+                  <IconComponent size={16} className="mr-3" />
                   {item.name}
                 </Button>
               </Link>

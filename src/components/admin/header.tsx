@@ -14,7 +14,15 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useSession, signOut } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import { Menu, Bell, LogOut, User, Settings, LayoutDashboard, Users2 } from "lucide-react"
+import {
+  MenuIcon,
+  BellIcon,
+  LogoutIcon,
+  UserIcon,
+  SettingsIcon,
+  LayoutDashboardIcon,
+  UsersIcon,
+} from "@/components/icons"
 
 export function AdminHeader() {
   const router = useRouter()
@@ -51,13 +59,13 @@ export function AdminHeader() {
       <div className="flex h-16 items-center justify-between px-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" className="lg:hidden">
-            <Menu className="h-5 w-5" />
+            <MenuIcon size={20} />
           </Button>
         </div>
 
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon">
-            <Bell className="h-5 w-5" />
+            <BellIcon size={20} />
           </Button>
 
           <DropdownMenu>
@@ -90,13 +98,13 @@ export function AdminHeader() {
                 <>
                   <DropdownMenuItem asChild>
                     <Link href="/staff-portal">
-                      <Users2 className="mr-2 h-4 w-4" />
+                      <UsersIcon size={16} className="mr-2" />
                       Staff Portal
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/my-account">
-                      <User className="mr-2 h-4 w-4" />
+                      <UserIcon size={16} className="mr-2" />
                       Client View
                     </Link>
                   </DropdownMenuItem>
@@ -105,16 +113,16 @@ export function AdminHeader() {
               )}
 
               <DropdownMenuItem>
-                <User className="mr-2 h-4 w-4" />
+                <UserIcon size={16} className="mr-2" />
                 Profile
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Settings className="mr-2 h-4 w-4" />
+                <SettingsIcon size={16} className="mr-2" />
                 Settings
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleSignOut}>
-                <LogOut className="mr-2 h-4 w-4" />
+                <LogoutIcon size={16} className="mr-2" />
                 Sign out
               </DropdownMenuItem>
             </DropdownMenuContent>

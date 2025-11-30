@@ -1,6 +1,13 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Calendar, DollarSign, ShoppingBag, Users, TrendingUp, Clock } from "lucide-react"
+import {
+  CalendarIcon,
+  CurrencyDollarIcon,
+  ShoppingBagIcon,
+  UsersIcon,
+  TrendingUpIcon,
+  ClockIcon,
+} from "@/components/icons"
 import Link from "next/link"
 
 export default function AdminDashboard() {
@@ -10,7 +17,7 @@ export default function AdminDashboard() {
       <div>
         <h1 className="text-3xl font-bold">Dashboard</h1>
         <p className="text-muted-foreground">
-          Welcome back! Here's your business overview.
+          Welcome back! Here&apos;s your business overview.
         </p>
       </div>
 
@@ -19,12 +26,12 @@ export default function AdminDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <CurrencyDollarIcon size={16} className="text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">$45,231.89</div>
             <p className="text-xs text-muted-foreground">
-              <TrendingUp className="mr-1 inline h-3 w-3 text-green-600" />
+              <TrendingUpIcon size={12} className="mr-1 inline text-green-600" />
               +20.1% from last month
             </p>
           </CardContent>
@@ -33,7 +40,7 @@ export default function AdminDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Appointments</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <CalendarIcon size={16} className="text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">+2,350</div>
@@ -46,7 +53,7 @@ export default function AdminDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Customers</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <UsersIcon size={16} className="text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">1,234</div>
@@ -59,7 +66,7 @@ export default function AdminDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Shop Sales</CardTitle>
-            <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+            <ShoppingBagIcon size={16} className="text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">+573</div>
@@ -74,7 +81,7 @@ export default function AdminDashboard() {
         {/* Today's Appointments */}
         <Card className="col-span-4">
           <CardHeader>
-            <CardTitle>Today's Appointments</CardTitle>
+            <CardTitle>Today&apos;s Appointments</CardTitle>
             <CardDescription>
               You have 12 appointments today
             </CardDescription>
@@ -90,7 +97,7 @@ export default function AdminDashboard() {
                 <div key={i} className="flex items-center justify-between rounded-lg border p-3">
                   <div className="flex items-center gap-4">
                     <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
-                      <Clock className="h-5 w-5" />
+                      <ClockIcon size={20} />
                     </div>
                     <div>
                       <p className="font-medium">{apt.customer}</p>
@@ -109,7 +116,7 @@ export default function AdminDashboard() {
               ))}
             </div>
             <div className="mt-4">
-              <Link href="/dashboard/citas">
+              <Link href="/dashboard/appointments">
                 <Button variant="outline" className="w-full">
                   View All Appointments
                 </Button>
@@ -125,21 +132,21 @@ export default function AdminDashboard() {
             <CardDescription>Common tasks and shortcuts</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
-            <Link href="/dashboard/citas/new">
+            <Link href="/dashboard/appointments/new">
               <Button className="w-full justify-start" variant="outline">
-                <Calendar className="mr-2 h-4 w-4" />
+                <CalendarIcon size={16} className="mr-2" />
                 New Appointment
               </Button>
             </Link>
-            <Link href="/dashboard/productos/new">
+            <Link href="/dashboard/products/new">
               <Button className="w-full justify-start" variant="outline">
-                <ShoppingBag className="mr-2 h-4 w-4" />
+                <ShoppingBagIcon size={16} className="mr-2" />
                 Add Product
               </Button>
             </Link>
-            <Link href="/dashboard/usuarios">
+            <Link href="/dashboard/users">
               <Button className="w-full justify-start" variant="outline">
-                <Users className="mr-2 h-4 w-4" />
+                <UsersIcon size={16} className="mr-2" />
                 Manage Customers
               </Button>
             </Link>
