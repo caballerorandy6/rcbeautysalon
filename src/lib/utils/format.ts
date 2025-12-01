@@ -7,6 +7,11 @@ export function formatCurrency(amount: number, currency: string = "USD"): string
   }).format(amount)
 }
 
+ export const formatChange = (change: number) => {
+    const sign = change >= 0 ? "+" : ""
+    return `${sign}${change.toFixed(1)}%`
+  }
+
 export function formatDate(date: Date | string): string {
   const d = typeof date === "string" ? new Date(date) : date
   return new Intl.DateTimeFormat("en-US", {
@@ -33,3 +38,4 @@ export function formatPhone(phone: string): string {
   }
   return phone
 }
+

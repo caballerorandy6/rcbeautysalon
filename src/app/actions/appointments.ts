@@ -11,6 +11,15 @@ import {
 } from "@/lib/interfaces"
 import { addMinutes, format, parse, isAfter, isBefore } from "date-fns"
 
+interface AdminAppointmentsFilter{
+  status?: string
+  staffId?: string
+  dateFrom?: Date
+  dateTo?: Date
+  search?: string // search by customer name
+}
+
+// Get salon configuration
 export async function getSalonConfig() {
   const config = await prisma.salonConfig.findUnique({
     where: { id: "salon_config" },
@@ -39,9 +48,7 @@ export async function getSalonConfig() {
   }
 }
 
-// ============================================
-// 2. GET AVAILABLE STAFF FOR SERVICE
-// ============================================
+//Get available staff for a service
 export async function getAvailableStaff(
   serviceId: string
 ): Promise<AvailableStaffMember[]> {
@@ -87,9 +94,7 @@ export async function getAvailableStaff(
   return availableStaff.map((s) => s.staff)
 }
 
-// ============================================
-// 3. GET AVAILABLE TIME SLOTS
-// ============================================
+//Get available time slots for a staff member on a specific date
 export async function getAvailableTimeSlots(
   staffId: string,
   date: Date,
@@ -178,9 +183,7 @@ export async function getAvailableTimeSlots(
   return slots
 }
 
-// ============================================
-// 4. GET SERVICE FOR BOOKING
-// ============================================
+//Get single service details for booking
 export async function getServiceForBooking(serviceId: string) {
   // Fetch service details for booking page
   const service = await prisma.service.findUnique({
@@ -211,9 +214,7 @@ export async function getServiceForBooking(serviceId: string) {
   }
 }
 
-// ============================================
-// 5. GET MULTIPLE SERVICES FOR BOOKING
-// ============================================
+//Get multiple services for multi-service booking
 export async function getServicesForBooking(serviceIds: string[]) {
   // Fetch multiple services for multi-service appointments
   const services = await prisma.service.findMany({
@@ -236,9 +237,7 @@ export async function getServicesForBooking(serviceIds: string[]) {
   }))
 }
 
-// ============================================
-// 6. CREATE APPOINTMENT (MOST IMPORTANT)
-// ============================================
+// Create appointment
 export async function createAppointment(
   data: CreateAppointmentData
 ): Promise<AppointmentCreationResult> {
@@ -361,9 +360,7 @@ export async function createAppointment(
   }
 }
 
-// ============================================
-// 7. GET USER APPOINTMENTS
-// ============================================
+//Get user appointments
 export async function getUserAppointments() {
   // Get current session
   const session = await auth()
@@ -407,9 +404,7 @@ export async function getUserAppointments() {
   }))
 }
 
-// ============================================
-// 8. CANCEL APPOINTMENT
-// ============================================
+// Cancel appointment
 export async function cancelAppointment(appointmentId: string) {
   try {
     // Verify user is authenticated
@@ -462,4 +457,14 @@ export async function cancelAppointment(appointmentId: string) {
       error: "Failed to cancel appointment. Please try again.",
     }
   }
+}
+
+//Get admin appointments with filters
+export async function getAdminAppointments(filters: AdminAppointmentsFilter) {
+  const session = await auth()
+
+  if (!session?.user || session.user.role !== "ADMIN") {
+    throw new Error("Unauthorized")
+  }
+  
 }
