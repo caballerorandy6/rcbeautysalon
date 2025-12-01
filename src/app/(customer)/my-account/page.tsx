@@ -1,0 +1,62 @@
+import type { Metadata } from "next"
+import { redirect } from "next/navigation"
+import { auth } from "@/lib/auth/auth"
+
+export const metadata: Metadata = {
+  title: "My Account | RC Beauty Salon",
+  description: "Manage your profile, view appointments, and update your account settings.",
+}
+import { getUserProfile, getUserStats } from "@/app/actions/account"
+import { ProfileHeader } from "@/components/account/profile-header"
+import { PersonalInfoSection } from "@/components/account/personal-info-section"
+import { AppointmentsSummary } from "@/components/account/appointments-summary"
+import { SecuritySection } from "@/components/account/security-section"
+
+export default async function MyAccountPage() {
+  const session = await auth()
+  if (!session?.user) {
+    redirect("/login?callbackUrl=/my-account")
+  }
+
+  const [profile, stats] = await Promise.all([
+    getUserProfile(),
+    getUserStats(),
+  ])
+
+  if (!profile) {
+    redirect("/login?callbackUrl=/my-account")
+  }
+
+  return (
+    <div className="from-muted/30 via-background to-muted/20 min-h-screen bg-linear-to-b py-12">
+      <div className="container mx-auto max-w-4xl px-4">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="from-primary to-accent mb-2 bg-linear-to-r bg-clip-text text-4xl font-bold text-transparent">
+            My Account
+          </h1>
+          <p className="text-muted-foreground text-lg">
+            Manage your profile and preferences
+          </p>
+        </div>
+
+        {/* Profile Header Card */}
+        <ProfileHeader profile={profile} />
+
+        {/* Main Content Grid */}
+        <div className="mt-6 grid gap-6 md:grid-cols-2">
+          {/* Personal Info */}
+          <PersonalInfoSection profile={profile} />
+
+          {/* Appointments Summary */}
+          <AppointmentsSummary stats={stats} />
+        </div>
+
+        {/* Security Section */}
+        <div className="mt-6">
+          <SecuritySection email={profile.email} />
+        </div>
+      </div>
+    </div>
+  )
+}

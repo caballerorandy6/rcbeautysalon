@@ -1,6 +1,6 @@
 "use client"
 
-import { useSyncExternalStore } from "react"
+import { useState, useEffect } from "react"
 import { Moon, Sun, Desktop } from "@phosphor-icons/react"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
@@ -10,25 +10,31 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-// Detect if we're on the client (recommended React pattern for SSR hydration)
-const useIsClient = () =>
-  useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false
-  )
-
 export function ThemeToggle() {
+  const [mounted, setMounted] = useState(false)
   const { setTheme, theme, resolvedTheme } = useTheme()
-  const isClient = useIsClient()
 
-  const isDark = isClient && resolvedTheme === "dark"
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const items = [
     { key: "light", label: "Light", icon: Sun },
     { key: "dark", label: "Dark", icon: Moon },
     { key: "system", label: "System", icon: Desktop },
   ]
+
+  // Render placeholder button during SSR to avoid hydration mismatch
+  if (!mounted) {
+    return (
+      <Button variant="ghost" size="icon" className="group hover:bg-primary/10">
+        <Moon size={20} weight="fill" className="text-primary" />
+        <span className="sr-only">Toggle theme</span>
+      </Button>
+    )
+  }
+
+  const isDark = resolvedTheme === "dark"
 
   return (
     <DropdownMenu>
@@ -38,7 +44,7 @@ export function ThemeToggle() {
           size="icon"
           className="group hover:bg-primary/10"
         >
-          {isClient && isDark ? (
+          {isDark ? (
             <Sun
               size={20}
               weight="fill"
@@ -56,7 +62,7 @@ export function ThemeToggle() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="mt-2 min-w-[140px] space-y-1">
         {items.map(({ key, label, icon: Icon }) => {
-          const isActive = isClient && theme === key
+          const isActive = theme === key
 
           return (
             <button

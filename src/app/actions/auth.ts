@@ -38,19 +38,50 @@ export async function registerUser(data: RegisterInput) {
       }
     }
 
-    const newUser = await prisma.user.create({
-      data: {
-        name,
+    // Check if there's an existing Customer with this email (from a deleted account)
+    const existingCustomer = await prisma.customer.findFirst({
+      where: {
         email,
-        password: hashedPassword,
-        customer: {
-          create: {
-            name,
-            email,
-          },
-        },
+        userId: null, // Customer exists but has no linked User
       },
     })
+
+    let newUser
+
+    if (existingCustomer) {
+      // Link existing Customer to new User (preserves appointment/order history)
+      newUser = await prisma.user.create({
+        data: {
+          name,
+          email,
+          password: hashedPassword,
+          customer: {
+            connect: { id: existingCustomer.id },
+          },
+        },
+      })
+
+      // Update customer name in case it changed
+      await prisma.customer.update({
+        where: { id: existingCustomer.id },
+        data: { name },
+      })
+    } else {
+      // Create new User with new Customer
+      newUser = await prisma.user.create({
+        data: {
+          name,
+          email,
+          password: hashedPassword,
+          customer: {
+            create: {
+              name,
+              email,
+            },
+          },
+        },
+      })
+    }
 
     // Generate verification token
     const verificationToken = crypto.randomBytes(32).toString("hex")
