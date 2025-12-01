@@ -80,10 +80,6 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// ============================================
-// SALON BRANDING & CONFIGURATION
-// ============================================
-
 model SalonConfig {
   id   String @id @default("salon_config")
   name String @default("Beauty Salon")
@@ -118,10 +114,6 @@ model SalonConfig {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
-// ============================================
-// SERVICES
-// ============================================
 
 model Category {
   id   String @id @default(cuid())
@@ -215,10 +207,6 @@ model ServiceFAQ {
   @@index([serviceId])
 }
 
-// ============================================
-// STAFF
-// ============================================
-
 model Staff {
   id       String  @id @default(cuid())
   name     String
@@ -271,10 +259,6 @@ model WorkingHours {
   @@index([staffId])
 }
 
-// ============================================
-// CUSTOMERS
-// ============================================
-
 model Customer {
   id    String  @id @default(cuid())
   name  String
@@ -296,10 +280,6 @@ model Customer {
   @@index([email])
   @@index([phone])
 }
-
-// ============================================
-// APPOINTMENTS (BOOKING)
-// ============================================
 
 model Appointment {
   id         String            @id @default(cuid())
@@ -356,7 +336,6 @@ model AppointmentService {
 enum AppointmentStatus {
   PENDING
   CONFIRMED
-  IN_PROGRESS
   COMPLETED
   CANCELLED
   NO_SHOW

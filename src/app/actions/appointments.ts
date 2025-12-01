@@ -10,9 +10,11 @@ import {
   AppointmentCreationResult,
 } from "@/lib/interfaces"
 import { addMinutes, format, parse, isAfter, isBefore } from "date-fns"
+import { Prisma } from "@prisma/client"
+import { AppointmentStatus } from "@/lib/types"
 
-interface AdminAppointmentsFilter{
-  status?: string
+interface AdminAppointmentsFilter {
+  status?: AppointmentStatus
   staffId?: string
   dateFrom?: Date
   dateTo?: Date
@@ -131,7 +133,7 @@ export async function getAvailableTimeSlots(
         lte: endOfDay,
       },
       status: {
-        in: ["PENDING", "CONFIRMED", "IN_PROGRESS"],
+        in: ["PENDING", "CONFIRMED"],
       },
     },
     select: {
@@ -460,11 +462,122 @@ export async function cancelAppointment(appointmentId: string) {
 }
 
 //Get admin appointments with filters
-export async function getAdminAppointments(filters: AdminAppointmentsFilter) {
+export async function getAdminAppointments(filters?: AdminAppointmentsFilter) {
   const session = await auth()
 
+  // Ensure user is an admin
   if (!session?.user || session.user.role !== "ADMIN") {
     throw new Error("Unauthorized")
   }
-  
+
+  // Build where clause based on filters
+  const where: Prisma.AppointmentWhereInput = {}
+
+  // Apply status filter
+  if (filters?.status) {
+    where.status = filters.status
+  }
+
+  // Apply staff filter
+  if (filters?.staffId) {
+    where.staffId = filters.staffId
+  }
+
+  // Apply date range filter
+  if (filters?.dateFrom || filters?.dateTo) {
+    where.startTime = {
+      ...(filters.dateFrom ? { gte: filters.dateFrom } : {}),
+      ...(filters.dateTo ? { lte: filters.dateTo } : {}),
+    }
+  }
+
+  // Apply search filter (by customer name)
+  if (filters?.search) {
+    where.OR = [
+      { customer: { name: { contains: filters.search, mode: "insensitive" } } },
+      { guestName: { contains: filters.search, mode: "insensitive" } },
+    ]
+  }
+
+  // Fetch appointments with applied filters
+  const appointments = await prisma.appointment.findMany({
+    where,
+    include: {
+      staff: { select: { id: true, name: true } },
+      customer: { select: { id: true, name: true, phone: true } },
+      services: {
+        include: {
+          service: { select: { id: true, name: true } },
+        },
+      },
+    },
+    orderBy: { startTime: "desc" },
+  })
+
+  // Convert Prisma Decimals to numbers for price fields
+  return appointments.map((apt) => ({
+    ...apt,
+    totalPrice: apt.totalPrice.toNumber(),
+    depositAmount: apt.depositAmount.toNumber(),
+  }))
+}
+
+export async function getAppointmentById(id: string) {
+  const session = await auth()
+
+  // Ensure user is authenticated
+  if (!session?.user || session.user.role !== "ADMIN") {
+    throw new Error("Unauthorized")
+  }
+
+  const appointment = await prisma.appointment.findUnique({
+    where: { id },
+    include: {
+      staff: { select: { id: true, name: true, email: true, phone: true } },
+      customer: { select: { id: true, name: true, email: true, phone: true } },
+      services: {
+        include: {
+          service: { select: { id: true, name: true, description: true, duration: true } },
+        },
+      },
+    },
+  })
+
+  if (!appointment) {
+    return null
+  }
+
+  // Convert Prisma Decimals to numbers for price fields
+  return {
+    ...appointment,
+    totalPrice: appointment.totalPrice.toNumber(),
+    depositAmount: appointment.depositAmount.toNumber(),
+  }
+}
+
+// Update appointment status
+export async function updateAppointmentStatus(
+  id: string,
+  status: AppointmentStatus
+) {
+  const session = await auth()
+
+  // Ensure user is authenticated
+  if (!session?.user || session.user.role !== "ADMIN") {
+    throw new Error("Unauthorized")
+  }
+
+  // Update appointment status
+  const appointment = await prisma.appointment.update({
+    where: { id },
+    data: { status },
+  })
+
+  revalidatePath("/dashboard")
+
+  return {
+    ...appointment,
+    totalPrice: appointment.totalPrice.toNumber(),
+    depositAmount: appointment.depositAmount.toNumber(),
+  }
 }

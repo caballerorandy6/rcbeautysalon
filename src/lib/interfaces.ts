@@ -143,7 +143,6 @@ export interface Appointment {
   status:
     | "PENDING"
     | "CONFIRMED"
-    | "IN_PROGRESS"
     | "COMPLETED"
     | "CANCELLED"
     | "NO_SHOW"

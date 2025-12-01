@@ -16,7 +16,6 @@ export type UserRole = "ADMIN" | "STAFF" | "CLIENTE"
 export type AppointmentStatus =
   | "PENDING"
   | "CONFIRMED"
-  | "IN_PROGRESS"
   | "COMPLETED"
   | "CANCELLED"
   | "NO_SHOW"

@@ -75,7 +75,7 @@ export function AppointmentCard({ appointment, isPast = false, isNew = false }: 
       PENDING: { variant: "secondary", label: "Pending Payment" },
       COMPLETED: { variant: "outline", label: "Completed" },
       CANCELLED: { variant: "destructive", label: "Cancelled" },
-      IN_PROGRESS: { variant: "default", label: "In Progress" },
+      NO_SHOW: { variant: "destructive", label: "No Show" },
     }
     const config = variants[status] || variants.PENDING
     return <Badge variant={config.variant}>{config.label}</Badge>

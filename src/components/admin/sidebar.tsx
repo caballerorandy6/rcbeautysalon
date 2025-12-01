@@ -34,10 +34,9 @@ export function AdminSidebar() {
     <aside className="hidden w-64 border-r bg-muted/30 lg:block">
       <div className="flex h-full flex-col">
         {/* Logo */}
-        <div className="flex h-20 items-center border-b px-6">
+        <div className="flex h-32 items-center border-b px-6">
           <Link href="/dashboard" className="flex items-center gap-4">
-            <Logo size={80} />
-            <span className="text-xl font-bold">Beauty Admin</span>
+            <Logo size={160} />
           </Link>
         </div>
 
