@@ -1,17 +1,22 @@
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import Image from "next/image"
 import { notFound } from "next/navigation"
-import { CalendarIcon, ClockIcon, CurrencyDollarIcon, ArrowLeftIcon, UserIcon } from "@/components/icons"
+import {
+  CalendarIcon,
+  ClockIcon,
+  CurrencyDollarIcon,
+  ArrowLeftIcon,
+  UserIcon,
+} from "@/components/icons"
 import { cloudinaryPresets } from "@/lib/utils/cloudinary"
-import { getServiceBySlug, getAllServiceSlugs, getRelatedServices } from "@/app/actions/services"
+import {
+  getServiceBySlug,
+  getAllServiceSlugs,
+  getRelatedServices,
+} from "@/app/actions/services"
 import { ReviewsSection } from "@/components/services/reviews-section"
 import { GallerySection } from "@/components/services/gallery-section"
 import { FAQSection } from "@/components/services/faq-section"
@@ -19,7 +24,7 @@ import { RelatedServicesSection } from "@/components/services/related-services-s
 import { ServiceBreadcrumbs } from "@/components/services/breadcrumbs"
 import { ReviewForm } from "@/components/services/review-form"
 import { StaffCard } from "@/components/staff/staff-card"
-import { auth } from "@/auth"
+import { auth } from "@/lib/auth/auth"
 
 //type ServiceWithStaff = NonNullable<Awaited<ReturnType<typeof getServiceBySlug>>>
 
@@ -31,19 +36,24 @@ export async function generateStaticParams() {
   }))
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}) {
   const { slug } = await params
   const service = await getServiceBySlug(slug)
 
   if (!service) {
     return {
-      title: "Service Not Found | BS Beauty Salon",
+      title: "Service Not Found | RC Beauty Salon",
     }
   }
 
   return {
-    title: `${service.name} | BS Beauty Salon`,
-    description: service.description || `Book ${service.name} at BS Beauty Salon`,
+    title: `${service.name} | RC Beauty Salon`,
+    description:
+      service.description || `Book ${service.name} at RC Beauty Salon`,
   }
 }
 
@@ -64,7 +74,7 @@ export default async function ServiceDetailPage({
   // Get related services by category and user session
   const [relatedServices, session] = await Promise.all([
     getRelatedServices(service.categoryId, service.id),
-    auth()
+    auth(),
   ])
 
   return (
@@ -80,7 +90,9 @@ export default async function ServiceDetailPage({
         <ServiceBreadcrumbs
           items={[
             { label: "Services", href: "/services" },
-            ...(service.category ? [{ label: service.category.name, href: "/services" }] : []),
+            ...(service.category
+              ? [{ label: service.category.name, href: "/services" }]
+              : []),
             { label: service.name },
           ]}
         />
@@ -91,18 +103,24 @@ export default async function ServiceDetailPage({
         <div className="container mx-auto px-4">
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
             {/* Image */}
-            <div className="relative h-[400px] lg:h-[600px] overflow-hidden rounded-2xl">
+            <div className="relative h-[400px] overflow-hidden rounded-2xl lg:h-[600px]">
               {service.imageUrl ? (
                 <Image
-                  src={service.imageUrl.startsWith('http') ? service.imageUrl : cloudinaryPresets.serviceHero(service.imageUrl)}
+                  src={
+                    service.imageUrl.startsWith("http")
+                      ? service.imageUrl
+                      : cloudinaryPresets.serviceHero(service.imageUrl)
+                  }
                   alt={service.name}
                   fill
                   className="object-cover"
                   priority
                 />
               ) : (
-                <div className="flex h-full w-full items-center justify-center bg-muted">
-                  <span className="text-muted-foreground text-lg">No image available</span>
+                <div className="bg-muted flex h-full w-full items-center justify-center">
+                  <span className="text-muted-foreground text-lg">
+                    No image available
+                  </span>
                 </div>
               )}
               <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent" />
@@ -112,7 +130,7 @@ export default async function ServiceDetailPage({
             <div>
               {/* Category Badge */}
               {service.category && (
-                <Badge variant="outline" className="mb-4 border-primary/50">
+                <Badge variant="outline" className="border-primary/50 mb-4">
                   {service.category.name}
                 </Badge>
               )}
@@ -130,24 +148,30 @@ export default async function ServiceDetailPage({
               )}
 
               {/* Service Details Cards */}
-              <div className="grid grid-cols-2 gap-4 mb-8">
+              <div className="mb-8 grid grid-cols-2 gap-4">
                 <Card className="border-primary/20">
                   <CardHeader className="pb-3">
-                    <div className="flex items-center gap-2 text-primary">
+                    <div className="text-primary flex items-center gap-2">
                       <CurrencyDollarIcon size={20} />
-                      <CardTitle className="text-sm font-medium">Price</CardTitle>
+                      <CardTitle className="text-sm font-medium">
+                        Price
+                      </CardTitle>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-2xl font-bold">${service.price.toString()}</p>
+                    <p className="text-2xl font-bold">
+                      ${service.price.toString()}
+                    </p>
                   </CardContent>
                 </Card>
 
                 <Card className="border-primary/20">
                   <CardHeader className="pb-3">
-                    <div className="flex items-center gap-2 text-primary">
+                    <div className="text-primary flex items-center gap-2">
                       <ClockIcon size={20} />
-                      <CardTitle className="text-sm font-medium">Duration</CardTitle>
+                      <CardTitle className="text-sm font-medium">
+                        Duration
+                      </CardTitle>
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -159,13 +183,16 @@ export default async function ServiceDetailPage({
               {/* Staff Section */}
               {service.staffServices && service.staffServices.length > 0 && (
                 <div className="mb-8">
-                  <h2 className="mb-4 text-xl font-semibold flex items-center gap-2">
+                  <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold">
                     <UserIcon size={20} className="text-primary" />
                     Available Staff
                   </h2>
                   <div className="grid gap-4 sm:grid-cols-2">
                     {service.staffServices.map((staffService) => (
-                      <StaffCard key={staffService.staff.id} staff={staffService.staff} />
+                      <StaffCard
+                        key={staffService.staff.id}
+                        staff={staffService.staff}
+                      />
                     ))}
                   </div>
                 </div>
@@ -173,7 +200,10 @@ export default async function ServiceDetailPage({
 
               {/* Book Button */}
               <div className="flex flex-col gap-4 sm:flex-row">
-                <Link href={`/booking?service=${service.id}`} className="flex-1">
+                <Link
+                  href={`/booking?service=${service.id}`}
+                  className="flex-1"
+                >
                   <Button
                     size="lg"
                     className="from-primary to-accent w-full bg-linear-to-r hover:opacity-90"
@@ -198,7 +228,7 @@ export default async function ServiceDetailPage({
       </section>
 
       {/* What to Expect Section */}
-      <section className="border-t border-primary/30 bg-muted/30 py-16">
+      <section className="border-primary/30 bg-muted/30 border-t py-16">
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-3xl">
             <h2 className="mb-8 text-center text-3xl font-bold">
@@ -217,7 +247,8 @@ export default async function ServiceDetailPage({
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground text-sm">
-                    We&apos;ll discuss your needs and preferences to ensure the perfect result.
+                    We&apos;ll discuss your needs and preferences to ensure the
+                    perfect result.
                   </p>
                 </CardContent>
               </Card>
@@ -272,15 +303,15 @@ export default async function ServiceDetailPage({
                 <ReviewForm serviceId={service.id} serviceName={service.name} />
               </div>
             ) : (
-              <div className="text-center rounded-lg border border-primary/20 bg-muted/30 p-8">
-                <h3 className="mb-2 text-xl font-semibold">Share Your Experience</h3>
+              <div className="border-primary/20 bg-muted/30 rounded-lg border p-8 text-center">
+                <h3 className="mb-2 text-xl font-semibold">
+                  Share Your Experience
+                </h3>
                 <p className="text-muted-foreground mb-4">
                   Please sign in to leave a review for this service
                 </p>
                 <Link href="/login">
-                  <Button variant="default">
-                    Sign In to Review
-                  </Button>
+                  <Button variant="default">Sign In to Review</Button>
                 </Link>
               </div>
             )}
@@ -295,7 +326,10 @@ export default async function ServiceDetailPage({
       <FAQSection faqs={service.faqs} />
 
       {/* Related Services Section */}
-      <RelatedServicesSection services={relatedServices} currentServiceId={service.id} />
+      <RelatedServicesSection
+        services={relatedServices}
+        currentServiceId={service.id}
+      />
     </div>
   )
 }

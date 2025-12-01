@@ -37,9 +37,15 @@ export function LoginForm() {
       })
 
       if (result?.error) {
+        // Show actual error message for email verification
+        const errorMessage =
+          result.error === "CredentialsSignin"
+            ? "Invalid email or password. Please try again."
+            : result.error
         toast.error("Login failed", {
-          description: "Invalid email or password. Please try again.",
+          description: errorMessage,
         })
+        return
       } else {
         toast.success("Login successful!", {
           description: "Redirecting to dashboard...",

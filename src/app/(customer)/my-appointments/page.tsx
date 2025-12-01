@@ -1,16 +1,18 @@
 import { redirect } from "next/navigation"
-import { auth } from "@/auth"
+import { auth } from "@/lib/auth/auth"
 import { getUserAppointments } from "@/app/actions/appointments"
 import { AppointmentsList } from "@/components/appointments/appointments-list"
 import { Button } from "@/components/ui/button"
-import { CalendarBlank } from "@phosphor-icons/react/dist/ssr"
+import { CalendarIcon } from "@/components/icons/calendar-icon"
 import Link from "next/link"
 
 interface MyAppointmentsPageProps {
   searchParams: Promise<{ new?: string }>
 }
 
-export default async function MyAppointmentsPage(props: MyAppointmentsPageProps) {
+export default async function MyAppointmentsPage(
+  props: MyAppointmentsPageProps
+) {
   // Unwrap searchParams Promise
   const searchParams = await props.searchParams
   const newAppointmentId = searchParams.new
@@ -27,21 +29,27 @@ export default async function MyAppointmentsPage(props: MyAppointmentsPageProps)
   // Separate upcoming and past appointments
   const now = new Date()
   const upcomingAppointments = appointments.filter(
-    (apt) => new Date(apt.startTime) >= now && apt.status !== "CANCELLED" && apt.status !== "COMPLETED"
+    (apt) =>
+      new Date(apt.startTime) >= now &&
+      apt.status !== "CANCELLED" &&
+      apt.status !== "COMPLETED"
   )
   const pastAppointments = appointments.filter(
-    (apt) => new Date(apt.startTime) < now || apt.status === "CANCELLED" || apt.status === "COMPLETED"
+    (apt) =>
+      new Date(apt.startTime) < now ||
+      apt.status === "CANCELLED" ||
+      apt.status === "COMPLETED"
   )
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-muted/30 via-background to-muted/20 py-12">
+    <div className="from-muted/30 via-background to-muted/20 min-h-screen bg-linear-to-b py-12">
       <div className="container mx-auto max-w-5xl px-4">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="mb-2 bg-linear-to-r from-primary to-accent bg-clip-text text-4xl font-bold text-transparent">
+          <h1 className="from-primary to-accent mb-2 bg-linear-to-r bg-clip-text text-4xl font-bold text-transparent">
             My Appointments
           </h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-muted-foreground text-lg">
             View and manage your beauty appointments
           </p>
         </div>
@@ -53,7 +61,8 @@ export default async function MyAppointmentsPage(props: MyAppointmentsPageProps)
               ✓ Appointment Booked Successfully!
             </p>
             <p className="mt-1 text-sm text-green-800 dark:text-green-200">
-              Your appointment has been created. Complete payment to confirm your booking.
+              Your appointment has been created. Complete payment to confirm
+              your booking.
             </p>
           </div>
         )}
@@ -68,8 +77,11 @@ export default async function MyAppointmentsPage(props: MyAppointmentsPageProps)
         {/* Book New Appointment Button */}
         <div className="mt-8">
           <Link href="/services">
-            <Button size="lg" className="w-full shadow-lg transition-all hover:scale-105 sm:w-auto">
-              <CalendarBlank size={20} className="mr-2" weight="regular" />
+            <Button
+              size="lg"
+              className="w-full shadow-lg transition-all hover:scale-105 sm:w-auto"
+            >
+              <CalendarIcon size={20} className="mr-2" weight="regular" />
               Book New Appointment
             </Button>
           </Link>

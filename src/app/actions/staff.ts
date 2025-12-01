@@ -1,6 +1,6 @@
 "use server"
 
-import prisma from "@/lib/db/prisma"
+import { prisma } from "@/lib/prisma"
 
 export const getStaffMembers = async () => {
   const staffMembers = await prisma.staff.findMany({

@@ -1,27 +1,34 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { Moon, Sun } from "@phosphor-icons/react"
+import { useSyncExternalStore } from "react"
+import { Moon, Sun, Desktop } from "@phosphor-icons/react"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
+// Detect if we're on the client (recommended React pattern for SSR hydration)
+const useIsClient = () =>
+  useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  )
+
 export function ThemeToggle() {
   const { setTheme, theme, resolvedTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
+  const isClient = useIsClient()
 
-  // Avoid hydration mismatch by only rendering theme-dependent content after mount
-  useEffect(() => {
-    setMounted(true)
-  }, [])
+  const isDark = isClient && resolvedTheme === "dark"
 
-  // Determine icon based on resolved theme
-  const isDark = mounted && resolvedTheme === "dark"
+  const items = [
+    { key: "light", label: "Light", icon: Sun },
+    { key: "dark", label: "Dark", icon: Moon },
+    { key: "system", label: "System", icon: Desktop },
+  ]
 
   return (
     <DropdownMenu>
@@ -29,80 +36,45 @@ export function ThemeToggle() {
         <Button
           variant="ghost"
           size="icon"
-          className="group transition-colors hover:bg-primary/10"
+          className="group hover:bg-primary/10"
         >
-          {mounted ? (
-            isDark ? (
-              <Sun
-                size={20}
-                weight="fill"
-                className="text-accent transition-transform duration-200 group-hover:scale-110"
-              />
-            ) : (
-              <Moon
-                size={20}
-                weight="fill"
-                className="text-primary transition-transform duration-200 group-hover:scale-110"
-              />
-            )
+          {isClient && isDark ? (
+            <Sun
+              size={20}
+              weight="fill"
+              className="text-accent transition-transform group-hover:scale-110"
+            />
           ) : (
             <Moon
               size={20}
               weight="fill"
-              className="text-primary transition-transform duration-200 group-hover:scale-110"
+              className="text-primary transition-transform group-hover:scale-110"
             />
           )}
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="mt-2 min-w-[140px]">
-        <DropdownMenuItem
-          onClick={() => setTheme("light")}
-          className={`
-            cursor-pointer transition-all duration-200
-            hover:bg-accent/10 hover:!text-accent!
-            focus:bg-accent/10 focus:!text-accent!
-            ${mounted && theme === "light"
-              ? "bg-accent/15 text-accent font-semibold"
-              : "text-accent/80"
-            }
-          `}
-        >
-          <Sun size={16} weight="fill" className="mr-2" />
-          Light
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => setTheme("dark")}
-          className={`
-            cursor-pointer transition-all duration-200
-            hover:bg-primary/10 hover:text-primary
-            focus:bg-primary/10 focus:text-primary
-            ${mounted && theme === "dark"
-              ? "bg-primary/15 text-primary font-semibold"
-              : "text-primary/80"
-            }
-          `}
-        >
-          <Moon size={16} weight="fill" className="mr-2" />
-          Dark
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => setTheme("system")}
-          className={`
-            cursor-pointer transition-all duration-200
-            hover:bg-white/10 hover:text-white
-            focus:bg-white/10 focus:text-white
-            ${mounted && theme === "system"
-              ? "bg-white/15 text-white font-semibold"
-              : "text-white/80"
-            }
-          `}
-        >
-          <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-          </svg>
-          System
-        </DropdownMenuItem>
+      <DropdownMenuContent align="end" className="mt-2 min-w-[140px] space-y-1">
+        {items.map(({ key, label, icon: Icon }) => {
+          const isActive = isClient && theme === key
+
+          return (
+            <button
+              key={key}
+              onClick={() => setTheme(key)}
+              className={`flex w-full cursor-pointer items-center gap-2 rounded-md px-3 py-2.5 text-sm transition-all duration-200 outline-none
+                ${key === "light"
+                  ? `text-accent/90 hover:bg-accent/15 hover:text-accent hover:drop-shadow-[0_0_10px_rgba(212,175,55,0.4)] ${isActive ? "bg-accent/20 text-accent font-medium" : ""}`
+                  : key === "dark"
+                    ? `text-primary/90 hover:bg-primary/15 hover:text-primary hover:drop-shadow-[0_0_10px_rgba(236,72,153,0.3)] ${isActive ? "bg-primary/20 text-primary font-medium" : ""}`
+                    : `text-white/70 hover:bg-white/10 hover:text-white ${isActive ? "bg-white/15 text-white font-medium" : ""}`
+                }`}
+            >
+              <Icon size={16} weight="fill" />
+              {label}
+            </button>
+          )
+        })}
       </DropdownMenuContent>
     </DropdownMenu>
   )

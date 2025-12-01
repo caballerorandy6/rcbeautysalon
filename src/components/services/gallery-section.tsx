@@ -27,7 +27,7 @@ export function GallerySection({ gallery, serviceName }: GallerySectionProps) {
         <div className="mx-auto max-w-6xl">
           {/* Section Header */}
           <div className="mb-12 text-center">
-            <h2 className="mb-4 text-3xl font-bold">
+            <h2 className="font-heading mb-4 text-4xl md:text-5xl">
               <span className="from-primary to-accent bg-linear-to-r bg-clip-text text-transparent">
                 Gallery
               </span>
@@ -42,7 +42,7 @@ export function GallerySection({ gallery, serviceName }: GallerySectionProps) {
             {sortedGallery.map((item) => (
               <div
                 key={item.id}
-                className="group relative aspect-[4/3] overflow-hidden rounded-lg shadow-md transition-all duration-300 hover:shadow-xl"
+                className="group relative aspect-4/3 overflow-hidden rounded-lg shadow-md transition-all duration-300 hover:shadow-xl"
               >
                 {/* Image */}
                 <Image
@@ -54,7 +54,7 @@ export function GallerySection({ gallery, serviceName }: GallerySectionProps) {
 
                 {/* Overlay with Caption (on hover) */}
                 {item.caption && (
-                  <div className="absolute inset-0 flex items-end bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                  <div className="absolute inset-0 flex items-end bg-linear-to-t from-black/80 via-black/40 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                     <p className="w-full p-4 text-sm text-white">
                       {item.caption}
                     </p>

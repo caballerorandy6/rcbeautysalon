@@ -136,8 +136,9 @@ body {
 }
 
 /* Elegant Typography for Beauty Salon */
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading), cursive;
+h1, h2, h3, h4, h5, h6,
+.font-heading {
+  font-family: var(--font-rouge-script), "Rouge Script", cursive;
   font-weight: 400;
   letter-spacing: 0.02em;
 }

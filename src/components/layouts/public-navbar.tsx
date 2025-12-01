@@ -3,10 +3,18 @@
 import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useSession, signOut } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Logo } from "@/components/ui/logo"
 import { ThemeToggle } from "@/components/theme-toggle"
-import { List, X } from "@phosphor-icons/react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { List, X, User, SignOut, CalendarCheck, Gear } from "@phosphor-icons/react"
 
 interface NavLink {
   href: string
@@ -24,6 +32,19 @@ const navLinks: NavLink[] = [
 export function PublicNavbar() {
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { data: session, status } = useSession()
+
+  const isLoading = status === "loading"
+  const isAuthenticated = !!session?.user
+
+  // Get dashboard link based on role
+  const getDashboardLink = () => {
+    if (!session?.user) return "/login"
+    const role = session.user.role
+    if (role === "ADMIN") return "/dashboard"
+    if (role === "STAFF") return "/staff-portal"
+    return "/my-appointments"
+  }
 
   const isActive = (href: string) => {
     // Home page
@@ -69,11 +90,50 @@ export function PublicNavbar() {
             </Link>
           ))}
           <ThemeToggle />
-          <Link href="/login">
-            <Button variant="ghost" className="text-foreground/80 hover:bg-secondary hover:text-primary">
-              Login
+          {isLoading ? (
+            <Button variant="ghost" disabled className="w-20">
+              <span className="animate-pulse">...</span>
             </Button>
-          </Link>
+          ) : isAuthenticated ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="text-foreground/80 hover:bg-secondary hover:text-primary gap-2">
+                  <User size={18} />
+                  <span className="max-w-24 truncate">{session.user.name || "Account"}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem asChild>
+                  <Link href={getDashboardLink()} className="flex items-center gap-2 cursor-pointer">
+                    <Gear size={16} />
+                    {session.user.role === "ADMIN" ? "Dashboard" : session.user.role === "STAFF" ? "Staff Portal" : "My Appointments"}
+                  </Link>
+                </DropdownMenuItem>
+                {session.user.role === "CLIENTE" && (
+                  <DropdownMenuItem asChild>
+                    <Link href="/my-appointments" className="flex items-center gap-2 cursor-pointer">
+                      <CalendarCheck size={16} />
+                      My Appointments
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => signOut({ callbackUrl: "/" })}
+                  className="flex items-center gap-2 cursor-pointer text-destructive focus:text-destructive"
+                >
+                  <SignOut size={16} />
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Link href="/login">
+              <Button variant="ghost" className="text-foreground/80 hover:bg-secondary hover:text-primary">
+                Login
+              </Button>
+            </Link>
+          )}
           <Link href="/booking">
             <Button className="from-primary to-primary/90 bg-linear-to-r text-white hover:opacity-90 shadow-md group">
               <span className="group-hover:text-accent transition-colors">Book Now</span>
@@ -117,11 +177,45 @@ export function PublicNavbar() {
               <ThemeToggle />
               <span className="text-sm text-muted-foreground">Theme</span>
             </div>
-            <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
-              <Button variant="ghost" className="w-full text-foreground/80 hover:bg-secondary hover:text-primary">
-                Login
+            {isLoading ? (
+              <Button variant="ghost" disabled className="w-full">
+                <span className="animate-pulse">Loading...</span>
               </Button>
-            </Link>
+            ) : isAuthenticated ? (
+              <>
+                <Link href={getDashboardLink()} onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="ghost" className="w-full text-foreground/80 hover:bg-secondary hover:text-primary gap-2">
+                    <User size={18} />
+                    {session.user.name || "Account"}
+                  </Button>
+                </Link>
+                {session.user.role === "CLIENTE" && (
+                  <Link href="/my-appointments" onClick={() => setMobileMenuOpen(false)}>
+                    <Button variant="ghost" className="w-full text-foreground/80 hover:bg-secondary hover:text-primary gap-2">
+                      <CalendarCheck size={18} />
+                      My Appointments
+                    </Button>
+                  </Link>
+                )}
+                <Button
+                  variant="ghost"
+                  className="w-full text-destructive hover:bg-destructive/10 gap-2"
+                  onClick={() => {
+                    setMobileMenuOpen(false)
+                    signOut({ callbackUrl: "/" })
+                  }}
+                >
+                  <SignOut size={18} />
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                <Button variant="ghost" className="w-full text-foreground/80 hover:bg-secondary hover:text-primary">
+                  Login
+                </Button>
+              </Link>
+            )}
             <Link href="/booking" onClick={() => setMobileMenuOpen(false)}>
               <Button className="from-primary to-primary/90 bg-linear-to-r text-white hover:opacity-90 w-full">
                 Book Now

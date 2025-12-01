@@ -1,6 +1,10 @@
 import { redirect } from "next/navigation"
-import { auth } from "@/auth"
-import { getServiceForBooking, getAvailableStaff, getSalonConfig } from "@/app/actions/appointments"
+import { auth } from "@/lib/auth/auth"
+import {
+  getServiceForBooking,
+  getAvailableStaff,
+  getSalonConfig,
+} from "@/app/actions/appointments"
 import { BookingForm } from "@/components/booking/booking-form"
 
 interface BookingPageProps {
@@ -42,14 +46,14 @@ export default async function BookingPage(props: BookingPageProps) {
     : undefined
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-muted/30 via-background to-muted/20 py-12">
+    <div className="from-muted/30 via-background to-muted/20 min-h-screen bg-linear-to-b py-12">
       <div className="container mx-auto max-w-6xl px-4">
         {/* Header */}
         <div className="mb-8 text-center">
-          <h1 className="mb-2 bg-linear-to-r from-primary to-accent bg-clip-text text-4xl font-bold text-transparent">
+          <h1 className="from-primary to-accent mb-2 bg-linear-to-r bg-clip-text text-4xl font-bold text-transparent">
             Book Your Appointment
           </h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-muted-foreground text-lg">
             Choose your preferred time and secure your spot
           </p>
         </div>

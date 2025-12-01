@@ -12,7 +12,7 @@ import { ServicesListSkeleton } from "@/components/services/services-list-skelet
 import { BookingButton } from "@/components/services/booking-button"
 
 export const metadata = {
-  title: "Our Services | BS Beauty Salon",
+  title: "Our Services | RC Beauty Salon",
   description: "Explore our full range of professional beauty services",
 }
 
@@ -58,7 +58,7 @@ export default async function ServicesPage() {
         {/* Content */}
         <div className="container relative z-20 mx-auto px-4">
           <div className="mx-auto max-w-3xl text-center">
-            <h1 className="mb-4 text-4xl font-bold tracking-tight text-white md:text-5xl">
+            <h1 className="font-heading mb-4 text-5xl tracking-tight text-white sm:text-6xl md:text-7xl">
               Our{" "}
               <span className="from-accent to-primary bg-linear-to-r bg-clip-text text-transparent">
                 Services
@@ -101,7 +101,7 @@ export default async function ServicesPage() {
         <div className="absolute inset-0 bg-black/60" />
 
         <div className="relative container mx-auto px-4 text-center text-white">
-          <h2 className="mb-4 text-3xl font-bold md:text-4xl">
+          <h2 className="font-heading mb-4 text-4xl md:text-5xl lg:text-6xl">
             Ready to Book Your Appointment?
           </h2>
           <p className="mb-8 text-lg opacity-90 md:text-xl">

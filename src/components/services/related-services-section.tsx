@@ -41,7 +41,7 @@ export function RelatedServicesSection({
         <div className="mx-auto max-w-6xl">
           {/* Section Header */}
           <div className="mb-12 text-center">
-            <h2 className="mb-4 text-3xl font-bold">
+            <h2 className="font-heading mb-4 text-4xl md:text-5xl">
               You Might Also{" "}
               <span className="from-primary to-accent bg-linear-to-r bg-clip-text text-transparent">
                 Like

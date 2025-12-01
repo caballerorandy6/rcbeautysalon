@@ -1,13 +1,4 @@
-/**
- * Centralized Interfaces
- * All interfaces used across the application
- */
-
 import { Decimal } from "@prisma/client/runtime/library"
-
-// ============================================
-// SERVICE INTERFACES
-// ============================================
 
 export interface Service {
   id: string
@@ -50,10 +41,6 @@ export interface ServiceDetail extends ServiceWithCategory {
   faqs: FAQ[]
 }
 
-// ============================================
-// REVIEW INTERFACES
-// ============================================
-
 export interface Review {
   id: string
   rating: number
@@ -69,10 +56,6 @@ export interface Review {
   }
 }
 
-// ============================================
-// GALLERY INTERFACES
-// ============================================
-
 export interface GalleryImage {
   id: string
   imageUrl: string
@@ -81,10 +64,6 @@ export interface GalleryImage {
   serviceId: string
   createdAt: Date
 }
-
-// ============================================
-// FAQ INTERFACES
-// ============================================
 
 export interface FAQ {
   id: string
@@ -95,10 +74,6 @@ export interface FAQ {
   createdAt: Date
   updatedAt: Date
 }
-
-// ============================================
-// CATEGORY INTERFACES
-// ============================================
 
 export interface Category {
   id: string
@@ -113,10 +88,6 @@ export interface CategoryWithCount extends Category {
     services: number
   }
 }
-
-// ============================================
-// STAFF INTERFACES
-// ============================================
 
 export interface Staff {
   id: string
@@ -137,10 +108,6 @@ export interface StaffWithServices extends Staff {
   }[]
 }
 
-// ============================================
-// CUSTOMER INTERFACES
-// ============================================
-
 export interface Customer {
   id: string
   name: string
@@ -151,10 +118,6 @@ export interface Customer {
   createdAt: Date
   updatedAt: Date
 }
-
-// ============================================
-// USER INTERFACES
-// ============================================
 
 export interface User {
   id: string
@@ -168,10 +131,6 @@ export interface User {
   updatedAt: Date
 }
 
-// ============================================
-// APPOINTMENT INTERFACES
-// ============================================
-
 export interface Appointment {
   id: string
   staffId: string
@@ -181,7 +140,13 @@ export interface Appointment {
   guestPhone: string | null
   startTime: Date
   endTime: Date
-  status: "PENDING" | "CONFIRMED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED" | "NO_SHOW"
+  status:
+    | "PENDING"
+    | "CONFIRMED"
+    | "IN_PROGRESS"
+    | "COMPLETED"
+    | "CANCELLED"
+    | "NO_SHOW"
   notes: string | null
   totalPrice: Decimal
   depositAmount: Decimal
@@ -200,10 +165,6 @@ export interface AppointmentWithDetails extends Appointment {
     service: Service
   }[]
 }
-
-// ============================================
-// PRODUCT INTERFACES
-// ============================================
 
 export interface Product {
   id: string
@@ -225,10 +186,6 @@ export interface Product {
 export interface ProductWithCategory extends Product {
   category: Category | null
 }
-
-// ============================================
-// ORDER INTERFACES
-// ============================================
 
 export interface Order {
   id: string
@@ -256,10 +213,6 @@ export interface OrderWithDetails extends Order {
   }[]
 }
 
-// ============================================
-// SALON CONFIGURATION INTERFACES
-// ============================================
-
 export interface SalonConfig {
   id: string
   name: string
@@ -286,10 +239,6 @@ export interface SalonConfig {
   updatedAt: Date
 }
 
-// ============================================
-// WORKING HOURS INTERFACES
-// ============================================
-
 export interface WorkingHours {
   id: string
   staffId: string
@@ -302,10 +251,6 @@ export interface WorkingHours {
 export interface StaffWithWorkingHours extends Staff {
   workingHours: WorkingHours[]
 }
-
-// ============================================
-// BREADCRUMB INTERFACES
-// ============================================
 
 export interface BreadcrumbItem {
   label: string
@@ -324,7 +269,14 @@ export interface ServiceFilters {
   minDuration?: number
   maxDuration?: number
   staffId?: string
-  sortBy?: "price_asc" | "price_desc" | "duration_asc" | "duration_desc" | "name_asc" | "rating_desc" | "popularity_desc"
+  sortBy?:
+    | "price_asc"
+    | "price_desc"
+    | "duration_asc"
+    | "duration_desc"
+    | "name_asc"
+    | "rating_desc"
+    | "popularity_desc"
 }
 
 export interface CategoryOption {
@@ -365,10 +317,6 @@ export interface ServicesListProps {
   staff: StaffOption[]
 }
 
-// ============================================
-// REVIEW FORM INTERFACES
-// ============================================
-
 export interface ReviewFormData {
   rating: number
   comment: string
@@ -380,10 +328,6 @@ export interface ReviewFormProps {
   serviceName: string
 }
 
-// ============================================
-// COMPONENT PROP INTERFACES
-// ============================================
-
 export interface RelatedService {
   id: string
   name: string
@@ -393,10 +337,6 @@ export interface RelatedService {
   duration: number
   imageUrl: string | null
 }
-
-// ============================================
-// BOOKING FLOW INTERFACES
-// ============================================
 
 export interface TimeSlot {
   time: string // "09:00", "10:00", etc.

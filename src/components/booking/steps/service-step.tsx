@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Clock } from "@phosphor-icons/react/dist/ssr"
+import { Clock } from "@phosphor-icons/react"
 
 interface ServiceStepProps {
   service: {

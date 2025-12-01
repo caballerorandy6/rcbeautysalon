@@ -1,7 +1,7 @@
 "use server"
 
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
+import { auth } from "@/lib/auth/auth"
 import { revalidatePath } from "next/cache"
 import {
   AvailableStaffMember,
@@ -11,9 +11,7 @@ import {
 } from "@/lib/interfaces"
 import { addMinutes, format, parse, isAfter, isBefore } from "date-fns"
 
-
 export async function getSalonConfig() {
- 
   const config = await prisma.salonConfig.findUnique({
     where: { id: "salon_config" },
     select: {
@@ -23,21 +21,21 @@ export async function getSalonConfig() {
       maxBookingAdvance: true,
       cancellationPolicy: true,
       timezone: true,
-    }
+    },
   })
-  if (!config){
+  if (!config) {
     return {
       bookingDeposit: 50,
       depositRefundable: false,
       minBookingAdvance: 24,
       maxBookingAdvance: 30,
       cancellationPolicy: null,
-      timezone: "America/New_York"
+      timezone: "America/New_York",
     }
   }
   return {
     ...config,
-    bookingDeposit: config.bookingDeposit.toNumber()
+    bookingDeposit: config.bookingDeposit.toNumber(),
   }
 }
 
@@ -70,7 +68,7 @@ export async function getAvailableStaff(
   const availableStaff = await prisma.staffService.findMany({
     where: {
       serviceId,
-      staff: {isActive: true}
+      staff: { isActive: true },
     },
     include: {
       staff: {
@@ -81,10 +79,10 @@ export async function getAvailableStaff(
           phone: true,
           bio: true,
           image: true,
-          isActive: true
-        }
-      }
-    }
+          isActive: true,
+        },
+      },
+    },
   })
   return availableStaff.map((s) => s.staff)
 }
@@ -196,9 +194,9 @@ export async function getServiceForBooking(serviceId: string) {
       duration: true,
       imageUrl: true,
       category: {
-        select: { name: true }
-      }
-    }
+        select: { name: true },
+      },
+    },
   })
 
   // Return null if service doesn't exist or is inactive
@@ -209,7 +207,7 @@ export async function getServiceForBooking(serviceId: string) {
   // Convert Prisma Decimal to number for price
   return {
     ...service,
-    price: service.price.toNumber()
+    price: service.price.toNumber(),
   }
 }
 
@@ -221,20 +219,20 @@ export async function getServicesForBooking(serviceIds: string[]) {
   const services = await prisma.service.findMany({
     where: {
       id: { in: serviceIds },
-      isActive: true
+      isActive: true,
     },
     select: {
       id: true,
       name: true,
       price: true,
-      duration: true
-    }
+      duration: true,
+    },
   })
 
   // Convert Prisma Decimal prices to numbers
   return services.map((s) => ({
     ...s,
-    price: s.price.toNumber()
+    price: s.price.toNumber(),
   }))
 }
 
@@ -295,7 +293,7 @@ export async function createAppointment(
       // Check if authenticated user has a customer profile
       const userWithCustomer = await prisma.user.findUnique({
         where: { id: session.user.id },
-        include: { customer: true }
+        include: { customer: true },
       })
 
       if (userWithCustomer?.customer) {
@@ -308,8 +306,8 @@ export async function createAppointment(
             name: session.user.name || data.guestName || "Customer",
             email: session.user.email || data.guestEmail,
             phone: data.guestPhone,
-            userId: session.user.id
-          }
+            userId: session.user.id,
+          },
         })
         customerId = customer.id
       }
@@ -334,15 +332,15 @@ export async function createAppointment(
         // Create appointment-service relationships
         services: {
           create: data.serviceIds.map((serviceId) => ({
-            serviceId
-          }))
-        }
+            serviceId,
+          })),
+        },
       },
       include: {
         services: {
-          include: { service: true }
-        }
-      }
+          include: { service: true },
+        },
+      },
     })
 
     // Revalidate paths to update UI with new appointment
@@ -352,13 +350,13 @@ export async function createAppointment(
     // Return success with appointment ID
     return {
       success: true,
-      appointmentId: appointment.id
+      appointmentId: appointment.id,
     }
   } catch (error) {
     console.error("Error creating appointment:", error)
     return {
       success: false,
-      error: "Failed to create appointment. Please try again."
+      error: "Failed to create appointment. Please try again.",
     }
   }
 }
@@ -376,7 +374,7 @@ export async function getUserAppointments() {
   // Find user with customer profile
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    include: { customer: true }
+    include: { customer: true },
   })
 
   if (!user?.customer) {
@@ -388,24 +386,24 @@ export async function getUserAppointments() {
     where: { customerId: user.customer.id },
     include: {
       staff: {
-        select: { name: true, image: true }
+        select: { name: true, image: true },
       },
       services: {
         include: {
           service: {
-            select: { name: true, duration: true, imageUrl: true }
-          }
-        }
-      }
+            select: { name: true, duration: true, imageUrl: true },
+          },
+        },
+      },
     },
-    orderBy: { startTime: "desc" } // Most recent first
+    orderBy: { startTime: "desc" }, // Most recent first
   })
 
   // Convert Prisma Decimals to numbers for price fields
   return appointments.map((apt) => ({
     ...apt,
     totalPrice: apt.totalPrice.toNumber(),
-    depositAmount: apt.depositAmount.toNumber()
+    depositAmount: apt.depositAmount.toNumber(),
   }))
 }
 
@@ -419,7 +417,7 @@ export async function cancelAppointment(appointmentId: string) {
     if (!session?.user) {
       return {
         success: false,
-        error: "You must be logged in to cancel appointments"
+        error: "You must be logged in to cancel appointments",
       }
     }
 
@@ -428,9 +426,9 @@ export async function cancelAppointment(appointmentId: string) {
       where: { id: appointmentId },
       include: {
         customer: {
-          include: { user: true }
-        }
-      }
+          include: { user: true },
+        },
+      },
     })
 
     // Validate appointment exists
@@ -442,14 +440,14 @@ export async function cancelAppointment(appointmentId: string) {
     if (appointment.customer?.userId !== session.user.id) {
       return {
         success: false,
-        error: "You don't have permission to cancel this appointment"
+        error: "You don't have permission to cancel this appointment",
       }
     }
 
     // Update appointment status to CANCELLED
     await prisma.appointment.update({
       where: { id: appointmentId },
-      data: { status: "CANCELLED" }
+      data: { status: "CANCELLED" },
     })
 
     // Revalidate paths to update UI
@@ -461,7 +459,7 @@ export async function cancelAppointment(appointmentId: string) {
     console.error("Error cancelling appointment:", error)
     return {
       success: false,
-      error: "Failed to cancel appointment. Please try again."
+      error: "Failed to cancel appointment. Please try again.",
     }
   }
 }

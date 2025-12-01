@@ -57,7 +57,7 @@ export function ReviewsSection({ reviews }: ReviewsSectionProps) {
         <div className="mx-auto max-w-5xl">
           {/* Section Header */}
           <div className="mb-12 text-center">
-            <h2 className="mb-4 text-3xl font-bold">
+            <h2 className="font-heading mb-4 text-4xl md:text-5xl">
               Customer{" "}
               <span className="from-primary to-accent bg-linear-to-r bg-clip-text text-transparent">
                 Reviews

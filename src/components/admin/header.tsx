@@ -20,7 +20,7 @@ import {
   LogoutIcon,
   UserIcon,
   SettingsIcon,
-  LayoutDashboardIcon,
+  //LayoutDashboardIcon,
   UsersIcon,
 } from "@/components/icons"
 
@@ -34,11 +34,12 @@ export function AdminHeader() {
     router.refresh()
   }
 
-  const userInitials = session?.user?.name
-    ?.split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase() || "U"
+  const userInitials =
+    session?.user?.name
+      ?.split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase() || "U"
 
   const userRole = session?.user?.role || "CLIENTE"
   const isAdmin = userRole === "ADMIN"
@@ -55,7 +56,7 @@ export function AdminHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
+    <header className="bg-background/95 supports-backdrop-filter:bg-background/60 sticky top-0 z-40 border-b backdrop-blur">
       <div className="flex h-16 items-center justify-between px-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" className="lg:hidden">
@@ -70,7 +71,10 @@ export function AdminHeader() {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+              <Button
+                variant="ghost"
+                className="relative h-10 w-10 rounded-full"
+              >
                 <Avatar className="h-10 w-10">
                   <AvatarFallback>{userInitials}</AvatarFallback>
                 </Avatar>
@@ -80,14 +84,14 @@ export function AdminHeader() {
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-2">
                   <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium leading-none">
+                    <p className="text-sm leading-none font-medium">
                       {session?.user?.name || "User"}
                     </p>
                     <Badge variant={getRoleBadgeVariant()} className="ml-2">
                       {userRole}
                     </Badge>
                   </div>
-                  <p className="text-xs leading-none text-muted-foreground">
+                  <p className="text-muted-foreground text-xs leading-none">
                     {session?.user?.email}
                   </p>
                 </div>
@@ -103,7 +107,7 @@ export function AdminHeader() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/my-account">
+                    <Link href="/login">
                       <UserIcon size={16} className="mr-2" />
                       Client View
                     </Link>

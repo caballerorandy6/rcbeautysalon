@@ -1,16 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
   <defs>
-    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#F4D35E;stop-opacity:1" />
-      <stop offset="50%" style="stop-color:#E8C547;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#DAAF37;stop-opacity:1" />
+    <linearGradient id="brandGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#E76D89;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F4C430;stop-opacity:1" />
     </linearGradient>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Rouge+Script&amp;display=swap');
+    </style>
   </defs>
 
   <!-- Background -->
-  <rect width="100" height="100" fill="#1A1A1A" rx="20"/>
+  <rect width="100" height="100" fill="#342A2C" rx="20"/>
 
-  <!-- BS Monogram -->
-  <text x="50" y="70" font-family="serif" font-size="48" font-weight="700"
-        text-anchor="middle" fill="url(#goldGradient)" letter-spacing="-2">BS</text>
+  <!-- RC Monogram -->
+  <text x="50" y="72" font-family="'Rouge Script', cursive" font-size="52"
+        text-anchor="middle" fill="url(#brandGradient)">RC</text>
 </svg>

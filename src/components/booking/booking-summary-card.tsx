@@ -7,7 +7,7 @@ import {
   Clock,
   CurrencyDollar,
   SpinnerGap,
-} from "@phosphor-icons/react/dist/ssr"
+} from "@phosphor-icons/react"
 import { format } from "date-fns"
 import { AvailableStaffMember, TimeSlot } from "@/lib/interfaces"
 

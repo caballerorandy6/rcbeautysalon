@@ -22,7 +22,7 @@ const poppins = Poppins({
 })
 
 export const metadata: Metadata = {
-  title: "BS Beauty Salon - Professional Beauty Services",
+  title: "RC Beauty Salon - Professional Beauty Services",
   description: "Book appointments, shop products, and manage your beauty salon experience",
   icons: {
     icon: '/favicon.svg',
@@ -113,7 +113,7 @@ export default function RootLayout({
 
                   {/* Quick Links */}
                   <div className="space-y-4">
-                    <h3 className="font-heading text-lg font-bold tracking-tight">Quick Links</h3>
+                    <h3 className="font-heading text-2xl md:text-3xl tracking-tight">Quick Links</h3>
                     <ul className="space-y-3 text-sm">
                       <li>
                         <Link
@@ -156,7 +156,7 @@ export default function RootLayout({
 
                   {/* Contact Info */}
                   <div className="space-y-4">
-                    <h3 className="font-heading text-lg font-bold tracking-tight">Contact Us</h3>
+                    <h3 className="font-heading text-2xl md:text-3xl tracking-tight">Contact Us</h3>
                     <ul className="space-y-3 text-sm">
                       <li className="flex items-start gap-3 text-muted-foreground">
                         <svg className="mt-0.5 h-5 w-5 shrink-0 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -182,7 +182,7 @@ export default function RootLayout({
 
                   {/* Business Hours */}
                   <div className="space-y-4">
-                    <h3 className="font-heading text-lg font-bold tracking-tight">Business Hours</h3>
+                    <h3 className="font-heading text-2xl md:text-3xl tracking-tight">Business Hours</h3>
                     <ul className="space-y-2 text-sm text-muted-foreground">
                       <li className="flex items-center justify-between">
                         <span>Monday - Friday</span>

@@ -22,7 +22,7 @@ export default async function HomePage() {
 
         <div className="relative container mx-auto px-4">
           <div className="mx-auto max-w-3xl text-center">
-            <h1 className="mb-6 text-4xl font-bold tracking-tight text-white drop-shadow-lg sm:text-6xl md:text-7xl">
+            <h1 className="font-heading mb-6 text-5xl tracking-tight text-white drop-shadow-lg sm:text-7xl md:text-8xl lg:text-9xl">
               Your Beauty,{" "}
               <span className="from-primary via-accent to-primary bg-linear-to-r bg-clip-text text-transparent">
                 Our Passion
@@ -48,7 +48,7 @@ export default async function HomePage() {
       <section id="services" className="py-16">
         <div className="container mx-auto px-4">
           <div className="mb-12 text-center">
-            <h2 className="mb-4 text-3xl font-bold md:text-4xl">
+            <h2 className="font-heading mb-4 text-4xl md:text-5xl lg:text-6xl">
               Our{" "}
               <span className="from-primary to-accent bg-linear-to-r bg-clip-text text-transparent">
                 Services
@@ -208,7 +208,7 @@ export default async function HomePage() {
       <section id="shop" className="border-primary/30 border-t py-16">
         <div className="container mx-auto px-4">
           <div className="mb-12 text-center">
-            <h2 className="mb-4 text-3xl font-bold md:text-4xl">
+            <h2 className="font-heading mb-4 text-4xl md:text-5xl lg:text-6xl">
               Shop Our{" "}
               <span className="from-primary to-accent bg-linear-to-r bg-clip-text text-transparent">
                 Favorites

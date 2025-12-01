@@ -5,7 +5,7 @@ import Image from "next/image"
 import { cloudinaryPresets } from "@/lib/utils/cloudinary"
 
 export const metadata: Metadata = {
-  title: "Our Team | BS Beauty Salon",
+  title: "Our Team | RC Beauty Salon",
   description: "Meet our talented team of beauty professionals",
 }
 
@@ -29,7 +29,7 @@ const StaffPage = async () => {
             <span className="mb-4 inline-block rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary font-body">
               Meet the Experts
             </span>
-            <h1 className="mb-4 text-5xl md:text-6xl lg:text-7xl">
+            <h1 className="font-heading mb-4 text-5xl sm:text-6xl md:text-7xl lg:text-8xl">
               Our{" "}
               <span className="bg-linear-to-r from-primary to-accent bg-clip-text text-transparent">
                 Team
@@ -63,7 +63,7 @@ const StaffPage = async () => {
                   />
                 </svg>
               </div>
-              <h3 className="mb-2 text-3xl">No team members yet</h3>
+              <h3 className="font-heading mb-2 text-3xl md:text-4xl">No team members yet</h3>
               <p className="text-muted-foreground font-body">
                 Our team is being assembled. Check back soon!
               </p>
@@ -102,7 +102,7 @@ const StaffPage = async () => {
                     </div>
 
                     {/* Name */}
-                    <h3 className="text-3xl md:text-4xl mb-2 drop-shadow-lg transition-colors duration-300 group-hover:text-accent">
+                    <h3 className="font-heading text-3xl md:text-4xl lg:text-5xl mb-2 drop-shadow-lg transition-colors duration-300 group-hover:text-accent">
                       {staff.name}
                     </h3>
 
@@ -144,7 +144,7 @@ const StaffPage = async () => {
       {/* CTA Section */}
       <section className="border-t bg-linear-to-br from-primary/5 to-accent/5 py-16">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="mb-4 text-4xl md:text-5xl">
+          <h2 className="font-heading mb-4 text-4xl md:text-5xl lg:text-6xl">
             Ready to Transform Your Look?
           </h2>
           <p className="mb-8 text-muted-foreground font-body">

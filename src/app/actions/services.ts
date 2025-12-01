@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/prisma"
 import { Prisma } from "@prisma/client"
 import { ReviewFormData, ServiceFilters } from "@/lib/interfaces"
-import { auth } from "@/auth"
+import { auth } from "@/lib/auth/auth"
 import { revalidatePath } from "next/cache"
 
 // Get featured services for homepage display
