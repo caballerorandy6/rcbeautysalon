@@ -140,12 +140,7 @@ export interface Appointment {
   guestPhone: string | null
   startTime: Date
   endTime: Date
-  status:
-    | "PENDING"
-    | "CONFIRMED"
-    | "COMPLETED"
-    | "CANCELLED"
-    | "NO_SHOW"
+  status: "PENDING" | "CONFIRMED" | "COMPLETED" | "CANCELLED" | "NO_SHOW"
   notes: string | null
   totalPrice: Decimal
   depositAmount: Decimal
@@ -308,6 +303,19 @@ export interface ServiceListItem {
     name: string
     slug: string
   } | null
+}
+
+export interface CreateServiceInput {
+  name: string
+  slug: string
+  description?: string
+  duration: number
+  price: number
+  imageUrl?: string
+  categoryId?: string
+  isActive?: boolean
+  isFeatured?: boolean
+  order?: number
 }
 
 export interface ServicesListProps {

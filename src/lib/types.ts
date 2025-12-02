@@ -49,3 +49,9 @@ export type ServiceSortBy =
   | "name_asc"
   | "rating_desc"
   | "popularity_desc"
+
+
+  export type Service={
+    id:string;
+    name:string;
+  }

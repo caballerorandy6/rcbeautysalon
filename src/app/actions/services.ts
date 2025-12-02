@@ -5,6 +5,9 @@ import { Prisma } from "@prisma/client"
 import { ReviewFormData, ServiceFilters } from "@/lib/interfaces"
 import { auth } from "@/lib/auth/auth"
 import { revalidatePath } from "next/cache"
+import { CreateServiceInput } from "@/lib/interfaces"
+
+export type UpdateServiceInput = Partial<CreateServiceInput>
 
 // Get featured services for homepage display
 export async function getFeaturedServices() {
@@ -338,6 +341,7 @@ export async function getAllActiveStaff() {
   })
 }
 
+// Get all categories for filter dropdown
 export async function getAllCategories() {
   const categories = await prisma.category.findMany({
     select: {
@@ -349,6 +353,7 @@ export async function getAllCategories() {
   return categories
 }
 
+// Create a new review for a service
 export async function createReview(data: ReviewFormData) {
   // Ensure user is authenticated
   const session = await auth()
@@ -436,4 +441,158 @@ export async function getActiveServicesForBooking() {
     ...service,
     price: service.price.toNumber(),
   }))
+}
+
+// Admin: Get all services with counts for management
+export async function getAdminServices() {
+  const services = await prisma.service.findMany({
+    include: {
+      category: {
+        select: { name: true },
+      },
+      _count: {
+        select: {
+          appointmentServices: true,
+          staffServices: true,
+          reviews: true,
+        },
+      },
+    },
+    orderBy: { name: "asc" },
+  })
+
+  return services.map((service) => ({
+    ...service,
+    price: service.price.toNumber(),
+  }))
+}
+
+// Admin: Get service statistics
+export async function getServiceStats() {
+  const [totalServices, activeServices, featuredServices, categoriesCount] =
+    await Promise.all([
+      prisma.service.count(),
+      prisma.service.count({ where: { isActive: true } }),
+      prisma.service.count({ where: { isFeatured: true } }),
+      prisma.category.count(),
+    ])
+
+  return {
+    totalServices,
+    activeServices,
+    featuredServices,
+    categoriesCount,
+  }
+}
+
+// Admin: Get service by ID with detailed info
+export async function getServiceById(id: string) {
+  const service = await prisma.service.findUnique({
+    where: { id },
+    include: {
+      category: true,
+      staffServices: {
+        include: {
+          staff: true,
+        },
+      },
+    },
+  })
+
+  if (!service) {
+    return null
+  }
+
+  return {
+    ...service,
+    price: service.price.toNumber(),
+  }
+}
+
+//Create Service
+export async function createService(data: CreateServiceInput) {
+  try {
+    const service = await prisma.service.create({
+      data,
+    })
+    revalidatePath("/dashboard/services")
+    revalidatePath("/services")
+
+    return { success: true, service }
+  } catch (error) {
+    console.error("Error creating service:", error)
+    return { success: false, error: "Failed to create service." }
+  }
+}
+
+// Update Service
+export async function updateService(id: string, data: UpdateServiceInput) {
+  try {
+    const updatedService = await prisma.service.update({
+      where: { id },
+      data,
+    })
+    revalidatePath("/dashboard/services")
+    revalidatePath("/services")
+
+    return { success: true, service: updatedService }
+  } catch (error) {
+    console.error("Error updating service:", error)
+    return { success: false, error: "Failed to update service." }
+  }
+}
+
+// Delete Service
+export async function deleteService(id: string) {
+  try {
+    const appointmentCount = await prisma.appointmentService.count({
+      where: { serviceId: id },
+    })
+
+    if (appointmentCount > 0) {
+      return {
+        success: false,
+        error:
+          "Cannot delete service with existing appointments. Deactivate it instead.",
+      }
+    }
+    await prisma.service.delete({
+      where: { id },
+    })
+
+    revalidatePath("/dashboard/services")
+    revalidatePath("/services")
+
+    return { success: true }
+  } catch (error) {
+    console.error("Error deleting service:", error)
+    return { success: false, error: "Failed to delete service." }
+  }
+}
+
+// Toggle service active status
+export async function toggleServiceStatus(id: string) {
+  try {
+    const service = await prisma.service.findUnique({
+      where: { id },
+      select: { isActive: true },
+    })
+
+    if (!service) {
+      return { success: false, error: "Service not found" }
+    }
+
+    const updated = await prisma.service.update({
+      where: { id },
+      data: { isActive: !service.isActive },
+    })
+
+    revalidatePath("/dashboard/services")
+    revalidatePath("/services")
+
+    return { success: true, isActive: updated.isActive }
+  } catch (error) {
+    console.error("Error toggling service status:", error)
+    return { success: false, error: "Failed to toggle service status." }
+  }
 }
