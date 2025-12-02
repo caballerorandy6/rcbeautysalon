@@ -46,7 +46,8 @@ export function RegisterForm() {
     }
 
     toast.success("Account created successfully!", {
-      description: "You can now log in with your new account.",
+      description: "Please check your email to verify your account before logging in.",
+      duration: 6000,
     })
 
     router.push("/login")

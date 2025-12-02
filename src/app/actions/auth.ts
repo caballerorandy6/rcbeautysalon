@@ -14,6 +14,7 @@ import bcrypt from "bcryptjs"
 import crypto from "crypto"
 import { sendPasswordResetEmail } from "@/lib/email/password-reset"
 import { sendVerificationEmail } from "@/lib/email/email-verification"
+import { sendAccountActivatedEmail } from "@/lib/email/account-activated"
 
 // Server action to handle user registration
 export async function registerUser(data: RegisterInput) {
@@ -230,16 +231,22 @@ export async function verifyEmail(token: string) {
       }
     }
 
-    // Mark user's email as verified
-    await prisma.user.update({
+    // Mark user's email as verified and get user info
+    const user = await prisma.user.update({
       where: { email: verificationToken.identifier },
       data: { emailVerified: new Date() },
+      select: { name: true, email: true },
     })
 
     // Delete the used verification token
     await prisma.verificationToken.delete({
       where: { token },
     })
+
+    // Send account activated email
+    if (user.email) {
+      await sendAccountActivatedEmail(user.email, user.name || undefined)
+    }
 
     return { success: true }
   } catch (error) {

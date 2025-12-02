@@ -10,6 +10,7 @@ import {
   AppointmentCreationResult,
 } from "@/lib/interfaces"
 import { addMinutes, format, parse, isAfter, isBefore } from "date-fns"
+import { sendAppointmentConfirmationEmail } from "@/lib/email/appointment-confirmation"
 import { Prisma } from "@prisma/client"
 import { AppointmentStatus } from "@/lib/types"
 
@@ -99,11 +100,14 @@ export async function getAvailableStaff(
 //Get available time slots for a staff member on a specific date
 export async function getAvailableTimeSlots(
   staffId: string,
-  date: Date,
+  date: Date | string,
   serviceDuration: number
 ): Promise<TimeSlot[]> {
+  // Ensure date is a Date object (server actions serialize Date to string)
+  const dateObj = new Date(date)
+
   // Get day of week (0 = Sunday, 6 = Saturday)
-  const dayOfWeek = date.getDay()
+  const dayOfWeek = dateObj.getDay()
 
   // Find working hours for this staff on this day
   const workingHours = await prisma.workingHours.findFirst({
@@ -119,10 +123,10 @@ export async function getAvailableTimeSlots(
   }
 
   // Get existing appointments for this day
-  const startOfDay = new Date(date)
+  const startOfDay = new Date(dateObj)
   startOfDay.setHours(0, 0, 0, 0)
 
-  const endOfDay = new Date(date)
+  const endOfDay = new Date(dateObj)
   endOfDay.setHours(23, 59, 59, 999)
 
   const existingAppointments = await prisma.appointment.findMany({
@@ -143,8 +147,8 @@ export async function getAvailableTimeSlots(
   })
 
   // Generate time slots
-  const workStart = parse(workingHours.startTime, "HH:mm", date)
-  const workEnd = parse(workingHours.endTime, "HH:mm", date)
+  const workStart = parse(workingHours.startTime, "HH:mm", dateObj)
+  const workEnd = parse(workingHours.endTime, "HH:mm", dateObj)
   const slots: TimeSlot[] = []
   let currentSlot = workStart
 
@@ -158,14 +162,11 @@ export async function getAvailableTimeSlots(
     }
 
     // Check for conflicts with existing appointments
+    // Overlap formula: (startA < endB) && (endA > startB)
     const hasConflict = existingAppointments.some((apt) => {
       const aptStart = new Date(apt.startTime)
       const aptEnd = new Date(apt.endTime)
-      return (
-        (isAfter(currentSlot, aptStart) && isBefore(currentSlot, aptEnd)) ||
-        (isAfter(slotEnd, aptStart) && isBefore(slotEnd, aptEnd)) ||
-        (isBefore(currentSlot, aptStart) && isAfter(slotEnd, aptEnd))
-      )
+      return isBefore(currentSlot, aptEnd) && isAfter(slotEnd, aptStart)
     })
 
     // Check if slot is in the past
@@ -314,6 +315,12 @@ export async function createAppointment(
       }
     }
 
+    // Get staff info for the email
+    const staff = await prisma.staff.findUnique({
+      where: { id: data.staffId },
+      select: { name: true },
+    })
+
     // Create the appointment with associated services
     const appointment = await prisma.appointment.create({
       data: {
@@ -343,6 +350,27 @@ export async function createAppointment(
         },
       },
     })
+
+    // Send confirmation email to customer
+    const customerEmail = session?.user?.email || data.guestEmail
+    const customerName = session?.user?.name || data.guestName || "Customer"
+
+    if (customerEmail) {
+      const serviceNames = services.map((s) => s.name).join(", ")
+
+      await sendAppointmentConfirmationEmail({
+        email: customerEmail,
+        customerName,
+        serviceName: serviceNames,
+        staffName: staff?.name || "Our Staff",
+        appointmentDate: new Date(data.startTime),
+        appointmentTime: format(new Date(data.startTime), "h:mm a"),
+        duration: totalDuration,
+        totalPrice,
+        depositAmount: config.bookingDeposit,
+        appointmentId: appointment.id,
+      })
+    }
 
     // Revalidate paths to update UI with new appointment
     revalidatePath("/my-appointments")

@@ -27,7 +27,7 @@ export function ServiceStep({ service }: ServiceStepProps) {
         <div className="rounded-lg border-2 border-primary/30 bg-primary/5 p-4">
           <div className="mb-2 flex items-start justify-between">
             <div>
-              <h3 className="text-lg font-semibold">{service.name}</h3>
+              <h3 className="text-3xl font-bold text-primary">{service.name}</h3>
               {service.category && (
                 <p className="text-sm text-muted-foreground">{service.category.name}</p>
               )}

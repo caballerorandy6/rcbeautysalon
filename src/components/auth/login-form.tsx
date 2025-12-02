@@ -37,13 +37,18 @@ export function LoginForm() {
       })
 
       if (result?.error) {
-        // Show actual error message for email verification
-        const errorMessage =
-          result.error === "CredentialsSignin"
-            ? "Invalid email or password. Please try again."
-            : result.error
+        // Check if error is about email verification
+        if (result.code === "EMAIL_NOT_VERIFIED" || result.error.includes("EMAIL_NOT_VERIFIED")) {
+          toast.error("Email verification required", {
+            description: "Please check your inbox and verify your email address before logging in. If you didn't receive the email, check your spam folder.",
+            duration: 8000,
+          })
+          return
+        }
+
+        // Show generic error for invalid credentials
         toast.error("Login failed", {
-          description: errorMessage,
+          description: "Invalid email or password. Please try again.",
         })
         return
       } else {

@@ -418,3 +418,22 @@ export async function createReview(data: ReviewFormData) {
     }
   }
 }
+
+// Get Active Services for Booking
+export async function getActiveServicesForBooking() {
+  const services = await prisma.service.findMany({
+    where: { isActive: true },
+    select: {
+      id: true,
+      name: true,
+      duration: true,
+      price: true,
+    },
+    orderBy: { name: "asc" },
+  })
+
+  return services.map((service) => ({
+    ...service,
+    price: service.price.toNumber(),
+  }))
+}

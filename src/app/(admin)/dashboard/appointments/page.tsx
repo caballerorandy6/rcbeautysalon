@@ -146,9 +146,9 @@ export default async function AppointmentsPage() {
                         <p className="font-medium">
                           {apt.customer?.name || apt.guestName || "Guest"}
                         </p>
-                        {apt.customer?.phone && (
+                        {(apt.customer?.phone || apt.guestPhone) && (
                           <p className="text-xs text-muted-foreground">
-                            {apt.customer.phone}
+                            {apt.customer?.phone || apt.guestPhone}
                           </p>
                         )}
                       </td>

@@ -2,12 +2,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { UseFormRegister, FieldErrors } from "react-hook-form"
-import { BookingInput } from "@/lib/validations/booking"
 
 interface CustomerInfoStepProps {
-  register: UseFormRegister<BookingInput>
-  errors: FieldErrors<BookingInput>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  register: any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  errors: any
   isAuthenticated: boolean
 }
 

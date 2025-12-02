@@ -1,11 +1,11 @@
 "use client"
+/* eslint-disable react-hooks/incompatible-library */
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { bookingSchema, authenticatedBookingSchema, type BookingInput } from "@/lib/validations/booking"
-import { createAppointment } from "@/app/actions/appointments"
+import { bookingSchema, authenticatedBookingSchema } from "@/lib/validations/booking"
+import { createCheckoutSession } from "@/app/actions/stripe"
 import { AvailableStaffMember } from "@/lib/interfaces"
 import { ServiceStep } from "./steps/service-step"
 import { StaffStep } from "./steps/staff-step"
@@ -35,6 +35,18 @@ interface BookingFormProps {
   }
 }
 
+// Form values type that works for both authenticated and guest users
+interface BookingFormValues {
+  staffId: string
+  date: Date | undefined
+  time: string
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
+  notes: string
+}
+
 export function BookingForm({
   service,
   availableStaff,
@@ -42,7 +54,6 @@ export function BookingForm({
   isAuthenticated,
   defaultValues = {},
 }: BookingFormProps) {
-  const router = useRouter()
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -55,8 +66,8 @@ export function BookingForm({
     watch,
     setValue,
     formState: { errors },
-  } = useForm<BookingInput>({
-    resolver: zodResolver(schema),
+  } = useForm<BookingFormValues>({
+    resolver: zodResolver(schema) as never,
     mode: "onChange",
     defaultValues: {
       staffId: "",
@@ -74,34 +85,42 @@ export function BookingForm({
   const selectedDate = watch("date")
   const selectedTime = watch("time")
 
-  const onSubmit = async (data: BookingInput) => {
+  const onSubmit = async (data: BookingFormValues) => {
     setSubmitting(true)
     setError(null)
 
     try {
+      if (!data.date) {
+        setError("Please select a date")
+        setSubmitting(false)
+        return
+      }
+
       // Combine date and time into a single datetime
       const [hours, minutes] = data.time.split(":").map(Number)
       const startTime = new Date(data.date)
       startTime.setHours(hours, minutes, 0, 0)
 
-      const result = await createAppointment({
+      // Create Stripe Checkout session and redirect to payment
+      const result = await createCheckoutSession({
         serviceIds: [service.id],
         staffId: data.staffId,
-        startTime,
+        startTime: startTime.toISOString(),
         guestName: !isAuthenticated ? `${data.firstName} ${data.lastName}` : undefined,
         guestEmail: !isAuthenticated ? data.email : undefined,
         guestPhone: data.phone || undefined,
         notes: data.notes || undefined,
       })
 
-      if (result.success) {
-        router.push(`/my-appointments?new=${result.appointmentId}`)
+      if (result.success && result.checkoutUrl) {
+        // Redirect to Stripe Checkout
+        window.location.href = result.checkoutUrl
       } else {
-        setError(result.error || "Failed to create appointment")
+        setError(result.error || "Failed to create payment session")
         setSubmitting(false)
       }
     } catch (err) {
-      console.error("Error creating appointment:", err)
+      console.error("Error creating checkout session:", err)
       setError("An unexpected error occurred. Please try again.")
       setSubmitting(false)
     }

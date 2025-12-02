@@ -102,7 +102,10 @@ export default async function ServicesPage() {
 
         <div className="relative container mx-auto px-4 text-center text-white">
           <h2 className="font-heading mb-4 text-4xl md:text-5xl lg:text-6xl">
-            Ready to Book Your Appointment?
+            Ready to Book Your{" "}
+            <span className="from-accent to-primary bg-linear-to-r bg-clip-text text-transparent">
+              Appointment?
+            </span>
           </h2>
           <p className="mb-8 text-lg opacity-90 md:text-xl">
             Choose your service and get started today

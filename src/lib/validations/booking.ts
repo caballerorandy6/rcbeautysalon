@@ -2,14 +2,13 @@ import { z } from "zod"
 
 export const bookingSchema = z.object({
   staffId: z.string().min(1, "Please select a staff member"),
-  date: z.date({
-    required_error: "Please select a date",
-    invalid_type_error: "Invalid date selected",
-  }),
+  date: z.date({ message: "Please select a date" }),
   time: z
     .string()
-    .regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Invalid time format")
-    .min(1, "Please select a time"),
+    .min(1, "Please select a time")
+    .refine((val) => /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(val), {
+      message: "Invalid time format",
+    }),
   firstName: z
     .string()
     .min(2, "First name must be at least 2 characters")
@@ -28,8 +27,9 @@ export const bookingSchema = z.object({
     .string()
     .min(10, "Phone number must be at least 10 digits")
     .max(20, "Phone number must not exceed 20 characters")
-    .regex(/^[\d\s\-\(\)\+]+$/, "Please enter a valid phone number")
-    .trim(),
+    .refine((val) => /^[\d\s\-\(\)\+]+$/.test(val), {
+      message: "Please enter a valid phone number",
+    }),
   notes: z
     .string()
     .max(500, "Notes must not exceed 500 characters")

@@ -39,13 +39,15 @@ export function DateTimeStep({
   // Load available time slots when staff and date are selected
   useEffect(() => {
     async function loadTimeSlots() {
-      if (!selectedStaffId || !selectedDate) return
+      if (!selectedStaffId || !selectedDate) {
+        setAvailableSlots([])
+        return
+      }
 
       setLoadingSlots(true)
       try {
         const slots = await getAvailableTimeSlots(selectedStaffId, selectedDate, serviceDuration)
         setAvailableSlots(slots)
-        onSelectTime("") // Reset selected time when slots change
       } catch (err) {
         console.error("Error loading time slots:", err)
         setAvailableSlots([])
@@ -55,7 +57,8 @@ export function DateTimeStep({
     }
 
     loadTimeSlots()
-  }, [selectedStaffId, selectedDate, serviceDuration, onSelectTime])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedStaffId, selectedDate, serviceDuration])
 
   return (
     <Card className="shadow-lg">

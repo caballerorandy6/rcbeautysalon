@@ -1,4 +1,10 @@
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import {
@@ -44,30 +50,35 @@ export function BookingSummaryCard({
   return (
     <div className="space-y-4">
       <Card className="sticky top-4 shadow-xl">
-        <CardHeader className="bg-linear-to-br from-primary/5 to-accent/5">
+        <CardHeader className="from-primary/5 to-accent/5 bg-linear-to-br">
           <CardTitle>Booking Summary</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 pt-6">
           <div className="space-y-3 text-sm">
             <div>
-              <p className="font-semibold text-muted-foreground">Service</p>
+              <p className="text-muted-foreground font-semibold">Service</p>
               <p className="text-base">{service.name}</p>
             </div>
             <Separator />
             <div>
-              <p className="font-semibold text-muted-foreground">Staff</p>
+              <p className="text-muted-foreground font-semibold">Staff</p>
               <p className="text-base">
                 {selectedStaff ? selectedStaff.name : "Not selected"}
               </p>
             </div>
             <Separator />
             <div>
-              <p className="font-semibold text-muted-foreground">Date & Time</p>
+              <p className="text-muted-foreground font-semibold">Date & Time</p>
               <p className="text-base">
                 {selectedDate && selectedTime ? (
                   <>
-                    <CalendarBlank size={14} className="mr-1 inline" weight="regular" />
-                    {format(selectedDate, "MMM d, yyyy")} at {selectedSlot?.formattedTime || selectedTime}
+                    <CalendarBlank
+                      size={14}
+                      className="mr-1 inline"
+                      weight="regular"
+                    />
+                    {format(selectedDate, "MMM d, yyyy")} at{" "}
+                    {selectedSlot?.formattedTime || selectedTime}
                   </>
                 ) : (
                   "Not selected"
@@ -76,7 +87,7 @@ export function BookingSummaryCard({
             </div>
             <Separator />
             <div>
-              <p className="font-semibold text-muted-foreground">Duration</p>
+              <p className="text-muted-foreground font-semibold">Duration</p>
               <p className="text-base">
                 <Clock size={14} className="mr-1 inline" weight="regular" />
                 {service.duration} minutes
@@ -93,25 +104,38 @@ export function BookingSummaryCard({
             </div>
             <div className="flex justify-between text-lg font-semibold">
               <span>Deposit Required</span>
-              <span className="text-primary">${salonConfig.bookingDeposit.toFixed(2)}</span>
+              <span className="text-primary">
+                ${salonConfig.bookingDeposit.toFixed(2)}
+              </span>
             </div>
           </div>
 
           {/* Non-refundable warning */}
-          <div className="rounded-lg border-2 border-amber-200 bg-amber-50 p-4 dark:border-amber-900/50 dark:bg-amber-950/20">
-            <div className="flex gap-2">
+          <div
+            className="rounded-xl border-2 p-4"
+            style={{
+              backgroundColor: "hsl(0 84% 95%)",
+              borderColor: "hsl(0 84% 60%)",
+            }}
+          >
+            <div className="flex gap-3">
               <WarningCircle
-                size={20}
+                size={32}
                 weight="fill"
-                className="shrink-0 text-amber-600 dark:text-amber-500"
+                className="shrink-0"
+                style={{ color: "hsl(0 84% 40%)" }}
               />
-              <div className="space-y-1 text-sm">
-                <p className="font-semibold text-amber-900 dark:text-amber-100">
+              <div className="space-y-1">
+                <p
+                  className="text-base font-bold"
+                  style={{ color: "hsl(0 84% 30%)" }}
+                >
                   Non-Refundable Deposit
                 </p>
-                <p className="text-amber-800 dark:text-amber-200">
-                  The ${salonConfig.bookingDeposit.toFixed(2)} deposit is required to secure your
-                  appointment and is <strong>non-refundable</strong>.
+                <p className="text-sm" style={{ color: "hsl(0 84% 35%)" }}>
+                  The ${salonConfig.bookingDeposit.toFixed(2)} deposit is
+                  required to secure your appointment and is{" "}
+                  <strong className="font-bold">non-refundable</strong>.
                 </p>
               </div>
             </div>
@@ -119,8 +143,12 @@ export function BookingSummaryCard({
         </CardContent>
         <CardFooter className="flex-col gap-3 pt-6">
           {error && (
-            <div className="w-full rounded-lg border-2 border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
-              <WarningCircle size={16} className="mr-1 inline" weight="regular" />
+            <div className="border-destructive/30 bg-destructive/10 text-destructive w-full rounded-lg border-2 p-3 text-sm">
+              <WarningCircle
+                size={16}
+                className="mr-1 inline"
+                weight="regular"
+              />
               {error}
             </div>
           )}
@@ -132,7 +160,11 @@ export function BookingSummaryCard({
           >
             {submitting ? (
               <>
-                <SpinnerGap size={20} className="mr-2 animate-spin" weight="regular" />
+                <SpinnerGap
+                  size={20}
+                  className="mr-2 animate-spin"
+                  weight="regular"
+                />
                 Processing...
               </>
             ) : (
@@ -142,6 +174,21 @@ export function BookingSummaryCard({
               </>
             )}
           </Button>
+
+          {/* Test Mode Indicator */}
+          {process.env.NODE_ENV === "development" && (
+            <div className="w-full rounded-lg border border-blue-300 bg-blue-50 p-3 text-xs dark:border-blue-800 dark:bg-blue-950/30">
+              <p className="mb-1 font-semibold text-blue-700 dark:text-blue-400">
+                Test Mode - No Real Charges
+              </p>
+              <p className="text-blue-600 dark:text-blue-300">
+                Use card: <code className="font-mono font-bold">4242 4242 4242 4242</code>
+              </p>
+              <p className="text-blue-600 dark:text-blue-300">
+                Expiry: Any future date • CVV: Any 3 digits
+              </p>
+            </div>
+          )}
         </CardFooter>
       </Card>
     </div>

@@ -1,8 +1,13 @@
-import NextAuth, { DefaultSession } from "next-auth"
+import NextAuth, { DefaultSession, CredentialsSignin } from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import { compare } from "bcryptjs"
 import { prisma } from "@/lib/prisma"
 import { UserRole } from "@prisma/client"
+
+// Custom error for email not verified
+class EmailNotVerifiedError extends CredentialsSignin {
+  code = "EMAIL_NOT_VERIFIED"
+}
 
 declare module "next-auth" {
   interface Session {
@@ -58,7 +63,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         // Block login if email is not verified
         if (!user.emailVerified) {
-          throw new Error("Please verify your email before logging in")
+          throw new EmailNotVerifiedError()
         }
 
         return {
