@@ -35,8 +35,8 @@ export function ProductCard({ name, price, category }: ProductCardProps) {
         </div>
       </div>
       <CardHeader>
-        <CardTitle className="text-lg">{name}</CardTitle>
-        <CardDescription className="text-primary text-xl font-bold">
+        <CardTitle className="text-lg group-hover:text-accent transition-colors">{name}</CardTitle>
+        <CardDescription className="text-primary text-xl font-bold group-hover:text-accent transition-colors">
           {price}
         </CardDescription>
       </CardHeader>

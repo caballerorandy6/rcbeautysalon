@@ -86,15 +86,15 @@ export default async function HomePage() {
                   {/* Content Overlay */}
                   <div className="absolute inset-0 flex flex-col justify-end p-5">
                     <div className="transform transition-transform duration-500 group-hover:-translate-y-1">
-                      <h3 className="font-heading group-hover:text-primary mb-2 text-xl font-semibold tracking-tight text-white transition-colors duration-300">
+                      <h3 className="font-heading group-hover:text-accent mb-2 text-xl font-semibold tracking-tight text-white transition-colors duration-300">
                         {service.name}
                       </h3>
                       <div className="flex items-center justify-between text-sm text-white/90 transition-colors duration-300">
-                        <span className="group-hover:text-primary/90 font-medium">
+                        <span className="group-hover:text-accent/90 font-medium">
                           ${service.price.toString()}
                         </span>
                         {service.duration && (
-                          <span className="text-white/70 group-hover:text-accent transition-colors">
+                          <span className="text-white/70 group-hover:text-accent/70 transition-colors">
                             {service.duration} min
                           </span>
                         )}
@@ -102,10 +102,10 @@ export default async function HomePage() {
 
                       {/* Hover Button */}
                       <div className="mt-4 translate-y-2 transform opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
-                        <div className="text-primary border-primary/50 hover:border-primary inline-flex items-center border-b-2 pb-1 text-sm font-medium">
+                        <div className="text-accent border-accent/50 hover:border-accent inline-flex items-center border-b-2 pb-1 text-sm font-medium">
                           Book Now
                           <svg
-                            className="text-accent ml-1 h-4 w-4"
+                            className="ml-1 h-4 w-4"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"

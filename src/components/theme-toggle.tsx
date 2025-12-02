@@ -12,6 +12,7 @@ import {
 
 export function ThemeToggle() {
   const [mounted, setMounted] = useState(false)
+  const [open, setOpen] = useState(false)
   const { setTheme, theme, resolvedTheme } = useTheme()
 
   useEffect(() => {
@@ -23,6 +24,11 @@ export function ThemeToggle() {
     { key: "dark", label: "Dark", icon: Moon },
     { key: "system", label: "System", icon: Desktop },
   ]
+
+  const handleThemeChange = (newTheme: string) => {
+    setTheme(newTheme)
+    setOpen(false)
+  }
 
   // Render placeholder button during SSR to avoid hydration mismatch
   if (!mounted) {
@@ -37,7 +43,7 @@ export function ThemeToggle() {
   const isDark = resolvedTheme === "dark"
 
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
@@ -60,23 +66,41 @@ export function ThemeToggle() {
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="mt-2 min-w-[140px] space-y-1">
+      <DropdownMenuContent align="end" className="mt-2 min-w-[140px] space-y-1 bg-card border-border">
         {items.map(({ key, label, icon: Icon }) => {
           const isActive = theme === key
+
+          // Light = gold/accent, Dark = rose/primary, System = neutral
+          const getStyles = () => {
+            if (key === "light") {
+              return isActive
+                ? "bg-accent/20 text-accent font-semibold shadow-sm"
+                : "text-accent/80 hover:text-accent hover:bg-accent/15 hover:shadow-sm"
+            }
+            if (key === "dark") {
+              return isActive
+                ? "bg-primary/20 text-primary font-semibold shadow-sm"
+                : "text-primary/80 hover:text-primary hover:bg-primary/15 hover:shadow-sm"
+            }
+            // system
+            return isActive
+              ? "bg-muted text-foreground font-semibold"
+              : "text-muted-foreground hover:text-foreground hover:bg-muted/80"
+          }
+
+          const getIconColor = () => {
+            if (key === "light") return isActive ? "text-accent" : "text-accent/70"
+            if (key === "dark") return isActive ? "text-primary" : "text-primary/70"
+            return isActive ? "text-foreground" : "text-muted-foreground"
+          }
 
           return (
             <button
               key={key}
-              onClick={() => setTheme(key)}
-              className={`flex w-full cursor-pointer items-center gap-2 rounded-md px-3 py-2.5 text-sm transition-all duration-200 outline-none
-                ${key === "light"
-                  ? `text-accent/90 hover:bg-accent/15 hover:text-accent hover:drop-shadow-[0_0_10px_rgba(212,175,55,0.4)] ${isActive ? "bg-accent/20 text-accent font-medium" : ""}`
-                  : key === "dark"
-                    ? `text-primary/90 hover:bg-primary/15 hover:text-primary hover:drop-shadow-[0_0_10px_rgba(236,72,153,0.3)] ${isActive ? "bg-primary/20 text-primary font-medium" : ""}`
-                    : `text-white/70 hover:bg-white/10 hover:text-white ${isActive ? "bg-white/15 text-white font-medium" : ""}`
-                }`}
+              onClick={() => handleThemeChange(key)}
+              className={`flex w-full cursor-pointer items-center gap-2 rounded-md px-3 py-2.5 text-sm transition-all duration-300 outline-none ${getStyles()}`}
             >
-              <Icon size={16} weight="fill" />
+              <Icon size={16} weight="fill" className={`transition-transform duration-300 ${getIconColor()} ${!isActive ? "group-hover:scale-110" : ""}`} />
               {label}
             </button>
           )

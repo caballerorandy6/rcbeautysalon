@@ -78,7 +78,7 @@ export function RelatedServicesSection({
 
                 {/* Service Info */}
                 <CardContent className="p-5 flex flex-col flex-1">
-                  <h3 className="mb-2 text-xl font-bold group-hover:text-primary transition-colors">
+                  <h3 className="mb-2 text-xl font-bold group-hover:text-accent transition-colors">
                     {service.name}
                   </h3>
 
@@ -92,9 +92,9 @@ export function RelatedServicesSection({
 
                   {/* Service Details */}
                   <div className="mb-4 flex items-center gap-4 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 group-hover:text-accent transition-colors">
                       <CurrencyDollar size={16} weight="regular" />
-                      <span className="font-semibold text-foreground">
+                      <span className="font-semibold">
                         ${service.price}
                       </span>
                     </div>

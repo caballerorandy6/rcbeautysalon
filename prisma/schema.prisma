@@ -341,10 +341,6 @@ enum AppointmentStatus {
   NO_SHOW
 }
 
-// ============================================
-// PRODUCTS & SHOP
-// ============================================
-
 model Product {
   id             String   @id @default(cuid())
   name           String

@@ -7,8 +7,8 @@
 
 <defs>
   <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-    <stop offset="0%" style="stop-color:#E76D89;stop-opacity:1" />
-    <stop offset="100%" style="stop-color:#F4C430;stop-opacity:1" />
+    <stop offset="0%" style="stop-color:#B85C72;stop-opacity:1" />
+    <stop offset="100%" style="stop-color:#D9A12C;stop-opacity:1" />
   </linearGradient>
 </defs>
 <g transform="translate(0.000000,1200.000000) scale(0.100000,-0.100000)"

@@ -391,3 +391,23 @@ button[disabled] {
   cursor: not-allowed;
   pointer-events: none;
 }
+
+/* ============================================
+   CARD HOVER EFFECTS - Gold accent on image cards
+   ============================================ */
+
+/* Cards with image background - text turns gold on hover */
+.group:hover .group-hover\:text-accent {
+  color: hsl(var(--accent));
+  transition: color 0.3s ease;
+}
+
+.group:hover .group-hover\:text-accent\/90 {
+  color: hsl(var(--accent) / 0.9);
+  transition: color 0.3s ease;
+}
+
+.group:hover .group-hover\:text-accent\/70 {
+  color: hsl(var(--accent) / 0.7);
+  transition: color 0.3s ease;
+}
