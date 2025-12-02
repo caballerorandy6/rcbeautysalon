@@ -1,12 +1,7 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import {
   ArrowLeftIcon,
@@ -23,6 +18,8 @@ import { format } from "date-fns"
 import { formatCurrency } from "@/lib/utils/format"
 import { AppointmentStatusActions } from "@/components/appointments/status-actions"
 
+export const dynamic = "force-dynamic"
+
 const statusColors: Record<string, string> = {
   PENDING: "bg-amber-500 text-white",
   CONFIRMED: "bg-blue-500 text-white",
@@ -33,6 +30,25 @@ const statusColors: Record<string, string> = {
 
 interface PageProps {
   params: Promise<{ id: string }>
+}
+
+export async function generateMetadata({ params }: PageProps) {
+  const { id } = await params
+  const appointment = await getAppointmentById(id)
+
+  if (!appointment) {
+    return {
+      title: "Appointment Not Found",
+    }
+  }
+
+  const customerName =
+    appointment.customer?.name || appointment.guestName || "Guest"
+
+  return {
+    title: `Appointment - ${customerName}`,
+    description: `Appointment details for ${customerName} on ${format(new Date(appointment.startTime), "MMMM d, yyyy")}`,
+  }
 }
 
 export default async function AppointmentDetailPage({ params }: PageProps) {
@@ -100,14 +116,11 @@ export default async function AppointmentDetailPage({ params }: PageProps) {
             </CardHeader>
             <CardContent className="space-y-4">
               {appointment.services.map((s) => (
-                <div
-                  key={s.id}
-                  className="flex items-center justify-between"
-                >
+                <div key={s.id} className="flex items-center justify-between">
                   <div>
                     <p className="font-medium">{s.service.name}</p>
                     {s.service.description && (
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-muted-foreground text-sm">
                         {s.service.description}
                       </p>
                     )}
@@ -117,22 +130,22 @@ export default async function AppointmentDetailPage({ params }: PageProps) {
               <Separator />
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                  <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">
                     <CalendarIcon size={20} className="text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Date</p>
+                    <p className="text-muted-foreground text-sm">Date</p>
                     <p className="font-medium">
                       {format(new Date(appointment.startTime), "MMMM d, yyyy")}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                  <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">
                     <ClockIcon size={20} className="text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Time</p>
+                    <p className="text-muted-foreground text-sm">Time</p>
                     <p className="font-medium">
                       {format(new Date(appointment.startTime), "h:mm a")} -{" "}
                       {format(new Date(appointment.endTime), "h:mm a")}
@@ -140,7 +153,7 @@ export default async function AppointmentDetailPage({ params }: PageProps) {
                   </div>
                 </div>
               </div>
-              <div className="text-sm text-muted-foreground">
+              <div className="text-muted-foreground text-sm">
                 Total duration: {totalDuration} minutes
               </div>
             </CardContent>
@@ -212,7 +225,7 @@ export default async function AppointmentDetailPage({ params }: PageProps) {
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 font-semibold text-primary">
+                <div className="bg-primary/10 text-primary flex h-12 w-12 items-center justify-center rounded-full font-semibold">
                   {appointment.staff.name
                     .split(" ")
                     .map((n) => n[0])
@@ -220,7 +233,7 @@ export default async function AppointmentDetailPage({ params }: PageProps) {
                 </div>
                 <div>
                   <p className="font-medium">{appointment.staff.name}</p>
-                  <p className="text-sm text-muted-foreground">Staff Member</p>
+                  <p className="text-muted-foreground text-sm">Staff Member</p>
                 </div>
               </div>
             </CardContent>
@@ -271,7 +284,7 @@ export default async function AppointmentDetailPage({ params }: PageProps) {
             <CardHeader>
               <CardTitle>Booking Info</CardTitle>
             </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
+            <CardContent className="text-muted-foreground text-sm">
               <p>
                 Created on{" "}
                 {format(new Date(appointment.createdAt), "MMMM d, yyyy")}

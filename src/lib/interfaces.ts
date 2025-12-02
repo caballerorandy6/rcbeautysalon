@@ -392,3 +392,12 @@ export interface AppointmentCreationResult {
   error?: string
   stripeClientSecret?: string
 }
+
+export interface CreateStaffInput {
+    name: string
+    email: string
+    phone?: string
+    bio?: string
+    image?: string
+    isActive?: boolean
+  }
