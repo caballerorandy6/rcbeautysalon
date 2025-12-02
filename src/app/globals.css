@@ -1,99 +1,111 @@
 @import "tailwindcss";
 
 /* ============================================
-   COLOR SYSTEM - LUXURY BEAUTY SALON
+   RC BEAUTY SALON - DESIGN SYSTEM
    ============================================
-   Light Mode: Vibrant rose + Pure white + Gold
-   Dark Mode: Sophisticated black + Luxury gold
+
+   COLORS:
+   - Primary: Elegant Rose (sophistication, femininity)
+   - Accent: Refined Gold (luxury, premium)
+   - Backgrounds: Warm neutrals (comfort, elegance)
+
+   TYPOGRAPHY:
+   - Rouge Script: Decorative headings (min 24px)
+   - Poppins: Body text, UI elements
+
+   ============================================ */
+
+/* ============================================
+   COLOR PALETTE
    ============================================ */
 
 :root {
-  /* ===== LIGHT MODE - Vibrant Elegance ===== */
+  /* ===== LIGHT MODE - Elegant & Legible ===== */
 
   /* Base Colors */
-  --background: 15 50% 98%;           /* Nude rosado #FAF7F5 */
-  --foreground: 345 15% 18%;          /* Rose dark #342A2C */
+  --background: 20 25% 98%;             /* Crema suave #FDFBFA */
+  --foreground: 340 20% 15%;            /* Rosewood oscuro #2D2226 */
 
-  /* Primary - Vibrant rose */
-  --primary: 345 65% 58%;             /* Vibrant rose #E76D89 */
-  --primary-foreground: 0 0% 100%;    /* White */
+  /* Primary - Elegant Rose */
+  --primary: 340 45% 50%;               /* Rose elegante #B85C72 */
+  --primary-foreground: 0 0% 100%;      /* White */
 
-  /* Secondary - Blush nude */
-  --secondary: 20 40% 96%;            /* Blush nude muy claro #F9F4F3 */
-  --secondary-foreground: 345 15% 18%; /* Rose dark */
+  /* Secondary - Champagne */
+  --secondary: 25 20% 95%;              /* Champagne suave #F7F3F1 */
+  --secondary-foreground: 340 20% 20%;  /* Rosewood */
 
-  /* Accent - Bright gold */
-  --accent: 45 90% 55%;               /* Bright gold #F4C430 */
-  --accent-foreground: 30 15% 15%;    /* Dark text */
+  /* Accent - Refined Gold */
+  --accent: 38 70% 50%;                 /* Gold sofisticado #D9A12C */
+  --accent-foreground: 0 0% 100%;       /* White */
 
   /* UI Elements */
-  --muted: 20 30% 92%;                /* Nude beige claro #F3EBE8 */
-  --muted-foreground: 345 12% 45%;    /* Rose gray medium #8B7176 */
+  --muted: 25 15% 92%;                  /* Beige neutro #EDE8E5 */
+  --muted-foreground: 340 10% 40%;      /* Gris rosado #6B5D61 */
 
-  --card: 0 0% 100%;                  /* Blanco puro para contraste #FFFFFF */
-  --card-foreground: 345 15% 18%;     /* Rose dark */
+  --card: 0 0% 100%;                    /* Blanco puro #FFFFFF */
+  --card-foreground: 340 20% 15%;       /* Rosewood oscuro */
 
-  --popover: 0 0% 100%;               /* Blanco puro #FFFFFF */
-  --popover-foreground: 345 15% 18%;  /* Rose dark */
+  --popover: 0 0% 100%;                 /* Blanco puro */
+  --popover-foreground: 340 20% 15%;    /* Rosewood oscuro */
 
-  --border: 20 25% 88%;               /* Nude border suave #E8DDD9 */
-  --input: 20 25% 88%;                /* Nude input border #E8DDD9 */
-  --ring: 345 65% 58%;                /* Vibrant rose focus */
+  --border: 25 15% 85%;                 /* Borde suave #DED6D2 */
+  --input: 25 15% 85%;                  /* Input border */
+  --ring: 340 45% 50%;                  /* Rose focus */
 
   /* States */
-  --destructive: 0 70% 50%;           /* Red */
+  --destructive: 0 70% 50%;             /* Red */
   --destructive-foreground: 0 0% 100%;
 
-  --success: 142 60% 45%;             /* Green */
+  --success: 142 60% 40%;               /* Green */
   --success-foreground: 0 0% 100%;
 
-  --warning: 38 85% 55%;              /* Amber */
+  --warning: 38 85% 50%;                /* Amber */
   --warning-foreground: 30 15% 15%;
 
   /* Border Radius */
   --radius: 0.5rem;
 }
 
-/* ===== DARK MODE - Sophisticated Rose + Luxury Gold ===== */
+/* ===== DARK MODE - Sofisticado & Legible ===== */
 .dark {
-  /* Base Colors - Pure black */
-  --background: 0 0% 0%;              /* Pure black #000000 */
-  --foreground: 345 10% 92%;          /* Light rose-tinted cream #F0EAEC */
+  /* Base Colors */
+  --background: 340 10% 6%;             /* Negro rosado #100E0F */
+  --foreground: 25 15% 90%;             /* Crema claro #E8E3E0 */
 
-  /* Primary - Vibrant rose (adjusted for dark) */
-  --primary: 345 70% 65%;             /* Lighter vibrant rose #F18CA0 */
-  --primary-foreground: 0 0% 0%;      /* Pure black for contrast */
+  /* Primary - Luminous Rose */
+  --primary: 340 50% 65%;               /* Rose luminoso #D88A9E */
+  --primary-foreground: 340 10% 8%;     /* Near black */
 
-  /* Secondary - Dark rose charcoal */
-  --secondary: 345 8% 12%;            /* Dark rose charcoal #1D1A1B */
-  --secondary-foreground: 345 10% 88%; /* Rose cream */
+  /* Secondary - Rose Charcoal */
+  --secondary: 340 8% 12%;              /* Charcoal rosado #1F1B1C */
+  --secondary-foreground: 25 15% 85%;   /* Crema */
 
-  /* Accent - Brilliant gold (decorative only) */
-  --accent: 45 100% 62%;              /* Brilliant gold #FFD93D */
-  --accent-foreground: 0 0% 0%;       /* Pure black */
+  /* Accent - Brilliant Gold */
+  --accent: 42 80% 58%;                 /* Gold brillante #E8B42C */
+  --accent-foreground: 340 10% 8%;      /* Near black */
 
   /* UI Elements */
-  --muted: 345 5% 10%;                /* Very dark rose gray #1A1819 */
-  --muted-foreground: 345 8% 60%;     /* Warm rose gray #A19698 */
+  --muted: 340 6% 14%;                  /* Gris oscuro #252122 */
+  --muted-foreground: 25 10% 65%;       /* Gris calido #ADA5A2 */
 
-  --card: 345 6% 8%;                  /* Near black rose card #141213 */
-  --card-foreground: 345 10% 90%;     /* Light rose cream */
+  --card: 340 8% 10%;                   /* Card oscuro #1A1718 */
+  --card-foreground: 25 15% 88%;        /* Crema claro */
 
-  --popover: 345 6% 8%;               /* Near black rose popover */
-  --popover-foreground: 345 10% 90%;  /* Light rose cream */
+  --popover: 340 8% 10%;                /* Popover oscuro */
+  --popover-foreground: 25 15% 88%;     /* Crema claro */
 
-  --border: 345 8% 18%;               /* Subtle dark rose border #2D2829 */
-  --input: 345 8% 18%;                /* Input border */
-  --ring: 345 70% 65%;                /* Vibrant rose focus */
+  --border: 340 6% 20%;                 /* Borde sutil #363132 */
+  --input: 340 6% 20%;                  /* Input border */
+  --ring: 340 50% 65%;                  /* Rose focus */
 
   /* States */
-  --destructive: 0 65% 50%;           /* Bright red */
+  --destructive: 0 65% 55%;             /* Bright red */
   --destructive-foreground: 0 0% 100%;
 
-  --success: 142 60% 55%;             /* Bright green */
+  --success: 142 60% 50%;               /* Bright green */
   --success-foreground: 0 0% 100%;
 
-  --warning: 38 85% 65%;              /* Golden amber */
+  --warning: 38 85% 60%;                /* Golden amber */
   --warning-foreground: 0 0% 0%;
 }
 
@@ -127,23 +139,121 @@
   --radius: var(--radius);
 }
 
-/* Base Styles */
+/* ============================================
+   TYPOGRAPHY SYSTEM
+   ============================================
+
+   Rouge Script (Cursive):
+   - ONLY for decorative headings
+   - Minimum size: 1.5rem (24px)
+   - Use: Hero titles, section headers, brand elements
+
+   Poppins (Sans-serif):
+   - Body text, UI elements, buttons, labels
+   - All sizes from xs to xl
+
+   ============================================ */
+
+/* Base body styles */
 body {
   background: hsl(var(--background));
   color: hsl(var(--foreground));
-  font-family: var(--font-body), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--font-poppins), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-feature-settings: "rlig" 1, "calt" 1;
+  line-height: 1.6;
 }
 
-/* Elegant Typography for Beauty Salon */
-h1, h2, h3, h4, h5, h6,
-.font-heading {
+/* ===== ROUGE SCRIPT - Decorative Headings Only ===== */
+/* Minimum 24px (1.5rem) for legibility */
+
+.font-heading,
+h1.font-heading,
+h2.font-heading,
+h3.font-heading {
   font-family: var(--font-rouge-script), "Rouge Script", cursive;
   font-weight: 400;
   letter-spacing: 0.02em;
+  line-height: 1.2;
 }
 
-/* Custom scrollbar - Purple and Pink */
+/* Hero/Page titles - Rouge Script */
+h1 {
+  font-family: var(--font-rouge-script), "Rouge Script", cursive;
+  font-size: clamp(2.5rem, 5vw, 4rem);    /* 40px - 64px */
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+}
+
+/* Section titles - Rouge Script */
+h2 {
+  font-family: var(--font-rouge-script), "Rouge Script", cursive;
+  font-size: clamp(2rem, 4vw, 3rem);      /* 32px - 48px */
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+}
+
+/* Subsection titles - Rouge Script */
+h3 {
+  font-family: var(--font-rouge-script), "Rouge Script", cursive;
+  font-size: clamp(1.5rem, 3vw, 2rem);    /* 24px - 32px, minimum 24px! */
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+}
+
+/* ===== POPPINS - UI & Content ===== */
+/* h4, h5, h6 use Poppins for better readability at smaller sizes */
+
+h4 {
+  font-family: var(--font-poppins), sans-serif;
+  font-size: 1.25rem;                     /* 20px */
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+h5 {
+  font-family: var(--font-poppins), sans-serif;
+  font-size: 1.125rem;                    /* 18px */
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+h6 {
+  font-family: var(--font-poppins), sans-serif;
+  font-size: 1rem;                        /* 16px */
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* Force Poppins on UI elements */
+button,
+input,
+select,
+textarea,
+label,
+.btn,
+.button,
+nav,
+.nav,
+.badge,
+.card-title:not(.font-heading),
+.text-sm,
+.text-xs,
+.text-base {
+  font-family: var(--font-poppins), sans-serif;
+}
+
+/* Utility class to force Poppins */
+.font-sans {
+  font-family: var(--font-poppins), sans-serif !important;
+}
+
+/* ============================================
+   CUSTOM SCROLLBAR
+   ============================================ */
+
 ::-webkit-scrollbar {
   width: 10px;
 }
