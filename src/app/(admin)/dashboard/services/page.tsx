@@ -1,36 +1,44 @@
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import {
   ScissorsIcon,
   PlusIcon,
-  SearchIcon,
   PencilIcon,
-  TrashIcon,
+  EyeIcon,
 } from "@/components/icons"
+import { getAdminServices, getServiceStats } from "@/app/actions/services"
+import { formatCurrency } from "@/lib/utils/format"
+import { ServiceSearch } from "@/components/dashboard/service-search"
 
-// Mockup data - will be replaced with real data
-const services = [
-  { id: "1", name: "Haircut & Styling", category: "Hair", duration: 60, price: 85.00, image: "/images/services/haircut.jpg", isActive: true, isFeatured: true },
-  { id: "2", name: "Hair Coloring", category: "Hair", duration: 120, price: 150.00, image: "/images/services/coloring.jpg", isActive: true, isFeatured: true },
-  { id: "3", name: "Manicure", category: "Nails", duration: 45, price: 35.00, image: "/images/services/manicure.jpg", isActive: true, isFeatured: false },
-  { id: "4", name: "Pedicure", category: "Nails", duration: 60, price: 45.00, image: "/images/services/pedicure.jpg", isActive: true, isFeatured: false },
-  { id: "5", name: "Facial Treatment", category: "Skin", duration: 90, price: 95.00, image: "/images/services/facial.jpg", isActive: true, isFeatured: true },
-  { id: "6", name: "Massage Therapy", category: "Body", duration: 60, price: 80.00, image: "/images/services/massage.jpg", isActive: false, isFeatured: false },
-]
+interface ServicesPageProps {
+  searchParams: Promise<{ search?: string }>
+}
 
-export default function ServicesPage() {
+export default async function ServicesPage({ searchParams }: ServicesPageProps) {
+  const params = await searchParams
+  const search = params.search || ""
+
+  const [services, stats] = await Promise.all([
+    getAdminServices(search),
+    getServiceStats(),
+  ])
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold">Services</h1>
-          <p className="text-muted-foreground">
-            Manage your salon services
-          </p>
+          <p className="text-muted-foreground">Manage your salon services</p>
         </div>
         <Link href="/dashboard/services/new">
           <Button>
@@ -45,89 +53,120 @@ export default function ServicesPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>Total Services</CardDescription>
-            <CardTitle className="text-3xl">24</CardTitle>
+            <CardTitle className="text-3xl">{stats.totalServices}</CardTitle>
           </CardHeader>
         </Card>
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>Active Services</CardDescription>
-            <CardTitle className="text-3xl text-green-600">20</CardTitle>
+            <CardTitle className="text-3xl text-green-600">
+              {stats.activeServices}
+            </CardTitle>
           </CardHeader>
         </Card>
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>Featured</CardDescription>
-            <CardTitle className="text-3xl text-blue-600">6</CardTitle>
+            <CardTitle className="text-3xl text-blue-600">
+              {stats.featuredServices}
+            </CardTitle>
           </CardHeader>
         </Card>
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>Categories</CardDescription>
-            <CardTitle className="text-3xl">5</CardTitle>
+            <CardTitle className="text-3xl">{stats.categoriesCount}</CardTitle>
           </CardHeader>
         </Card>
       </div>
 
       {/* Search */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="relative">
-            <SearchIcon size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <Input placeholder="Search services..." className="pl-9" />
-          </div>
-        </CardContent>
-      </Card>
+      <ServiceSearch initialSearch={search} />
 
       {/* Services Grid */}
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {services.map((service) => (
-          <Card key={service.id} className="overflow-hidden">
-            <div className="relative aspect-video bg-muted">
-              <div className="flex h-full items-center justify-center">
-                <ScissorsIcon size={48} className="text-muted-foreground/50" />
-              </div>
-              {service.isFeatured && (
-                <span className="absolute left-2 top-2 rounded-full bg-primary px-2 py-1 text-xs font-medium text-primary-foreground">
-                  Featured
-                </span>
-              )}
-              {!service.isActive && (
-                <div className="absolute inset-0 flex items-center justify-center bg-background/80">
-                  <span className="rounded-full bg-muted px-3 py-1 text-sm font-medium">
-                    Inactive
-                  </span>
+      {services.length === 0 ? (
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-12">
+            <ScissorsIcon size={48} className="text-muted-foreground mb-4" />
+            <p className="text-muted-foreground text-lg">
+              {search ? "No services found matching your search" : "No services yet"}
+            </p>
+            {!search && (
+              <Link href="/dashboard/services/new" className="mt-4">
+                <Button>
+                  <PlusIcon size={16} className="mr-2" />
+                  Add Your First Service
+                </Button>
+              </Link>
+            )}
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {services.map((service) => (
+            <Card key={service.id} className="overflow-hidden">
+              <div className="relative aspect-video bg-muted">
+                {service.imageUrl ? (
+                  <Image
+                    src={service.imageUrl}
+                    alt={service.name}
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full items-center justify-center">
+                    <ScissorsIcon size={48} className="text-muted-foreground/50" />
+                  </div>
+                )}
+                <div className="absolute top-2 left-2 flex gap-2">
+                  {service.isFeatured && (
+                    <Badge className="bg-primary text-primary-foreground">
+                      Featured
+                    </Badge>
+                  )}
+                  {!service.isActive && (
+                    <Badge variant="secondary">Inactive</Badge>
+                  )}
                 </div>
-              )}
-            </div>
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div>
-                  <CardTitle className="text-lg">{service.name}</CardTitle>
-                  <CardDescription>{service.category}</CardDescription>
-                </div>
-                <p className="text-xl font-bold">${service.price.toFixed(2)}</p>
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-muted-foreground">
-                  {service.duration} minutes
-                </p>
-                <div className="flex gap-1">
-                  <Link href={`/dashboard/services/${service.id}/edit`}>
-                    <Button variant="ghost" size="icon">
-                      <PencilIcon size={16} />
-                    </Button>
-                  </Link>
-                  <Button variant="ghost" size="icon" className="text-destructive">
-                    <TrashIcon size={16} />
-                  </Button>
+              <CardHeader className="pb-2">
+                <div className="flex items-start justify-between">
+                  <div className="space-y-1">
+                    <CardTitle className="text-lg">{service.name}</CardTitle>
+                    <CardDescription>{service.category?.name}</CardDescription>
+                  </div>
+                  <p className="text-primary text-xl font-bold">
+                    {formatCurrency(service.price)}
+                  </p>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div className="text-muted-foreground space-y-1 text-sm">
+                    <p>{service.duration} minutes</p>
+                    <p>
+                      {service._count.appointmentServices} bookings •{" "}
+                      {service._count.staffServices} staff
+                    </p>
+                  </div>
+                  <div className="flex gap-1">
+                    <Link href={`/services/${service.slug}`}>
+                      <Button variant="ghost" size="icon" title="View public page">
+                        <EyeIcon size={16} />
+                      </Button>
+                    </Link>
+                    <Link href={`/dashboard/services/${service.id}/edit`}>
+                      <Button variant="ghost" size="icon" title="Edit service">
+                        <PencilIcon size={16} />
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

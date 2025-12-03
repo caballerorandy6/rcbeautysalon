@@ -448,8 +448,16 @@ export async function getActiveServicesForBooking() {
 }
 
 // Admin: Get all services with counts for management
-export async function getAdminServices() {
+export async function getAdminServices(search?: string) {
   const services = await prisma.service.findMany({
+    where: search
+      ? {
+          OR: [
+            { name: { contains: search, mode: "insensitive" } },
+            { category: { name: { contains: search, mode: "insensitive" } } },
+          ],
+        }
+      : undefined,
     include: {
       category: {
         select: { name: true },
