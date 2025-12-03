@@ -103,7 +103,7 @@ export async function getCustomerTotalSpent(customerId: string) {
       where: {
         customerId,
         status: "COMPLETED",
-        depositPaid: true,
+        // Count all completed appointments (service was rendered)
       },
       _sum: {
         totalPrice: true,
