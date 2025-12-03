@@ -1,17 +1,16 @@
 "use client"
 
 import Link from "next/link"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { CalendarIcon } from "@/components/icons/calendar-icon"
-
-interface AppointmentsSummaryProps {
-  stats: {
-    totalAppointments: number
-    completedAppointments: number
-    upcomingAppointments: number
-  } | null
-}
+import { AppointmentsSummaryProps } from "@/lib/interfaces"
 
 export function AppointmentsSummary({ stats }: AppointmentsSummaryProps) {
   return (
@@ -25,23 +24,23 @@ export function AppointmentsSummary({ stats }: AppointmentsSummaryProps) {
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-3 gap-4 text-center">
-          <div className="rounded-lg bg-muted/50 p-3">
-            <p className="text-2xl font-bold text-primary">
+          <div className="bg-muted/50 rounded-lg p-3">
+            <p className="text-primary text-2xl font-bold">
               {stats?.upcomingAppointments || 0}
             </p>
-            <p className="text-xs text-muted-foreground">Upcoming</p>
+            <p className="text-muted-foreground text-xs">Upcoming</p>
           </div>
-          <div className="rounded-lg bg-muted/50 p-3">
+          <div className="bg-muted/50 rounded-lg p-3">
             <p className="text-2xl font-bold text-green-600">
               {stats?.completedAppointments || 0}
             </p>
-            <p className="text-xs text-muted-foreground">Completed</p>
+            <p className="text-muted-foreground text-xs">Completed</p>
           </div>
-          <div className="rounded-lg bg-muted/50 p-3">
+          <div className="bg-muted/50 rounded-lg p-3">
             <p className="text-2xl font-bold">
               {stats?.totalAppointments || 0}
             </p>
-            <p className="text-xs text-muted-foreground">Total</p>
+            <p className="text-muted-foreground text-xs">Total</p>
           </div>
         </div>
 

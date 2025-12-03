@@ -9,16 +9,7 @@ import { toast } from "sonner"
 import { updateProfileImage } from "@/app/actions/account"
 import { CameraIcon } from "@/components/icons/camera-icon"
 import { SpinnerIcon } from "@/components/icons/spinner-icon"
-
-interface ProfileHeaderProps {
-  profile: {
-    id: string
-    name: string | null
-    email: string
-    image: string | null
-    createdAt: Date
-  }
-}
+import { ProfileHeaderProps } from "@/lib/interfaces"
 
 export function ProfileHeader({ profile }: ProfileHeaderProps) {
   const [isUploading, setIsUploading] = useState(false)
@@ -83,7 +74,9 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
       }
     } catch (error) {
       console.error("Upload error:", error)
-      toast.error(error instanceof Error ? error.message : "Failed to upload image")
+      toast.error(
+        error instanceof Error ? error.message : "Failed to upload image"
+      )
       setPreviewUrl(null)
     } finally {
       setIsUploading(false)
@@ -100,9 +93,12 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
         <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
           {/* Avatar with Edit Button */}
           <div className="relative">
-            <Avatar className="h-24 w-24 border-4 border-primary/20">
-              <AvatarImage src={displayImage || undefined} alt={profile.name || "User"} />
-              <AvatarFallback className="bg-primary/10 text-2xl font-semibold text-primary">
+            <Avatar className="border-primary/20 h-24 w-24 border-4">
+              <AvatarImage
+                src={displayImage || undefined}
+                alt={profile.name || "User"}
+              />
+              <AvatarFallback className="bg-primary/10 text-primary text-2xl font-semibold">
                 {initials}
               </AvatarFallback>
             </Avatar>
@@ -111,7 +107,7 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
             <Button
               size="icon"
               variant="secondary"
-              className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full shadow-md"
+              className="absolute -right-1 -bottom-1 h-8 w-8 rounded-full shadow-md"
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploading}
             >
@@ -136,7 +132,7 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
           <div className="flex-1 text-center sm:text-left">
             <h2 className="text-2xl font-bold">{profile.name || "User"}</h2>
             <p className="text-muted-foreground">{profile.email}</p>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="text-muted-foreground mt-2 text-sm">
               Member since {format(new Date(profile.createdAt), "MMMM yyyy")}
             </p>
           </div>

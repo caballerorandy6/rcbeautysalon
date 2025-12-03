@@ -5,11 +5,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { updateAppointmentStatus } from "@/app/actions/appointments"
 import { AppointmentStatus } from "@/lib/types"
-
-interface StatusActionsProps {
-  appointmentId: string
-  currentStatus: AppointmentStatus
-}
+import { StatusActionsProps } from "@/lib/interfaces"
 
 const statusTransitions: Record<
   AppointmentStatus,

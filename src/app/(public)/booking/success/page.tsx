@@ -3,7 +3,7 @@ import Link from "next/link"
 import { CheckCircle, CalendarCheck, House } from "@phosphor-icons/react/dist/ssr"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { verifyCheckoutSession } from "@/app/actions/stripe"
+import { verifyAndCreateAppointment } from "@/app/actions/stripe"
 
 export const metadata = {
   title: "Booking Confirmed | RC Beauty Salon",
@@ -33,15 +33,16 @@ async function BookingSuccessContent({
     )
   }
 
-  const result = await verifyCheckoutSession(sessionId)
+  // Verify payment and create appointment (works as fallback if webhook didn't fire)
+  const result = await verifyAndCreateAppointment(sessionId)
 
-  if (!result.success || result.status !== "paid") {
+  if (!result.success) {
     return (
       <Card className="mx-auto max-w-lg text-center">
         <CardHeader>
           <CardTitle className="text-destructive">Payment Not Completed</CardTitle>
           <CardDescription>
-            Your payment was not completed. Please try again.
+            {result.error || "Your payment was not completed. Please try again."}
           </CardDescription>
         </CardHeader>
         <CardContent>

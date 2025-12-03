@@ -3,7 +3,14 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
   CalendarBlank,
@@ -16,40 +23,23 @@ import {
 } from "@phosphor-icons/react"
 import { format } from "date-fns"
 import { cancelAppointment } from "@/app/actions/appointments"
+import { AppointmentCardProps } from "@/lib/interfaces"
 
-interface AppointmentCardProps {
-  appointment: {
-    id: string
-    startTime: Date
-    endTime: Date
-    status: string
-    totalPrice: number
-    depositAmount: number
-    depositPaid: boolean
-    notes: string | null
-    staff: {
-      name: string
-      image: string | null
-    }
-    services: Array<{
-      service: {
-        name: string
-        duration: number
-        imageUrl: string | null
-      }
-    }>
-  }
-  isPast?: boolean
-  isNew?: boolean
-}
-
-export function AppointmentCard({ appointment, isPast = false, isNew = false }: AppointmentCardProps) {
+export function AppointmentCard({
+  appointment,
+  isPast = false,
+  isNew = false,
+}: AppointmentCardProps) {
   const router = useRouter()
   const [isCancelling, setIsCancelling] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const handleCancelAppointment = async () => {
-    if (!confirm("Are you sure you want to cancel this appointment? The deposit is non-refundable.")) {
+    if (
+      !confirm(
+        "Are you sure you want to cancel this appointment? The deposit is non-refundable."
+      )
+    ) {
       return
     }
 
@@ -69,7 +59,10 @@ export function AppointmentCard({ appointment, isPast = false, isNew = false }: 
   const getStatusBadge = (status: string) => {
     const variants: Record<
       string,
-      { variant: "default" | "secondary" | "destructive" | "outline"; label: string }
+      {
+        variant: "default" | "secondary" | "destructive" | "outline"
+        label: string
+      }
     > = {
       CONFIRMED: { variant: "default", label: "Confirmed" },
       PENDING: { variant: "secondary", label: "Pending Payment" },
@@ -81,8 +74,13 @@ export function AppointmentCard({ appointment, isPast = false, isNew = false }: 
     return <Badge variant={config.variant}>{config.label}</Badge>
   }
 
-  const serviceNames = appointment.services.map((s) => s.service.name).join(", ")
-  const totalDuration = appointment.services.reduce((sum, s) => sum + s.service.duration, 0)
+  const serviceNames = appointment.services
+    .map((s) => s.service.name)
+    .join(", ")
+  const totalDuration = appointment.services.reduce(
+    (sum, s) => sum + s.service.duration,
+    0
+  )
 
   return (
     <Card
@@ -109,15 +107,15 @@ export function AppointmentCard({ appointment, isPast = false, isNew = false }: 
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
-        <div className="flex items-center text-sm text-muted-foreground">
+        <div className="text-muted-foreground flex items-center text-sm">
           <User size={16} className="mr-2" weight="regular" />
           <span>With {appointment.staff.name}</span>
         </div>
-        <div className="flex items-center text-sm text-muted-foreground">
+        <div className="text-muted-foreground flex items-center text-sm">
           <Clock size={16} className="mr-2" weight="regular" />
           <span>Duration: {totalDuration} minutes</span>
         </div>
-        <div className="flex items-center text-sm text-muted-foreground">
+        <div className="text-muted-foreground flex items-center text-sm">
           <CurrencyDollar size={16} className="mr-2" weight="regular" />
           <span>Total Price: ${appointment.totalPrice.toFixed(2)}</span>
         </div>
@@ -128,12 +126,18 @@ export function AppointmentCard({ appointment, isPast = false, isNew = false }: 
             {appointment.depositPaid ? (
               <div className="mt-4 rounded-lg border-2 border-green-200 bg-green-50 p-3 dark:border-green-900/50 dark:bg-green-950/20">
                 <div className="flex items-center gap-2">
-                  <CheckCircle size={20} weight="fill" className="shrink-0 text-green-600 dark:text-green-500" />
+                  <CheckCircle
+                    size={20}
+                    weight="fill"
+                    className="shrink-0 text-green-600 dark:text-green-500"
+                  />
                   <div className="text-sm">
                     <p className="font-semibold text-green-900 dark:text-green-100">
                       Deposit Paid: ${appointment.depositAmount.toFixed(2)}
                     </p>
-                    <p className="text-green-800 dark:text-green-200">Non-refundable</p>
+                    <p className="text-green-800 dark:text-green-200">
+                      Non-refundable
+                    </p>
                   </div>
                 </div>
               </div>
@@ -161,9 +165,9 @@ export function AppointmentCard({ appointment, isPast = false, isNew = false }: 
 
         {/* Notes */}
         {appointment.notes && (
-          <div className="mt-4 rounded-lg bg-muted p-3">
+          <div className="bg-muted mt-4 rounded-lg p-3">
             <p className="text-sm font-semibold">Notes:</p>
-            <p className="text-sm text-muted-foreground">{appointment.notes}</p>
+            <p className="text-muted-foreground text-sm">{appointment.notes}</p>
           </div>
         )}
       </CardContent>
@@ -172,8 +176,12 @@ export function AppointmentCard({ appointment, isPast = false, isNew = false }: 
       {!isPast && appointment.status !== "CANCELLED" && (
         <CardFooter className="flex flex-col gap-3">
           {error && (
-            <div className="w-full rounded-lg border-2 border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
-              <WarningCircle size={16} className="mr-1 inline" weight="regular" />
+            <div className="border-destructive/30 bg-destructive/10 text-destructive w-full rounded-lg border-2 p-3 text-sm">
+              <WarningCircle
+                size={16}
+                className="mr-1 inline"
+                weight="regular"
+              />
               {error}
             </div>
           )}
@@ -192,7 +200,11 @@ export function AppointmentCard({ appointment, isPast = false, isNew = false }: 
             >
               {isCancelling ? (
                 <>
-                  <SpinnerGap size={18} className="mr-2 animate-spin" weight="regular" />
+                  <SpinnerGap
+                    size={18}
+                    className="mr-2 animate-spin"
+                    weight="regular"
+                  />
                   Cancelling...
                 </>
               ) : (

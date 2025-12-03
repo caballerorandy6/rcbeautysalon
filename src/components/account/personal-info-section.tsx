@@ -22,16 +22,7 @@ import {
 import { UserIcon } from "@/components/icons/user-icon"
 import { PencilIcon } from "@/components/icons/pencil-icon"
 import { SpinnerIcon } from "@/components/icons/spinner-icon"
-
-interface PersonalInfoSectionProps {
-  profile: {
-    name: string | null
-    email: string
-    customer: {
-      phone: string | null
-    } | null
-  }
-}
+import { PersonalInfoSectionProps } from "@/lib/interfaces"
 
 export function PersonalInfoSection({ profile }: PersonalInfoSectionProps) {
   const [isEditing, setIsEditing] = useState(false)

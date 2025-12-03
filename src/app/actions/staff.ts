@@ -6,6 +6,16 @@ import { revalidatePath } from "next/cache"
 
 export type UpdateStaffInput = Partial<CreateStaffInput>
 
+//Get Featured Staff for Homepage
+export const getFeaturedStaff = async () => {
+  const staffMembers = await prisma.staff.findMany({
+    where: { isActive: true },
+    take: 4,
+    orderBy: { name: "asc" },
+  })
+  return staffMembers
+}
+
 //Get Staff Member
 export const getStaffMembers = async () => {
   const staffMembers = await prisma.staff.findMany({
@@ -56,8 +66,17 @@ export const getStaffMemberBySlug = async (slug: string) => {
 }
 
 //Get Admin Staff Members
-export const getAdminStaffMembers = async () => {
+export const getAdminStaffMembers = async (search?: string) => {
   const staffMembers = await prisma.staff.findMany({
+    where: search
+      ? {
+          OR: [
+            { name: { contains: search, mode: "insensitive" } },
+            { email: { contains: search, mode: "insensitive" } },
+            { phone: { contains: search, mode: "insensitive" } },
+          ],
+        }
+      : undefined,
     include: {
       _count: {
         select: {

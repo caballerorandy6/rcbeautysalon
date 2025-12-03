@@ -4,48 +4,19 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { bookingSchema, authenticatedBookingSchema } from "@/lib/validations/booking"
+import {
+  bookingSchema,
+  authenticatedBookingSchema,
+} from "@/lib/validations/booking"
 import { createCheckoutSession } from "@/app/actions/stripe"
-import { AvailableStaffMember } from "@/lib/interfaces"
+//import { AvailableStaffMember } from "@/lib/interfaces"
 import { ServiceStep } from "./steps/service-step"
 import { StaffStep } from "./steps/staff-step"
 import { DateTimeStep } from "./steps/date-time-step"
 import { CustomerInfoStep } from "./steps/customer-info-step"
 import { BookingSummaryCard } from "./booking-summary-card"
 
-interface BookingFormProps {
-  service: {
-    id: string
-    name: string
-    price: number
-    duration: number
-    category: { name: string } | null
-  }
-  availableStaff: AvailableStaffMember[]
-  salonConfig: {
-    bookingDeposit: number
-    depositRefundable: boolean
-    maxBookingAdvance: number
-  }
-  isAuthenticated: boolean
-  defaultValues?: {
-    firstName?: string
-    lastName?: string
-    email?: string
-  }
-}
-
-// Form values type that works for both authenticated and guest users
-interface BookingFormValues {
-  staffId: string
-  date: Date | undefined
-  time: string
-  firstName: string
-  lastName: string
-  email: string
-  phone: string
-  notes: string
-}
+import { BookingFormProps, BookingFormValues } from "@/lib/interfaces"
 
 export function BookingForm({
   service,
@@ -106,7 +77,9 @@ export function BookingForm({
         serviceIds: [service.id],
         staffId: data.staffId,
         startTime: startTime.toISOString(),
-        guestName: !isAuthenticated ? `${data.firstName} ${data.lastName}` : undefined,
+        guestName: !isAuthenticated
+          ? `${data.firstName} ${data.lastName}`
+          : undefined,
         guestEmail: !isAuthenticated ? data.email : undefined,
         guestPhone: data.phone || undefined,
         notes: data.notes || undefined,
@@ -138,7 +111,9 @@ export function BookingForm({
           <StaffStep
             availableStaff={availableStaff}
             selectedStaffId={staffId}
-            onSelectStaff={(id) => setValue("staffId", id, { shouldValidate: true })}
+            onSelectStaff={(id) =>
+              setValue("staffId", id, { shouldValidate: true })
+            }
             error={errors.staffId?.message}
           />
 
@@ -148,8 +123,12 @@ export function BookingForm({
             serviceDuration={service.duration}
             selectedDate={selectedDate}
             selectedTime={selectedTime}
-            onSelectDate={(date) => setValue("date", date, { shouldValidate: true })}
-            onSelectTime={(time) => setValue("time", time, { shouldValidate: true })}
+            onSelectDate={(date) =>
+              setValue("date", date, { shouldValidate: true })
+            }
+            onSelectTime={(time) =>
+              setValue("time", time, { shouldValidate: true })
+            }
             maxBookingAdvance={salonConfig.maxBookingAdvance}
             dateError={errors.date?.message}
             timeError={errors.time?.message}

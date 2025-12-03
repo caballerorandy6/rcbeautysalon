@@ -1,61 +1,29 @@
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { CartButton } from "@/components/shop/cart-button"
 import { SearchInput } from "@/components/shop/search-input"
+import { prisma } from "@/lib/prisma"
+import { Package } from "@phosphor-icons/react/dist/ssr"
 
-export default function TiendaPage() {
-  const products = [
-    {
-      id: 1,
-      name: "Premium Shampoo",
-      price: 29.99,
-      compareAtPrice: 39.99,
-      image: null,
-      isFeatured: true,
-      inStock: true,
-    },
-    {
-      id: 2,
-      name: "Hair Conditioner",
-      price: 24.99,
-      image: null,
-      isFeatured: false,
-      inStock: true,
-    },
-    {
-      id: 3,
-      name: "Hair Styling Gel",
-      price: 19.99,
-      image: null,
-      isFeatured: true,
-      inStock: true,
-    },
-    {
-      id: 4,
-      name: "Hair Serum",
-      price: 34.99,
-      image: null,
-      isFeatured: false,
-      inStock: false,
-    },
-    {
-      id: 5,
-      name: "Nail Polish Set",
-      price: 44.99,
-      image: null,
-      isFeatured: true,
-      inStock: true,
-    },
-    {
-      id: 6,
-      name: "Face Mask",
-      price: 15.99,
-      image: null,
-      isFeatured: false,
-      inStock: true,
-    },
-  ]
+export const dynamic = "force-dynamic"
+
+async function getShopProducts() {
+  const products = await prisma.product.findMany({
+    where: { isActive: true },
+    orderBy: [{ isFeatured: "desc" }, { name: "asc" }],
+  })
+
+  return products.map((product) => ({
+    ...product,
+    price: product.price.toNumber(),
+    compareAtPrice: product.compareAtPrice?.toNumber() ?? null,
+  }))
+}
+
+export default async function ShopPage() {
+  const products = await getShopProducts()
 
   return (
     <div className="min-h-screen">
@@ -102,43 +70,74 @@ export default function TiendaPage() {
       {/* Products Grid */}
       <div className="container mx-auto px-4 py-8">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {products.map((product) => (
-            <Card key={product.id} className="overflow-hidden">
-              <CardHeader className="p-0">
-                {/* Product Image Placeholder */}
-                <div className="relative aspect-square bg-muted">
-                  {product.isFeatured && (
-                    <Badge className="absolute right-2 top-2">Featured</Badge>
+          {products.map((product) => {
+            const inStock = product.stockQuantity > 0
+            const imageUrl = product.images?.[0] || null
+
+            return (
+              <Card key={product.id} className="group overflow-hidden border-primary/10 transition-all duration-300 hover:shadow-xl">
+                <CardHeader className="p-0">
+                  {/* Product Image */}
+                  <div className="relative aspect-square overflow-hidden bg-muted">
+                    {imageUrl ? (
+                      <Image
+                        src={imageUrl}
+                        alt={product.name}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-muted to-muted/50">
+                        <Package size={48} weight="light" className="text-muted-foreground/50" />
+                      </div>
+                    )}
+
+                    {/* Badges */}
+                    <div className="absolute right-2 top-2 flex flex-col gap-1">
+                      {product.isFeatured && (
+                        <Badge className="bg-accent text-accent-foreground">Featured</Badge>
+                      )}
+                      {!inStock && (
+                        <Badge variant="destructive">Out of Stock</Badge>
+                      )}
+                      {product.compareAtPrice && inStock && (
+                        <Badge variant="secondary" className="bg-primary text-primary-foreground">
+                          Sale
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-4">
+                  <CardTitle className="mb-2 text-lg group-hover:text-accent transition-colors">
+                    {product.name}
+                  </CardTitle>
+                  {product.description && (
+                    <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+                      {product.description}
+                    </p>
                   )}
-                  {!product.inStock && (
-                    <Badge variant="destructive" className="absolute right-2 top-2">
-                      Out of Stock
-                    </Badge>
-                  )}
-                </div>
-              </CardHeader>
-              <CardContent className="p-4">
-                <CardTitle className="mb-2 text-lg">{product.name}</CardTitle>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-2xl font-bold">${product.price}</span>
-                  {product.compareAtPrice && (
-                    <span className="text-sm text-muted-foreground line-through">
-                      ${product.compareAtPrice}
-                    </span>
-                  )}
-                </div>
-              </CardContent>
-              <CardFooter className="p-4 pt-0">
-                <Button
-                  className="w-full"
-                  disabled={!product.inStock}
-                  variant={product.inStock ? "default" : "secondary"}
-                >
-                  {product.inStock ? "Add to Cart" : "Out of Stock"}
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-2xl font-bold">${product.price.toFixed(2)}</span>
+                    {product.compareAtPrice && (
+                      <span className="text-sm text-muted-foreground line-through">
+                        ${product.compareAtPrice.toFixed(2)}
+                      </span>
+                    )}
+                  </div>
+                </CardContent>
+                <CardFooter className="p-4 pt-0">
+                  <Button
+                    className="w-full"
+                    disabled={!inStock}
+                    variant={inStock ? "default" : "secondary"}
+                  >
+                    {inStock ? "Add to Cart" : "Out of Stock"}
+                  </Button>
+                </CardFooter>
+              </Card>
+            )
+          })}
         </div>
       </div>
 

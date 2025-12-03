@@ -1,25 +1,25 @@
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
 import {
-  UserCogIcon,
   PlusIcon,
-  SearchIcon,
   PencilIcon,
   CalendarIcon,
 } from "@/components/icons"
+import { getAdminStaffMembers, getAdminStaffStats } from "@/app/actions/staff"
+import { StaffSearch } from "@/components/dashboard/staff-search"
 
-// Mockup data - will be replaced with real data
-const staff = [
-  { id: "1", name: "Emma Wilson", email: "emma@salon.com", phone: "(555) 111-1111", role: "Senior Stylist", services: 8, appointments: 145, isActive: true },
-  { id: "2", name: "Sarah Miller", email: "sarah@salon.com", phone: "(555) 222-2222", role: "Colorist", services: 5, appointments: 98, isActive: true },
-  { id: "3", name: "Maria Garcia", email: "maria@salon.com", phone: "(555) 333-3333", role: "Nail Technician", services: 6, appointments: 120, isActive: true },
-  { id: "4", name: "Carlos Ruiz", email: "carlos@salon.com", phone: "(555) 444-4444", role: "Barber", services: 4, appointments: 87, isActive: true },
-  { id: "5", name: "Jennifer Lee", email: "jennifer@salon.com", phone: "(555) 555-5555", role: "Esthetician", services: 7, appointments: 65, isActive: false },
-]
+interface StaffPageProps {
+  searchParams: Promise<{ search?: string }>
+}
 
-export default function StaffPage() {
+export default async function StaffPage({ searchParams }: StaffPageProps) {
+  const { search } = await searchParams
+  const [staffMembers, stats] = await Promise.all([
+    getAdminStaffMembers(search),
+    getAdminStaffStats(),
+  ])
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -39,97 +39,111 @@ export default function StaffPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>Total Staff</CardDescription>
-            <CardTitle className="text-3xl">8</CardTitle>
+            <CardTitle className="text-3xl">{stats.totalStaff}</CardTitle>
           </CardHeader>
         </Card>
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>Active</CardDescription>
-            <CardTitle className="text-3xl text-green-600">7</CardTitle>
+            <CardTitle className="text-3xl text-green-600">{stats.activeStaff}</CardTitle>
           </CardHeader>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardDescription>On Duty Today</CardDescription>
-            <CardTitle className="text-3xl text-blue-600">5</CardTitle>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Appointments Today</CardDescription>
-            <CardTitle className="text-3xl">24</CardTitle>
+            <CardDescription>Inactive</CardDescription>
+            <CardTitle className="text-3xl text-muted-foreground">{stats.inactiveStaff}</CardTitle>
           </CardHeader>
         </Card>
       </div>
 
       {/* Search */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="relative">
-            <SearchIcon size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <Input placeholder="Search staff..." className="pl-9" />
-          </div>
-        </CardContent>
-      </Card>
+      <StaffSearch />
 
       {/* Staff Grid */}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {staff.map((member) => (
-          <Card key={member.id} className={!member.isActive ? "opacity-60" : ""}>
-            <CardHeader>
-              <div className="flex items-start gap-4">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-xl font-semibold text-primary">
-                  {member.name.split(" ").map(n => n[0]).join("")}
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <CardTitle className="text-lg">{member.name}</CardTitle>
-                    {!member.isActive && (
-                      <span className="rounded-full bg-muted px-2 py-0.5 text-xs">
-                        Inactive
-                      </span>
-                    )}
+        {staffMembers.length === 0 ? (
+          <div className="col-span-full text-center py-12">
+            <p className="text-muted-foreground">No staff members found.</p>
+            <Link href="/dashboard/staff/new" className="mt-4 inline-block">
+              <Button>
+                <PlusIcon size={16} className="mr-2" />
+                Add First Staff Member
+              </Button>
+            </Link>
+          </div>
+        ) : (
+          staffMembers.map((member) => (
+            <Card key={member.id} className={!member.isActive ? "opacity-60" : ""}>
+              <CardHeader>
+                <div className="flex items-start gap-4">
+                  {member.image ? (
+                    <div className="relative h-16 w-16 overflow-hidden rounded-full">
+                      <Image
+                        src={member.image}
+                        alt={member.name}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-xl font-semibold text-primary">
+                      {member.name.split(" ").map(n => n[0]).join("")}
+                    </div>
+                  )}
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <CardTitle className="text-lg">{member.name}</CardTitle>
+                      {!member.isActive && (
+                        <span className="rounded-full bg-muted px-2 py-0.5 text-xs">
+                          Inactive
+                        </span>
+                      )}
+                    </div>
+                    <CardDescription>
+                      {member.bio ? member.bio.substring(0, 50) + (member.bio.length > 50 ? "..." : "") : "No bio"}
+                    </CardDescription>
                   </div>
-                  <CardDescription>{member.role}</CardDescription>
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-1 text-sm">
-                <p className="text-muted-foreground">{member.email}</p>
-                <p className="text-muted-foreground">{member.phone}</p>
-              </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-1 text-sm">
+                  <p className="text-muted-foreground">{member.email || "No email"}</p>
+                  <p className="text-muted-foreground">{member.phone || "No phone"}</p>
+                </div>
 
-              <div className="flex justify-between text-sm">
-                <div>
-                  <p className="text-2xl font-bold">{member.services}</p>
-                  <p className="text-muted-foreground">Services</p>
+                <div className="flex justify-between text-sm">
+                  <div>
+                    <p className="text-2xl font-bold">{member._count.services}</p>
+                    <p className="text-muted-foreground">Services</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-2xl font-bold">{member._count.appointments}</p>
+                    <p className="text-muted-foreground">Appointments</p>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-2xl font-bold">{member.appointments}</p>
-                  <p className="text-muted-foreground">Appointments</p>
-                </div>
-              </div>
 
-              <div className="flex gap-2">
-                <Link href={`/dashboard/staff/${member.id}/edit`} className="flex-1">
-                  <Button variant="outline" className="w-full" size="sm">
-                    <PencilIcon size={14} className="mr-1" />
-                    Edit
-                  </Button>
-                </Link>
-                <Button variant="outline" size="sm">
-                  <CalendarIcon size={14} className="mr-1" />
-                  Schedule
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+                <div className="flex gap-2">
+                  <Link href={`/dashboard/staff/${member.id}/edit`} className="flex-1">
+                    <Button variant="outline" className="w-full" size="sm">
+                      <PencilIcon size={14} className="mr-1" />
+                      Edit
+                    </Button>
+                  </Link>
+                  <Link href={`/dashboard/staff/${member.id}/schedule`}>
+                    <Button variant="outline" size="sm">
+                      <CalendarIcon size={14} className="mr-1" />
+                      Schedule
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
     </div>
   )

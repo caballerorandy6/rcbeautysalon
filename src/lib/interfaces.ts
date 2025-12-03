@@ -1,4 +1,5 @@
 import { Decimal } from "@prisma/client/runtime/library"
+import { AppointmentStatus } from "@/lib/types"
 
 export interface Service {
   id: string
@@ -251,10 +252,6 @@ export interface BreadcrumbItem {
   href?: string
 }
 
-// ============================================
-// SERVICE FILTER INTERFACES
-// ============================================
-
 export interface ServiceFilters {
   search?: string
   categoryId?: string
@@ -394,10 +391,204 @@ export interface AppointmentCreationResult {
 }
 
 export interface CreateStaffInput {
-    name: string
+  name: string
+  email: string
+  phone?: string
+  bio?: string
+  image?: string
+  isActive?: boolean
+}
+
+export interface SalonSettingsInput {
+  name?: string
+  logo?: string
+  primaryColor?: string
+  secondaryColor?: string
+  accentColor?: string
+  email?: string
+  phone?: string
+  address?: string
+  city?: string
+  state?: string
+  zipCode?: string
+  country?: string
+  timezone?: string
+  currency?: string
+  locale?: string
+  bookingDeposit?: number
+  depositRefundable?: boolean
+  minBookingAdvance?: number
+  maxBookingAdvance?: number
+  cancellationPolicy?: string
+}
+
+export interface CreateCheckoutSessionData {
+  serviceIds: string[]
+  staffId: string
+  startTime: string // ISO string
+  guestName?: string
+  guestEmail?: string
+  guestPhone?: string
+  notes?: string
+}
+
+export interface AdminAppointmentsFilter {
+  status?: AppointmentStatus
+  staffId?: string
+  dateFrom?: Date
+  dateTo?: Date
+  search?: string // search by customer name
+}
+
+export interface CreateProductInput {
+  name: string
+  description?: string
+  price: number
+  compareAtPrice?: number
+  sku?: string
+  trackInventory?: boolean
+  stockQuantity?: number
+  images?: string[]
+  categoryId?: string
+  isActive?: boolean
+  isFeatured?: boolean
+}
+
+export interface AppointmentsSummaryProps {
+  stats: {
+    totalAppointments: number
+    completedAppointments: number
+    upcomingAppointments: number
+  } | null
+}
+
+export interface PersonalInfoSectionProps {
+  profile: {
+    name: string | null
     email: string
-    phone?: string
-    bio?: string
-    image?: string
-    isActive?: boolean
+    customer: {
+      phone: string | null
+    } | null
   }
+}
+
+export interface ProfileHeaderProps {
+  profile: {
+    id: string
+    name: string | null
+    email: string
+    image: string | null
+    createdAt: Date
+  }
+}
+
+export interface SecuritySectionProps {
+  email: string
+}
+
+export interface AdminAppointmentFormProps {
+  services: Array<{ id: string; name: string; duration: number; price: number }>
+  staff: Array<{ id: string; name: string }>
+  customers?: Array<{
+    id: string
+    name: string
+    email: string | null
+    phone: string | null
+  }>
+}
+
+export interface AppointmentCardProps {
+  appointment: {
+    id: string
+    startTime: Date
+    endTime: Date
+    status: string
+    totalPrice: number
+    depositAmount: number
+    depositPaid: boolean
+    notes: string | null
+    staff: {
+      name: string
+      image: string | null
+    }
+    services: Array<{
+      service: {
+        name: string
+        duration: number
+        imageUrl: string | null
+      }
+    }>
+  }
+  isPast?: boolean
+  isNew?: boolean
+}
+
+export interface AppointmentData {
+  id: string
+  startTime: Date
+  endTime: Date
+  status: string
+  totalPrice: number
+  depositAmount: number
+  depositPaid: boolean
+  notes: string | null
+  staff: {
+    name: string
+    image: string | null
+  }
+  services: Array<{
+    service: {
+      name: string
+      duration: number
+      imageUrl: string | null
+    }
+  }>
+}
+
+export interface AppointmentsListProps {
+  upcomingAppointments: AppointmentData[]
+  pastAppointments: AppointmentData[]
+  newAppointmentId?: string
+}
+
+export interface StatusActionsProps {
+  appointmentId: string
+  currentStatus: AppointmentStatus
+}
+
+export interface ResetPasswordFormProps {
+  token: string
+}
+
+export interface BookingFormProps {
+  service: {
+    id: string
+    name: string
+    price: number
+    duration: number
+    category: { name: string } | null
+  }
+  availableStaff: AvailableStaffMember[]
+  salonConfig: {
+    bookingDeposit: number
+    depositRefundable: boolean
+    maxBookingAdvance: number
+  }
+  isAuthenticated: boolean
+  defaultValues?: {
+    firstName?: string
+    lastName?: string
+    email?: string
+  }
+}
+
+export interface BookingFormValues {
+  staffId: string
+  date: Date | undefined
+  time: string
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
+  notes: string
+}

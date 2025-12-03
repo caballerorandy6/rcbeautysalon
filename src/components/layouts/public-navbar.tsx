@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { List, X, User, SignOut, CalendarCheck, Gear } from "@phosphor-icons/react"
+import { useNavigationStore } from "@/store/navigation-store"
 
 interface NavLink {
   href: string
@@ -24,7 +25,8 @@ interface NavLink {
 
 const navLinks: NavLink[] = [
   { href: "/#services", label: "Services", isExternal: true },
-  { href: "/shop", label: "Shop" },
+  { href: "/#team", label: "Our Team", isExternal: true },
+  { href: "/#shop", label: "Shop", isExternal: true },
   { href: "/#about", label: "About", isExternal: true },
   { href: "/#contact", label: "Contact", isExternal: true },
 ]
@@ -33,6 +35,7 @@ export function PublicNavbar() {
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { data: session, status } = useSession()
+  const { activeSection } = useNavigationStore()
 
   const isLoading = status === "loading"
   const isAuthenticated = !!session?.user
@@ -52,10 +55,10 @@ export function PublicNavbar() {
       return pathname === "/"
     }
 
-    // Hash links (like /#about, /#contact) - never mark as active
-    // Would need scroll detection to know if user is at that section
+    // Hash links (like /#about, /#contact) - check active section from scroll
     if (href.startsWith("/#")) {
-      return false
+      const sectionId = href.replace("/#", "")
+      return pathname === "/" && activeSection === sectionId
     }
 
     // Regular routes like /services, /shop
@@ -82,8 +85,8 @@ export function PublicNavbar() {
               href={link.href}
               className={`text-sm font-medium transition-all px-3 py-2 rounded-md ${
                 isActive(link.href)
-                  ? "text-primary bg-primary/10"
-                  : "text-foreground/70 hover:text-primary hover:bg-primary/5"
+                  ? "text-primary-foreground bg-primary shadow-sm"
+                  : "text-foreground/70 hover:text-primary hover:bg-primary/10"
               }`}
             >
               {link.label}
@@ -165,8 +168,8 @@ export function PublicNavbar() {
                 href={link.href}
                 className={`text-sm font-medium transition-all px-3 py-2 rounded-md ${
                   isActive(link.href)
-                    ? "text-primary bg-primary/10"
-                    : "text-foreground/70 hover:text-primary hover:bg-primary/5"
+                    ? "text-primary-foreground bg-primary shadow-sm"
+                    : "text-foreground/70 hover:text-primary hover:bg-primary/10"
                 }`}
                 onClick={() => setMobileMenuOpen(false)}
               >

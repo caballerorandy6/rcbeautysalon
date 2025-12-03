@@ -1,17 +1,20 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { sendPasswordResetFromAccount } from "@/app/actions/account"
 import { LockIcon } from "@/components/icons/lock-icon"
 import { EnvelopeIcon } from "@/components/icons/envelope-icon"
 import { SpinnerIcon } from "@/components/icons/spinner-icon"
-
-interface SecuritySectionProps {
-  email: string
-}
+import { SecuritySectionProps } from "@/lib/interfaces"
 
 export function SecuritySection({ email }: SecuritySectionProps) {
   const [isSending, setIsSending] = useState(false)
@@ -25,7 +28,8 @@ export function SecuritySection({ email }: SecuritySectionProps) {
       if (result.success) {
         setEmailSent(true)
         toast.success("Password reset email sent", {
-          description: "Check your inbox for instructions to reset your password.",
+          description:
+            "Check your inbox for instructions to reset your password.",
         })
       } else {
         toast.error(result.error || "Failed to send reset email")
@@ -44,13 +48,18 @@ export function SecuritySection({ email }: SecuritySectionProps) {
           <LockIcon size={20} className="text-primary" />
           <CardTitle className="text-lg">Security</CardTitle>
         </div>
-        <CardDescription>Manage your password and security settings</CardDescription>
+        <CardDescription>
+          Manage your password and security settings
+        </CardDescription>
       </CardHeader>
       <CardContent>
         {emailSent ? (
           <div className="rounded-lg border-2 border-green-200 bg-green-50 p-4 dark:border-green-900/50 dark:bg-green-950/20">
             <div className="flex items-center gap-2">
-              <EnvelopeIcon size={20} className="text-green-600 dark:text-green-400" />
+              <EnvelopeIcon
+                size={20}
+                className="text-green-600 dark:text-green-400"
+              />
               <p className="font-semibold text-green-900 dark:text-green-100">
                 Email Sent!
               </p>
@@ -73,7 +82,7 @@ export function SecuritySection({ email }: SecuritySectionProps) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium">Password</p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   Secure your account with a strong password
                 </p>
               </div>
@@ -92,8 +101,9 @@ export function SecuritySection({ email }: SecuritySectionProps) {
                 )}
               </Button>
             </div>
-            <p className="text-xs text-muted-foreground">
-              We&apos;ll send a secure link to your email ({email}) to reset your password.
+            <p className="text-muted-foreground text-xs">
+              We&apos;ll send a secure link to your email ({email}) to reset
+              your password.
             </p>
           </div>
         )}

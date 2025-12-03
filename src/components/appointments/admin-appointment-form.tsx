@@ -34,12 +34,7 @@ import {
   createAppointment,
 } from "@/app/actions/appointments"
 import { TimeSlot, AvailableStaffMember } from "@/lib/interfaces"
-
-interface AdminAppointmentFormProps {
-  services: Array<{ id: string; name: string; duration: number; price: number }>
-  staff: Array<{ id: string; name: string }>
-  customers?: Array<{ id: string; name: string; email: string | null; phone: string | null }>
-}
+import { AdminAppointmentFormProps } from "@/lib/interfaces"
 
 export default function AdminAppointmentForm({
   services,
@@ -133,7 +128,13 @@ export default function AdminAppointmentForm({
     }
 
     loadSlots()
-  }, [selectedStaffId, selectedDate, selectedServiceId, serviceDuration, setValue])
+  }, [
+    selectedStaffId,
+    selectedDate,
+    selectedServiceId,
+    serviceDuration,
+    setValue,
+  ])
 
   // Auto-fill customer info when selecting from existing customers
   const handleCustomerSelect = (customerId: string) => {
@@ -194,7 +195,7 @@ export default function AdminAppointmentForm({
               ))}
             </SelectContent>
           </Select>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-muted-foreground text-xs">
             Select a customer to auto-fill their information, or enter manually
             below
           </p>
@@ -213,7 +214,7 @@ export default function AdminAppointmentForm({
               {...register("customerName")}
             />
             {errors.customerName && (
-              <p className="text-sm text-destructive">
+              <p className="text-destructive text-sm">
                 {errors.customerName.message}
               </p>
             )}
@@ -227,7 +228,7 @@ export default function AdminAppointmentForm({
               {...register("customerPhone")}
             />
             {errors.customerPhone && (
-              <p className="text-sm text-destructive">
+              <p className="text-destructive text-sm">
                 {errors.customerPhone.message}
               </p>
             )}
@@ -242,7 +243,7 @@ export default function AdminAppointmentForm({
             {...register("customerEmail")}
           />
           {errors.customerEmail && (
-            <p className="text-sm text-destructive">
+            <p className="text-destructive text-sm">
               {errors.customerEmail.message}
             </p>
           )}
@@ -268,7 +269,7 @@ export default function AdminAppointmentForm({
           </SelectContent>
         </Select>
         {errors.serviceId && (
-          <p className="text-sm text-destructive">{errors.serviceId.message}</p>
+          <p className="text-destructive text-sm">{errors.serviceId.message}</p>
         )}
       </div>
 
@@ -306,7 +307,7 @@ export default function AdminAppointmentForm({
           </SelectContent>
         </Select>
         {errors.staffId && (
-          <p className="text-sm text-destructive">{errors.staffId.message}</p>
+          <p className="text-destructive text-sm">{errors.staffId.message}</p>
         )}
       </div>
 
@@ -338,7 +339,7 @@ export default function AdminAppointmentForm({
           </PopoverContent>
         </Popover>
         {errors.date && (
-          <p className="text-sm text-destructive">{errors.date.message}</p>
+          <p className="text-destructive text-sm">{errors.date.message}</p>
         )}
       </div>
 
@@ -378,9 +379,9 @@ export default function AdminAppointmentForm({
           </SelectContent>
         </Select>
         {errors.time && (
-          <p className="text-sm text-destructive">{errors.time.message}</p>
+          <p className="text-destructive text-sm">{errors.time.message}</p>
         )}
-        <p className="text-xs text-muted-foreground">
+        <p className="text-muted-foreground text-xs">
           {availableSlots.filter((s) => s.available).length > 0
             ? `${availableSlots.filter((s) => s.available).length} time slots available`
             : "Available times will appear after selecting staff and date"}
@@ -397,7 +398,7 @@ export default function AdminAppointmentForm({
           {...register("notes")}
         />
         {errors.notes && (
-          <p className="text-sm text-destructive">{errors.notes.message}</p>
+          <p className="text-destructive text-sm">{errors.notes.message}</p>
         )}
       </div>
 

@@ -36,7 +36,11 @@ export async function getFeaturedServices() {
     },
   })
 
-  return featuredServices
+  // Convert Decimal to number for client components
+  return featuredServices.map((service) => ({
+    ...service,
+    price: service.price.toNumber(),
+  }))
 }
 
 // Get all active services grouped by category for /services page

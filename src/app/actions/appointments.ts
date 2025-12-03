@@ -13,14 +13,10 @@ import { addMinutes, format, parse, isAfter, isBefore } from "date-fns"
 import { sendAppointmentConfirmationEmail } from "@/lib/email/appointment-confirmation"
 import { Prisma } from "@prisma/client"
 import { AppointmentStatus } from "@/lib/types"
-
-interface AdminAppointmentsFilter {
-  status?: AppointmentStatus
-  staffId?: string
-  dateFrom?: Date
-  dateTo?: Date
-  search?: string // search by customer name
-}
+import { AdminAppointmentsFilter } from "@/lib/interfaces"
+import { sendNoShowNotificationEmail } from "@/lib/email/no-show-notification"
+import { sendAppointmentCompletedEmail } from "@/lib/email/appointment-completed"
+import { sendAppointmentCancelledEmail } from "@/lib/email/appointment-cancelled"
 
 // Get salon configuration
 export async function getSalonConfig() {
@@ -55,26 +51,6 @@ export async function getSalonConfig() {
 export async function getAvailableStaff(
   serviceId: string
 ): Promise<AvailableStaffMember[]> {
-  /**
-   * INDICACIONES:
-   *
-   * 1. Query a prisma.staffService.findMany()
-   * 2. Where:
-   *    - serviceId: el serviceId recibido
-   *    - staff: { isActive: true }
-   *
-   * 3. Include:
-   *    - staff: {
-   *        select: {
-   *          id, name, email, phone, bio, image, isActive
-   *        }
-   *      }
-   *
-   * 4. Mapear el resultado para retornar solo el array de staff:
-   *    staffServices.map((ss) => ss.staff)
-   *
-   * 5. Retornar el array de AvailableStaffMember
-   */
   const availableStaff = await prisma.staffService.findMany({
     where: {
       serviceId,
@@ -291,8 +267,11 @@ export async function createAppointment(
     // Handle customer creation/retrieval
     let customerId: string | null = null
 
-    if (session?.user) {
-      // Check if authenticated user has a customer profile
+    // Check if admin is creating appointment for a customer
+    const isAdminCreating = session?.user?.role === "ADMIN" && data.guestName
+
+    if (session?.user && !isAdminCreating) {
+      // Regular customer booking for themselves
       const userWithCustomer = await prisma.user.findUnique({
         where: { id: session.user.id },
         include: { customer: true },
@@ -309,6 +288,34 @@ export async function createAppointment(
             email: session.user.email || data.guestEmail,
             phone: data.guestPhone,
             userId: session.user.id,
+          },
+        })
+        customerId = customer.id
+      }
+    } else if (data.guestEmail) {
+      // Admin creating for a customer OR guest booking
+      // Check if customer already exists by email
+      const existingCustomer = await prisma.customer.findFirst({
+        where: { email: data.guestEmail },
+      })
+
+      if (existingCustomer) {
+        customerId = existingCustomer.id
+        // Update customer info if needed
+        await prisma.customer.update({
+          where: { id: existingCustomer.id },
+          data: {
+            name: data.guestName || existingCustomer.name,
+            phone: data.guestPhone || existingCustomer.phone,
+          },
+        })
+      } else if (data.guestName) {
+        // Create new customer without linking to any user
+        const customer = await prisma.customer.create({
+          data: {
+            name: data.guestName,
+            email: data.guestEmail,
+            phone: data.guestPhone,
           },
         })
         customerId = customer.id
@@ -352,15 +359,20 @@ export async function createAppointment(
     })
 
     // Send confirmation email to customer
-    const customerEmail = session?.user?.email || data.guestEmail
-    const customerName = session?.user?.name || data.guestName || "Customer"
+    // If admin is creating for a customer, use guest info; otherwise use session user info
+    const customerEmail = isAdminCreating
+      ? data.guestEmail
+      : session?.user?.email || data.guestEmail
+    const customerName = isAdminCreating
+      ? data.guestName
+      : session?.user?.name || data.guestName || "Customer"
 
-    if (customerEmail) {
+    if (customerEmail && customerName) {
       const serviceNames = services.map((s) => s.name).join(", ")
 
       await sendAppointmentConfirmationEmail({
-        email: customerEmail,
-        customerName,
+        email: customerEmail as string,
+        customerName: customerName as string,
         serviceName: serviceNames,
         staffName: staff?.name || "Our Staff",
         appointmentDate: new Date(data.startTime),
@@ -498,6 +510,46 @@ export async function getAdminAppointments(filters?: AdminAppointmentsFilter) {
     throw new Error("Unauthorized")
   }
 
+  // Automatically mark past appointments as NO_SHOW before fetching
+  const now = new Date()
+  const appointmentsToMarkNoShow = await prisma.appointment.findMany({
+    where: {
+      status: { in: ["PENDING", "CONFIRMED"] },
+      endTime: { lt: now },
+    },
+    include: {
+      customer: { select: { name: true, email: true } },
+      staff: { select: { name: true } },
+      services: { include: { service: { select: { name: true } } } },
+    },
+  })
+
+  for (const apt of appointmentsToMarkNoShow) {
+    const customerEmail = apt.customer?.email || apt.guestEmail
+    const customerName = apt.customer?.name || apt.guestName || "Customer"
+
+    if (customerEmail) {
+      await sendNoShowNotificationEmail({
+        email: customerEmail,
+        customerName,
+        serviceName: apt.services.map((s) => s.service.name).join(", "),
+        staffName: apt.staff?.name || "Our Staff",
+        appointmentDate: apt.startTime,
+        appointmentTime: format(apt.startTime, "h:mm a"),
+        depositAmount: apt.depositAmount.toNumber(),
+        appointmentId: apt.id,
+      })
+    }
+  }
+
+  await prisma.appointment.updateMany({
+    where: {
+      status: { in: ["PENDING", "CONFIRMED"] },
+      endTime: { lt: now },
+    },
+    data: { status: "NO_SHOW" },
+  })
+
   // Build where clause based on filters
   const where: Prisma.AppointmentWhereInput = {}
 
@@ -565,7 +617,9 @@ export async function getAppointmentById(id: string) {
       customer: { select: { id: true, name: true, email: true, phone: true } },
       services: {
         include: {
-          service: { select: { id: true, name: true, description: true, duration: true } },
+          service: {
+            select: { id: true, name: true, description: true, duration: true },
+          },
         },
       },
     },
@@ -583,6 +637,40 @@ export async function getAppointmentById(id: string) {
   }
 }
 
+// Mark past appointments as NO_SHOW
+export async function markNoShowAppointments() {
+  const session = await auth()
+
+  // Only allow admins to run this
+  if (!session?.user || session.user.role !== "ADMIN") {
+    return { updated: 0 }
+  }
+
+  const now = new Date()
+
+  // Find and update all PENDING or CONFIRMED appointments where endTime has passed
+  const result = await prisma.appointment.updateMany({
+    where: {
+      status: {
+        in: ["PENDING", "CONFIRMED"],
+      },
+      endTime: {
+        lt: now,
+      },
+    },
+    data: {
+      status: "NO_SHOW",
+    },
+  })
+
+  if (result.count > 0) {
+    revalidatePath("/dashboard")
+    revalidatePath("/dashboard/appointments")
+  }
+
+  return { updated: result.count }
+}
+
 // Update appointment status
 export async function updateAppointmentStatus(
   id: string,
@@ -595,13 +683,98 @@ export async function updateAppointmentStatus(
     throw new Error("Unauthorized")
   }
 
+  // Get appointment details before updating (for email)
+  const appointmentDetails = await prisma.appointment.findUnique({
+    where: { id },
+    include: {
+      customer: { select: { name: true, email: true } },
+      staff: { select: { name: true } },
+      services: { include: { service: { select: { id: true, name: true, duration: true } } } },
+    },
+  })
+
+  if (!appointmentDetails) {
+    throw new Error("Appointment not found")
+  }
+
   // Update appointment status
   const appointment = await prisma.appointment.update({
     where: { id },
     data: { status },
   })
 
+  // Send email notification based on new status
+  const customerEmail = appointmentDetails.customer?.email || appointmentDetails.guestEmail
+  const customerName = appointmentDetails.customer?.name || appointmentDetails.guestName || "Customer"
+  const serviceName = appointmentDetails.services.map((s) => s.service.name).join(", ")
+  const staffName = appointmentDetails.staff?.name || "Our Staff"
+
+  if (customerEmail) {
+    // Calculate total duration from appointment services
+    const totalDuration = appointmentDetails.services.reduce(
+      (sum, s) => sum + s.service.duration,
+      0
+    )
+
+    switch (status) {
+      case "CONFIRMED":
+        await sendAppointmentConfirmationEmail({
+          email: customerEmail,
+          customerName,
+          serviceName,
+          staffName,
+          appointmentDate: appointmentDetails.startTime,
+          appointmentTime: format(appointmentDetails.startTime, "h:mm a"),
+          duration: totalDuration,
+          totalPrice: appointmentDetails.totalPrice.toNumber(),
+          depositAmount: appointmentDetails.depositAmount.toNumber(),
+          appointmentId: id,
+        })
+        break
+
+      case "COMPLETED":
+        await sendAppointmentCompletedEmail({
+          email: customerEmail,
+          customerName,
+          serviceName,
+          staffName,
+          appointmentDate: appointmentDetails.startTime,
+          appointmentTime: format(appointmentDetails.startTime, "h:mm a"),
+          totalPrice: appointmentDetails.totalPrice.toNumber(),
+          appointmentId: id,
+        })
+        break
+
+      case "CANCELLED":
+        await sendAppointmentCancelledEmail({
+          email: customerEmail,
+          customerName,
+          serviceName,
+          staffName,
+          appointmentDate: appointmentDetails.startTime,
+          appointmentTime: format(appointmentDetails.startTime, "h:mm a"),
+          appointmentId: id,
+          cancelledByAdmin: true,
+        })
+        break
+
+      case "NO_SHOW":
+        await sendNoShowNotificationEmail({
+          email: customerEmail,
+          customerName,
+          serviceName,
+          staffName,
+          appointmentDate: appointmentDetails.startTime,
+          appointmentTime: format(appointmentDetails.startTime, "h:mm a"),
+          depositAmount: appointmentDetails.depositAmount.toNumber(),
+          appointmentId: id,
+        })
+        break
+    }
+  }
+
   revalidatePath("/dashboard")
+  revalidatePath("/dashboard/appointments")
 
   return {
     ...appointment,
