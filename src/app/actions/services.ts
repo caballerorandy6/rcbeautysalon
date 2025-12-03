@@ -524,13 +524,35 @@ export async function getServiceById(id: string) {
 //Create Service
 export async function createService(data: CreateServiceInput) {
   try {
+    // Extract staffIds and categoryId from data
+    const { staffIds, categoryId, ...serviceData } = data
+
     const service = await prisma.service.create({
-      data,
+      data: {
+        ...serviceData,
+        ...(categoryId && { category: { connect: { id: categoryId } } }),
+      },
     })
+
+    if (staffIds?.length) {
+      await prisma.staffService.createMany({
+        data: staffIds.map((staffId) => ({
+          staffId,
+          serviceId: service.id,
+        })),
+      })
+    }
+
     revalidatePath("/dashboard/services")
     revalidatePath("/services")
 
-    return { success: true, service }
+    return {
+      success: true,
+      service: {
+        ...service,
+        price: service.price.toNumber(),
+      },
+    }
   } catch (error) {
     console.error("Error creating service:", error)
     return { success: false, error: "Failed to create service." }
@@ -540,14 +562,43 @@ export async function createService(data: CreateServiceInput) {
 // Update Service
 export async function updateService(id: string, data: UpdateServiceInput) {
   try {
+    // Extract staffIds and categoryId from data
+    const { staffIds, categoryId, ...serviceData } = data
+
     const updatedService = await prisma.service.update({
       where: { id },
-      data,
+      data: {
+        ...serviceData,
+        ...(categoryId !== undefined && {
+          category: categoryId ? { connect: { id: categoryId } } : { disconnect: true },
+        }),
+      },
     })
+
+    if (staffIds !== undefined) {
+      await prisma.staffService.deleteMany({
+        where: { serviceId: id },
+      })
+      if (staffIds.length) {
+        await prisma.staffService.createMany({
+          data: staffIds.map((staffId) => ({
+            staffId,
+            serviceId: id,
+          })),
+        })
+      }
+    }
+
     revalidatePath("/dashboard/services")
     revalidatePath("/services")
 
-    return { success: true, service: updatedService }
+    return {
+      success: true,
+      service: {
+        ...updatedService,
+        price: updatedService.price.toNumber(),
+      },
+    }
   } catch (error) {
     console.error("Error updating service:", error)
     return { success: false, error: "Failed to update service." }

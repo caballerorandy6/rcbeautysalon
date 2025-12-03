@@ -313,6 +313,7 @@ export interface CreateServiceInput {
   isActive?: boolean
   isFeatured?: boolean
   order?: number
+  staffIds?: string[]
 }
 
 export interface ServicesListProps {
