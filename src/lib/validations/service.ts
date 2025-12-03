@@ -13,11 +13,11 @@ const serviceBaseSchema = z.object({
     .regex(/^[a-z0-9-]+$/, "Slug can only contain lowercase letters, numbers, and hyphens"),
   description: z.string().optional(),
   duration: z
-    .number({ invalid_type_error: "Duration is required" })
+    .number({ error: "Duration is required" })
     .min(5, "Duration must be at least 5 minutes")
     .max(480, "Duration must be less than 8 hours"),
   price: z
-    .number({ invalid_type_error: "Price is required" })
+    .number({ error: "Price is required" })
     .min(0, "Price must be positive"),
   imageUrl: z.string().optional(),
   categoryId: z.string().optional(),
