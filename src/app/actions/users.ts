@@ -154,6 +154,7 @@ export async function updateUserRole(userId: string, role: UserRole) {
           data: {
             name: user.name || "Staff Member",
             email: user.email,
+            image: user.image, // Copy user's profile image
             isActive: true,
             user: { connect: { id: userId } },
           },
@@ -168,6 +169,8 @@ export async function updateUserRole(userId: string, role: UserRole) {
 
     revalidatePath(`/dashboard/users/${userId}`)
     revalidatePath("/dashboard/users")
+    revalidatePath("/dashboard/staff")
+    revalidatePath("/staff")
 
     return { success: true }
   } catch (error) {

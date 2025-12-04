@@ -321,29 +321,41 @@ export const updateStaffMember = async (id: string, data: UpdateStaffInput) => {
   }
 }
 
-//Delete Staff Member
+//Delete Staff Member (deactivates and changes user role to CLIENTE)
 export const deleteStaffMember = async (id: string) => {
-  const appointmentCount = await prisma.appointment.count({
-    where: { staffId: id },
-  })
-
-  if (appointmentCount > 0) {
-    return {
-      success: false,
-      error:
-        "Cannot delete staff member with existing appointments. Deactivate instead.",
-    }
-  }
-
   try {
-    const deletedStaffMember = await prisma.staff.delete({
+    // Get staff with user info
+    const staff = await prisma.staff.findUnique({
       where: { id },
+      include: { user: true },
     })
+
+    if (!staff) {
+      return { success: false, error: "Staff member not found." }
+    }
+
+    // Deactivate staff profile (don't delete to preserve history)
+    await prisma.staff.update({
+      where: { id },
+      data: { isActive: false },
+    })
+
+    // Change user role back to CLIENTE if user exists
+    if (staff.userId) {
+      await prisma.user.update({
+        where: { id: staff.userId },
+        data: { role: "CLIENTE" },
+      })
+    }
+
     revalidatePath("/dashboard/staff")
-    return { success: true, staff: deletedStaffMember }
+    revalidatePath("/dashboard/users")
+    revalidatePath("/staff")
+
+    return { success: true }
   } catch (error) {
-    console.error("Error deleting staff member:", error)
-    return { success: false, error: "Failed to delete staff member." }
+    console.error("Error removing staff member:", error)
+    return { success: false, error: "Failed to remove staff member." }
   }
 }
 
