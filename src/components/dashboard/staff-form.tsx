@@ -316,7 +316,7 @@ export function StaffForm({ services, staff, mode = "create", onSubmit, onDelete
             </CardHeader>
             <CardContent>
               {image ? (
-                <div className="relative mx-auto h-48 w-48 overflow-hidden rounded-full">
+                <div className="relative aspect-video w-full overflow-hidden rounded-lg">
                   <Image
                     src={image}
                     alt="Staff photo"
@@ -327,7 +327,7 @@ export function StaffForm({ services, staff, mode = "create", onSubmit, onDelete
                     type="button"
                     variant="destructive"
                     size="icon"
-                    className="absolute bottom-2 right-2"
+                    className="absolute top-2 right-2"
                     onClick={handleRemoveImage}
                   >
                     <TrashIcon size={16} />
@@ -335,7 +335,7 @@ export function StaffForm({ services, staff, mode = "create", onSubmit, onDelete
                 </div>
               ) : (
                 <div
-                  className={`border-muted-foreground/25 hover:border-muted-foreground/50 mx-auto flex h-48 w-48 cursor-pointer flex-col items-center justify-center rounded-full border-2 border-dashed transition-colors ${
+                  className={`border-muted-foreground/25 hover:border-muted-foreground/50 flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-12 transition-colors ${
                     isUploading ? "pointer-events-none opacity-50" : ""
                   }`}
                   onClick={() => fileInputRef.current?.click()}
@@ -345,8 +345,8 @@ export function StaffForm({ services, staff, mode = "create", onSubmit, onDelete
                   ) : (
                     <ImageIcon size={48} className="text-muted-foreground/50" />
                   )}
-                  <p className="text-muted-foreground mt-2 text-sm">
-                    {isUploading ? "Uploading..." : "Click to upload"}
+                  <p className="text-muted-foreground mt-4 text-sm">
+                    {isUploading ? "Uploading..." : "Click to upload an image"}
                   </p>
                 </div>
               )}
