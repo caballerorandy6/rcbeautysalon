@@ -58,8 +58,8 @@ export default function RootLayout({
                 <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
                   {/* Brand Section */}
                   <div className="space-y-4 lg:col-span-1">
-                    <Link href="/" className="inline-block -mt-8">
-                      <Logo size={200} className="transition-transform duration-300 hover:scale-105" />
+                    <Link href="/" className="inline-block">
+                      <Logo variant="footer" className="transition-transform duration-300 hover:scale-105" />
                     </Link>
                     <p className="text-sm leading-relaxed text-muted-foreground">
                       Your premier destination for beauty and wellness services.

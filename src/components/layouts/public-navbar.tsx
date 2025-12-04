@@ -74,7 +74,7 @@ export function PublicNavbar() {
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <Link href="/" className="shrink-0">
-          <Logo size={140} />
+          <Logo variant="navbar" />
         </Link>
 
         {/* Desktop Navigation */}

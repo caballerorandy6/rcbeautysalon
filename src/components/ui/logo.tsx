@@ -4,9 +4,20 @@ import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { useSyncExternalStore } from "react"
 
+type LogoVariant = "navbar" | "sidebar" | "footer" | "auth" | "small"
+
 interface LogoProps {
   className?: string
-  size?: number
+  variant?: LogoVariant
+}
+
+// Preset sizes for different contexts
+const variantSizes: Record<LogoVariant, { width: number; height: number }> = {
+  navbar: { width: 120, height: 40 },
+  sidebar: { width: 100, height: 35 },
+  footer: { width: 140, height: 50 },
+  auth: { width: 160, height: 55 },
+  small: { width: 80, height: 28 },
 }
 
 // Subscribe to theme changes
@@ -29,19 +40,20 @@ function getServerSnapshot() {
   return false
 }
 
-export function Logo({ className, size = 128 }: LogoProps) {
+export function Logo({ className, variant = "navbar" }: LogoProps) {
   const isDark = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
+  const { width, height } = variantSizes[variant]
 
   return (
     <div
       className={cn("relative flex items-center justify-center", className)}
-      style={{ width: size, height: size }}
+      style={{ width, height }}
     >
       <Image
         src={isDark ? "/images/logo/logo-dark.svg" : "/images/logo/logo.svg"}
-        alt="Beauty Salon Logo"
-        width={size}
-        height={size}
+        alt="RC Beauty Salon"
+        width={width}
+        height={height}
         className="object-contain transition-opacity duration-300"
         priority
       />

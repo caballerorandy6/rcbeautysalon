@@ -34,7 +34,7 @@ async function VerifyEmailContent({ token }: { token: string }) {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <div className="mb-6 flex justify-center">
-            <Logo size={144} />
+            <Logo variant="auth" />
           </div>
           <div className="flex justify-center">
             <CheckCircleIcon size={64} weight="fill" className="text-green-500" />
@@ -60,7 +60,7 @@ async function VerifyEmailContent({ token }: { token: string }) {
     <Card className="w-full max-w-md">
       <CardHeader className="space-y-1">
         <div className="mb-6 flex justify-center">
-          <Logo size={144} />
+          <Logo variant="auth" />
         </div>
         <div className="flex justify-center">
           <XCircleIcon size={64} weight="fill" className="text-destructive" />

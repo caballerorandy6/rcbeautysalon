@@ -35,7 +35,7 @@ export function AdminSidebar() {
         {/* Logo */}
         <div className="flex h-16 items-center border-b px-6">
           <Link href="/dashboard">
-            <Logo size={140} />
+            <Logo variant="sidebar" />
           </Link>
         </div>
 

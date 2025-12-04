@@ -61,7 +61,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <div className="mb-6 flex justify-center">
-            <Logo size={144} />
+            <Logo variant="auth" />
           </div>
           <CardTitle className="text-center text-2xl">
             Reset your password
