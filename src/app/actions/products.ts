@@ -95,18 +95,27 @@ export async function getProductById(id: string) {
 // Create product
 export async function createProduct(data: CreateProductInput) {
   try {
+    // Extract categoryId from data
+    const { categoryId, ...productData } = data
+
     const product = await prisma.product.create({
       data: {
-        ...data,
-        price: data.price,
-        compareAtPrice: data.compareAtPrice,
+        ...productData,
+        ...(categoryId && { category: { connect: { id: categoryId } } }),
       },
     })
 
     revalidatePath("/dashboard/products")
     revalidatePath("/shop")
 
-    return { success: true, product }
+    return {
+      success: true,
+      product: {
+        ...product,
+        price: product.price.toNumber(),
+        compareAtPrice: product.compareAtPrice?.toNumber() ?? null,
+      },
+    }
   } catch (error) {
     console.error("Error creating product:", error)
     return { success: false, error: "Failed to create product." }
@@ -116,15 +125,30 @@ export async function createProduct(data: CreateProductInput) {
 // Update product
 export async function updateProduct(id: string, data: UpdateProductInput) {
   try {
+    // Extract categoryId from data
+    const { categoryId, ...productData } = data
+
     const product = await prisma.product.update({
       where: { id },
-      data,
+      data: {
+        ...productData,
+        ...(categoryId !== undefined && {
+          category: categoryId ? { connect: { id: categoryId } } : { disconnect: true },
+        }),
+      },
     })
 
     revalidatePath("/dashboard/products")
     revalidatePath("/shop")
 
-    return { success: true, product }
+    return {
+      success: true,
+      product: {
+        ...product,
+        price: product.price.toNumber(),
+        compareAtPrice: product.compareAtPrice?.toNumber() ?? null,
+      },
+    }
   } catch (error) {
     console.error("Error updating product:", error)
     return { success: false, error: "Failed to update product." }

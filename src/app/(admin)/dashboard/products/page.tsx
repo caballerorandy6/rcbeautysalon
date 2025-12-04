@@ -6,10 +6,10 @@ import {
   PackageIcon,
   PlusIcon,
   PencilIcon,
-  TrashIcon,
 } from "@/components/icons"
 import { getAdminProducts, getProductStats } from "@/app/actions/products"
 import { ProductSearch } from "@/components/dashboard/product-search"
+import { DeleteProductButton } from "@/components/dashboard/delete-product-button"
 
 interface ProductsPageProps {
   searchParams: Promise<{ search?: string }>
@@ -162,9 +162,10 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                               <PencilIcon size={16} />
                             </Button>
                           </Link>
-                          <Button variant="ghost" size="icon" className="text-destructive">
-                            <TrashIcon size={16} />
-                          </Button>
+                          <DeleteProductButton
+                            productId={product.id}
+                            productName={product.name}
+                          />
                         </div>
                       </td>
                     </tr>
