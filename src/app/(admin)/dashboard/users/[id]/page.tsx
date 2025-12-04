@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 import { notFound } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -13,6 +14,7 @@ import {
   ShoppingBagIcon,
   CurrencyDollarIcon,
   ClockIcon,
+  PencilIcon,
 } from "@/components/icons"
 import { getUserById, getCustomerTotalSpent } from "@/app/actions/users"
 import { format } from "date-fns"
@@ -93,6 +95,12 @@ export default async function UserDetailsPage({ params }: PageProps) {
             </p>
           </div>
         </div>
+        <Link href={`/dashboard/users/${id}/edit`}>
+          <Button>
+            <PencilIcon size={16} className="mr-2" />
+            Edit User
+          </Button>
+        </Link>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -250,12 +258,23 @@ export default async function UserDetailsPage({ params }: PageProps) {
             <CardContent className="space-y-4">
               {/* Avatar & Name */}
               <div className="flex items-center gap-4">
-                <div className="bg-primary/10 text-primary flex h-16 w-16 items-center justify-center rounded-full text-xl font-semibold">
-                  {user.name
-                    ?.split(" ")
-                    .map((n) => n[0])
-                    .join("") || "U"}
-                </div>
+                {user.image ? (
+                  <div className="relative h-16 w-16 overflow-hidden rounded-full">
+                    <Image
+                      src={user.image}
+                      alt={user.name || "User"}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="bg-primary/10 text-primary flex h-16 w-16 items-center justify-center rounded-full text-xl font-semibold">
+                    {user.name
+                      ?.split(" ")
+                      .map((n) => n[0])
+                      .join("") || "U"}
+                  </div>
+                )}
                 <div>
                   <p className="text-lg font-semibold">{user.name}</p>
                   <Badge className={roleColors[user.role]}>{user.role}</Badge>
@@ -333,14 +352,14 @@ export default async function UserDetailsPage({ params }: PageProps) {
                   <span className="text-muted-foreground">Position:</span>{" "}
                   <span className="font-medium">Staff Member</span>
                 </p>
-                <p className="text-sm">
-                  <span className="text-muted-foreground">Status:</span>{" "}
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-muted-foreground">Status:</span>
                   <Badge
                     variant={user.staff.isActive ? "default" : "secondary"}
                   >
                     {user.staff.isActive ? "Active" : "Inactive"}
                   </Badge>
-                </p>
+                </div>
                 {user.staff.bio && (
                   <p className="text-muted-foreground text-sm">
                     {user.staff.bio}
