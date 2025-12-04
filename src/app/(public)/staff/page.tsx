@@ -152,7 +152,7 @@ const StaffPage = async () => {
           </p>
           <Link
             href="/booking"
-            className="inline-flex items-center justify-center rounded-full bg-linear-to-r from-primary to-accent px-8 py-3 font-semibold text-white transition-opacity hover:opacity-90 font-body"
+            className="inline-flex items-center justify-center rounded-full bg-primary px-8 py-3 font-semibold text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-lg font-body"
           >
             Book Now
           </Link>

@@ -13,13 +13,14 @@ import Image from "next/image"
 import { Tote } from "@phosphor-icons/react"
 
 interface ProductCardProps {
+  id: string
   name: string
   price: string
   category: string
   image?: string | null
 }
 
-export function ProductCard({ name, price, category, image }: ProductCardProps) {
+export function ProductCard({ id, name, price, category, image }: ProductCardProps) {
   return (
     <Card className="group border-primary/10 overflow-hidden transition-all duration-300 hover:shadow-xl">
       <div className="bg-muted/30 relative aspect-square overflow-hidden">
@@ -49,15 +50,15 @@ export function ProductCard({ name, price, category, image }: ProductCardProps) 
       </CardHeader>
       <CardContent>
         <div className="flex gap-2">
-          <Link href="/shop" className="flex-1">
+          <Link href={`/shop/${id}`} className="flex-1">
             <Button
               variant="outline"
-              className="border-primary/50 hover:bg-primary/5 w-full"
+              className="w-full border-primary/50 hover:bg-primary hover:text-primary-foreground"
             >
-              View Details
+              See Details
             </Button>
           </Link>
-          <Button className="from-primary to-accent bg-linear-to-r hover:opacity-90">
+          <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
             <Tote size={16} />
           </Button>
         </div>

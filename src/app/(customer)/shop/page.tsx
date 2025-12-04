@@ -1,26 +1,28 @@
+import type { Metadata } from "next"
 import Image from "next/image"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { CartButton } from "@/components/shop/cart-button"
 import { SearchInput } from "@/components/shop/search-input"
-import { prisma } from "@/lib/prisma"
 import { Package } from "@phosphor-icons/react/dist/ssr"
+import { AddToCartButton } from "@/components/shop/add-to-cart-button"
+import { getShopProducts } from "@/app/actions/products"
 
-export const dynamic = "force-dynamic"
-
-async function getShopProducts() {
-  const products = await prisma.product.findMany({
-    where: { isActive: true },
-    orderBy: [{ isFeatured: "desc" }, { name: "asc" }],
-  })
-
-  return products.map((product) => ({
-    ...product,
-    price: product.price.toNumber(),
-    compareAtPrice: product.compareAtPrice?.toNumber() ?? null,
-  }))
+export const metadata: Metadata = {
+  title: "Shop | RC Beauty Salon",
+  description:
+    "Professional beauty products for home care. Hair care, skin care, and nail care products.",
 }
+
+export const revalidate = 60
 
 export default async function ShopPage() {
   const products = await getShopProducts()
@@ -28,7 +30,7 @@ export default async function ShopPage() {
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <div className="border-b bg-background">
+      <div className="bg-background border-b">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
@@ -45,7 +47,7 @@ export default async function ShopPage() {
       </div>
 
       {/* Search & Filters */}
-      <div className="border-b bg-muted/30 py-4">
+      <div className="bg-muted/30 border-b py-4">
         <div className="container mx-auto px-4">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <SearchInput className="flex-1 md:max-w-md" />
@@ -75,10 +77,13 @@ export default async function ShopPage() {
             const imageUrl = product.images?.[0] || null
 
             return (
-              <Card key={product.id} className="group overflow-hidden border-primary/10 transition-all duration-300 hover:shadow-xl">
+              <Card
+                key={product.id}
+                className="group border-primary/10 overflow-hidden transition-all duration-300 hover:shadow-xl"
+              >
                 <CardHeader className="p-0">
                   {/* Product Image */}
-                  <div className="relative aspect-square overflow-hidden bg-muted">
+                  <div className="bg-muted relative aspect-square overflow-hidden">
                     {imageUrl ? (
                       <Image
                         src={imageUrl}
@@ -87,21 +92,30 @@ export default async function ShopPage() {
                         className="object-cover transition-transform duration-500 group-hover:scale-110"
                       />
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-muted to-muted/50">
-                        <Package size={48} weight="light" className="text-muted-foreground/50" />
+                      <div className="from-muted to-muted/50 flex h-full w-full items-center justify-center bg-linear-to-br">
+                        <Package
+                          size={48}
+                          weight="light"
+                          className="text-muted-foreground/50"
+                        />
                       </div>
                     )}
 
                     {/* Badges */}
-                    <div className="absolute right-2 top-2 flex flex-col gap-1">
+                    <div className="absolute top-2 right-2 flex flex-col gap-1">
                       {product.isFeatured && (
-                        <Badge className="bg-accent text-accent-foreground">Featured</Badge>
+                        <Badge className="bg-accent text-accent-foreground">
+                          Featured
+                        </Badge>
                       )}
                       {!inStock && (
                         <Badge variant="destructive">Out of Stock</Badge>
                       )}
                       {product.compareAtPrice && inStock && (
-                        <Badge variant="secondary" className="bg-primary text-primary-foreground">
+                        <Badge
+                          variant="secondary"
+                          className="bg-primary text-primary-foreground"
+                        >
                           Sale
                         </Badge>
                       )}
@@ -109,30 +123,37 @@ export default async function ShopPage() {
                   </div>
                 </CardHeader>
                 <CardContent className="p-4">
-                  <CardTitle className="mb-2 text-lg group-hover:text-accent transition-colors">
+                  <CardTitle className="group-hover:text-accent mb-2 text-lg transition-colors">
                     {product.name}
                   </CardTitle>
                   {product.description && (
-                    <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+                    <p className="text-muted-foreground mb-2 line-clamp-2 text-sm">
                       {product.description}
                     </p>
                   )}
                   <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-bold">${product.price.toFixed(2)}</span>
+                    <span className="text-2xl font-bold">
+                      ${product.price.toFixed(2)}
+                    </span>
                     {product.compareAtPrice && (
-                      <span className="text-sm text-muted-foreground line-through">
+                      <span className="text-muted-foreground text-sm line-through">
                         ${product.compareAtPrice.toFixed(2)}
                       </span>
                     )}
                   </div>
                 </CardContent>
-                <CardFooter className="p-4 pt-0">
-                  <Button
-                    className="w-full"
-                    disabled={!inStock}
-                    variant={inStock ? "default" : "secondary"}
-                  >
-                    {inStock ? "Add to Cart" : "Out of Stock"}
+                <CardFooter className="flex flex-col gap-2 p-4 pt-0">
+                  <AddToCartButton
+                    product={{
+                      id: product.id,
+                      name: product.name,
+                      image: imageUrl,
+                      price: product.price,
+                    }}
+                    inStock={inStock}
+                  />
+                  <Button variant="outline" className="w-full border-primary/50 hover:bg-primary hover:text-primary-foreground" asChild>
+                    <Link href={`/shop/${product.id}`}>See Details</Link>
                   </Button>
                 </CardFooter>
               </Card>
@@ -142,7 +163,7 @@ export default async function ShopPage() {
       </div>
 
       {/* Mobile Cart Button */}
-      <div className="fixed bottom-4 right-4 md:hidden">
+      <div className="fixed right-4 bottom-4 md:hidden">
         <CartButton mobile />
       </div>
     </div>

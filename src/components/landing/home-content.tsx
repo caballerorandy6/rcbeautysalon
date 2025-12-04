@@ -282,6 +282,7 @@ export function HomeContent({ featuredServices, featuredProducts, featuredStaff 
               {featuredProducts.map((product) => (
                 <div key={product.id} className="w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.125rem)]">
                   <ProductCard
+                    id={product.id}
                     name={product.name}
                     price={`$${product.price.toFixed(2)}`}
                     category={product.category?.name || "Products"}

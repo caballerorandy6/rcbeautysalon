@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { List, X, User, SignOut, CalendarCheck, Gear } from "@phosphor-icons/react"
 import { useNavigationStore } from "@/store/navigation-store"
+import { NavCartButton } from "@/components/shop/nav-cart-button"
 
 interface NavLink {
   href: string
@@ -93,6 +94,7 @@ export function PublicNavbar() {
             </Link>
           ))}
           <ThemeToggle />
+          <NavCartButton />
           {isLoading ? (
             <Button variant="ghost" disabled className="w-20">
               <span className="animate-pulse">...</span>
@@ -176,9 +178,12 @@ export function PublicNavbar() {
                 {link.label}
               </Link>
             ))}
-            <div className="flex items-center gap-2 pt-4 border-t border-border/50">
-              <ThemeToggle />
-              <span className="text-sm text-muted-foreground">Theme</span>
+            <div className="flex items-center justify-between pt-4 border-t border-border/50">
+              <div className="flex items-center gap-2">
+                <ThemeToggle />
+                <span className="text-sm text-muted-foreground">Theme</span>
+              </div>
+              <NavCartButton />
             </div>
             {isLoading ? (
               <Button variant="ghost" disabled className="w-full">

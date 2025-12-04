@@ -162,7 +162,7 @@ const StaffDetailPage = async ({ params }: StaffDetailPageProps) => {
               {/* Book Button */}
               <Link
                 href={`/booking?staff=${staffMember.id}`}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-linear-to-r from-primary to-accent px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all hover:opacity-90 hover:shadow-xl font-body"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-8 py-4 text-lg font-semibold text-primary-foreground shadow-lg transition-all hover:bg-primary/90 hover:shadow-xl font-body"
               >
                 <CalendarIcon size={22} />
                 Book with {staffMember.name.split(" ")[0]}
@@ -271,7 +271,7 @@ const StaffDetailPage = async ({ params }: StaffDetailPageProps) => {
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <Link
               href={`/booking?staff=${staffMember.id}`}
-              className="inline-flex items-center justify-center rounded-full bg-linear-to-r from-primary to-accent px-8 py-3 font-semibold text-white transition-opacity hover:opacity-90 font-body"
+              className="inline-flex items-center justify-center rounded-full bg-primary px-8 py-3 font-semibold text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-lg font-body"
             >
               Book Now
             </Link>

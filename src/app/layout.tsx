@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { Rouge_Script, Poppins } from "next/font/google"
 import { SessionProvider } from "@/components/providers/session-provider"
 import { ThemeProvider } from "@/components/providers/theme-provider"
+import { CartProvider } from "@/components/providers/cart-provider"
 import { Logo } from "@/components/ui/logo"
 import Link from "next/link"
 import { Toaster } from "sonner"
@@ -47,9 +48,10 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <SessionProvider>
-            {children}
+            <CartProvider>
+              {children}
 
-            {/* Footer - Appears on ALL pages (public, customer, admin) */}
+              {/* Footer - Appears on ALL pages (public, customer, admin) */}
             <footer className="relative overflow-hidden border-t border-primary/10 bg-linear-to-b from-muted/30 via-muted/50 to-muted/30 py-16">
               {/* Decorative gradient overlay */}
               <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none" />
@@ -224,6 +226,7 @@ export default function RootLayout({
                 </div>
               </div>
             </footer>
+            </CartProvider>
 
             <Toaster position="top-right" richColors />
           </SessionProvider>

@@ -133,7 +133,9 @@ export async function updateProduct(id: string, data: UpdateProductInput) {
       data: {
         ...productData,
         ...(categoryId !== undefined && {
-          category: categoryId ? { connect: { id: categoryId } } : { disconnect: true },
+          category: categoryId
+            ? { connect: { id: categoryId } }
+            : { disconnect: true },
         }),
       },
     })

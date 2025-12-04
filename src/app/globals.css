@@ -36,7 +36,7 @@
 
   /* Accent - Refined Gold */
   --accent: 38 70% 50%;                 /* Gold sofisticado #D9A12C */
-  --accent-foreground: 0 0% 100%;       /* White */
+  --accent-foreground: 30 30% 10%;      /* Dark brown for contrast */
 
   /* UI Elements */
   --muted: 25 15% 92%;                  /* Beige neutro #EDE8E5 */
