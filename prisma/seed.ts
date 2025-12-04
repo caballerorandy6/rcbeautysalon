@@ -420,14 +420,14 @@ async function main() {
   const staffLaura = await prisma.staff.upsert({
     where: { userId: lauraUser.id },
     update: {
-      image: 'v1764141936/Beauty Salon/services/laura-thompson_asbi3t.avif',
+      image: 'https://res.cloudinary.com/caballerorandy/image/upload/v1764141936/Beauty%20Salon/services/laura-thompson_asbi3t.avif',
     },
     create: {
       name: 'Laura Thompson',
       email: 'laura@rcbeautysalon.org',
       phone: '+1 (555) 100-1001',
       bio: 'Senior stylist with 15+ years of experience specializing in cuts, color transformations, and keratin treatments',
-      image: 'v1764141936/Beauty Salon/services/laura-thompson_asbi3t.avif',
+      image: 'https://res.cloudinary.com/caballerorandy/image/upload/v1764141936/Beauty%20Salon/services/laura-thompson_asbi3t.avif',
       isActive: true,
       userId: lauraUser.id,
     },
@@ -436,14 +436,14 @@ async function main() {
   const staffMaria = await prisma.staff.upsert({
     where: { userId: mariaUser.id },
     update: {
-      image: 'v1764142469/Beauty Salon/services/maria-rodriguez_uzksdw.avif',
+      image: 'https://res.cloudinary.com/caballerorandy/image/upload/v1764142469/Beauty%20Salon/services/maria-rodriguez_uzksdw.avif',
     },
     create: {
       name: 'Maria Rodriguez',
       email: 'maria@rcbeautysalon.org',
       phone: '+1 (555) 111-2222',
       bio: 'Expert hair colorist and balayage specialist with a passion for creating natural-looking highlights',
-      image: 'v1764142469/Beauty Salon/services/maria-rodriguez_uzksdw.avif',
+      image: 'https://res.cloudinary.com/caballerorandy/image/upload/v1764142469/Beauty%20Salon/services/maria-rodriguez_uzksdw.avif',
       isActive: true,
       userId: mariaUser.id,
     },
@@ -452,14 +452,14 @@ async function main() {
   const staffSofia = await prisma.staff.upsert({
     where: { userId: sofiaUser.id },
     update: {
-      image: 'v1764142586/Beauty Salon/services/sofia-martinez_vc28m8.avif',
+      image: 'https://res.cloudinary.com/caballerorandy/image/upload/v1764142586/Beauty%20Salon/services/sofia-martinez_vc28m8.avif',
     },
     create: {
       name: 'Sofia Martinez',
       email: 'sofia@rcbeautysalon.org',
       phone: '+1 (555) 333-4444',
       bio: 'Certified nail technician specializing in gel manicures, nail art, and spa pedicures',
-      image: 'v1764142586/Beauty Salon/services/sofia-martinez_vc28m8.avif',
+      image: 'https://res.cloudinary.com/caballerorandy/image/upload/v1764142586/Beauty%20Salon/services/sofia-martinez_vc28m8.avif',
       isActive: true,
       userId: sofiaUser.id,
     },
@@ -468,14 +468,14 @@ async function main() {
   const staffAna = await prisma.staff.upsert({
     where: { userId: anaUser.id },
     update: {
-      image: 'v1764142701/Beauty Salon/services/ana-garcia_cl0tgj.avif',
+      image: 'https://res.cloudinary.com/caballerorandy/image/upload/v1764142701/Beauty%20Salon/services/ana-garcia_cl0tgj.avif',
     },
     create: {
       name: 'Ana Garcia',
       email: 'ana@rcbeautysalon.org',
       phone: '+1 (555) 555-6666',
       bio: 'Licensed esthetician and massage therapist specializing in anti-aging facials and therapeutic massage',
-      image: 'v1764142701/Beauty Salon/services/ana-garcia_cl0tgj.avif',
+      image: 'https://res.cloudinary.com/caballerorandy/image/upload/v1764142701/Beauty%20Salon/services/ana-garcia_cl0tgj.avif',
       isActive: true,
       userId: anaUser.id,
     },

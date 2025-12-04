@@ -12,7 +12,7 @@ const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'caballerora
 /**
  * Generates a Cloudinary URL with transformations
  *
- * @param publicId - Cloudinary image public ID (e.g. "services/haircut")
+ * @param imageUrl - Cloudinary image public ID (e.g. "services/haircut") or full URL
  * @param options - Transformation options
  * @returns Full Cloudinary URL
  *
@@ -21,7 +21,7 @@ const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'caballerora
  * // https://res.cloudinary.com/YOUR_CLOUD_NAME/image/upload/w_400,h_300,c_fill/services/haircut
  */
 export function getCloudinaryUrl(
-  publicId: string,
+  imageUrl: string,
   options?: {
     width?: number
     height?: number
@@ -32,7 +32,7 @@ export function getCloudinaryUrl(
     aspectRatio?: string
   }
 ): string {
-  if (!publicId) {
+  if (!imageUrl) {
     return '/images/placeholders/placeholder.svg'
   }
 
@@ -50,7 +50,19 @@ export function getCloudinaryUrl(
     ? `${transformations.join(',')}/`
     : ''
 
-  return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${transformString}${publicId}`
+  // Check if imageUrl is already a full Cloudinary URL
+  const cloudinaryUrlPattern = /^https?:\/\/res\.cloudinary\.com\/([^/]+)\/image\/upload\/(v\d+\/)?(.+)$/
+  const match = imageUrl.match(cloudinaryUrlPattern)
+
+  if (match) {
+    // It's a full URL - extract cloudName, version (optional), and publicId
+    const [, cloudName, version, publicId] = match
+    const versionString = version || ''
+    return `https://res.cloudinary.com/${cloudName}/image/upload/${transformString}${versionString}${publicId}`
+  }
+
+  // It's a publicId - construct the URL
+  return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${transformString}${imageUrl}`
 }
 
 /**

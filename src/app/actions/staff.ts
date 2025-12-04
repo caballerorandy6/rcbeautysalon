@@ -4,7 +4,25 @@ import { prisma } from "@/lib/prisma"
 import { CreateStaffInput } from "@/lib/interfaces"
 import { revalidatePath } from "next/cache"
 
-export type UpdateStaffInput = Partial<CreateStaffInput>
+export type UpdateStaffInput = Partial<CreateStaffInput> & {
+  serviceIds?: string[]
+  workingHours?: {
+    dayOfWeek: number
+    isActive: boolean
+    startTime: string
+    endTime: string
+  }[]
+}
+
+//Get All Active Services for Staff Form
+export const getActiveServicesForStaff = async () => {
+  const services = await prisma.service.findMany({
+    where: { isActive: true },
+    select: { id: true, name: true },
+    orderBy: { name: "asc" },
+  })
+  return services
+}
 
 //Get Featured Staff for Homepage
 export const getFeaturedStaff = async () => {
@@ -25,13 +43,30 @@ export const getStaffMembers = async () => {
     include: {
       services: {
         include: {
-          service: true,
+          service: {
+            select: {
+              id: true,
+              name: true,
+              duration: true,
+              price: true,
+            },
+          },
         },
       },
       workingHours: true,
     },
   })
-  return staffMembers
+  // Serialize Decimal values
+  return staffMembers.map((staff) => ({
+    ...staff,
+    services: staff.services.map((ss) => ({
+      ...ss,
+      service: {
+        ...ss.service,
+        price: Number(ss.service.price),
+      },
+    })),
+  }))
 }
 
 //Get Staff Member by Slug
@@ -44,7 +79,16 @@ export const getStaffMemberBySlug = async (slug: string) => {
     include: {
       services: {
         include: {
-          service: true,
+          service: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              description: true,
+              duration: true,
+              price: true,
+            },
+          },
         },
       },
       workingHours: true,
@@ -62,7 +106,19 @@ export const getStaffMemberBySlug = async (slug: string) => {
     (staff) => generateSlug(staff.name) === slug
   )
 
-  return staffMember || null
+  if (!staffMember) return null
+
+  // Serialize Decimal values
+  return {
+    ...staffMember,
+    services: staffMember.services.map((ss) => ({
+      ...ss,
+      service: {
+        ...ss.service,
+        price: Number(ss.service.price),
+      },
+    })),
+  }
 }
 
 //Get Admin Staff Members
@@ -109,7 +165,12 @@ export const getStaffMemberById = async (id: string) => {
     include: {
       services: {
         include: {
-          service: true,
+          service: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
         },
       },
       workingHours: true,
@@ -123,17 +184,81 @@ export const getStaffMemberById = async (id: string) => {
 }
 
 //Create Staff Member
-export const createStaffMember = async (
-  data: CreateStaffInput,
-  userId: string
-) => {
+export const createStaffMember = async (data: UpdateStaffInput) => {
   try {
+    const { serviceIds, workingHours, email, ...staffData } = data
+
+    if (!staffData.name || !email) {
+      return { success: false, error: "Name and email are required" }
+    }
+
+    // Check if user with email already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    })
+
+    if (existingUser) {
+      // Check if this user is already linked to a staff member
+      const existingStaff = await prisma.staff.findUnique({
+        where: { userId: existingUser.id },
+      })
+
+      if (existingStaff) {
+        return { success: false, error: "A staff member with this email already exists" }
+      }
+    }
+
+    // Create user if doesn't exist, then create staff
     const staff = await prisma.staff.create({
       data: {
-        ...data,
-        userId,
+        name: staffData.name,
+        email,
+        phone: staffData.phone,
+        bio: staffData.bio,
+        image: staffData.image,
+        isActive: staffData.isActive ?? true,
+        user: existingUser
+          ? { connect: { id: existingUser.id } }
+          : {
+              create: {
+                name: staffData.name,
+                email,
+                role: "STAFF",
+              },
+            },
       },
     })
+
+    // Update user role to STAFF if they exist
+    if (existingUser && existingUser.role !== "STAFF") {
+      await prisma.user.update({
+        where: { id: existingUser.id },
+        data: { role: "STAFF" },
+      })
+    }
+
+    // Create service associations
+    if (serviceIds?.length) {
+      await prisma.staffService.createMany({
+        data: serviceIds.map((serviceId) => ({
+          staffId: staff.id,
+          serviceId,
+        })),
+      })
+    }
+
+    // Create working hours
+    if (workingHours?.length) {
+      await prisma.workingHours.createMany({
+        data: workingHours.map((wh) => ({
+          staffId: staff.id,
+          dayOfWeek: wh.dayOfWeek,
+          isActive: wh.isActive,
+          startTime: wh.startTime,
+          endTime: wh.endTime,
+        })),
+      })
+    }
 
     revalidatePath("/dashboard/staff")
 
@@ -147,10 +272,45 @@ export const createStaffMember = async (
 //Update Staff Member
 export const updateStaffMember = async (id: string, data: UpdateStaffInput) => {
   try {
+    const { serviceIds, workingHours, ...staffData } = data
+
     const updatedStaffMember = await prisma.staff.update({
       where: { id },
-      data,
+      data: staffData,
     })
+
+    // Update service associations
+    if (serviceIds !== undefined) {
+      await prisma.staffService.deleteMany({
+        where: { staffId: id },
+      })
+      if (serviceIds.length) {
+        await prisma.staffService.createMany({
+          data: serviceIds.map((serviceId) => ({
+            staffId: id,
+            serviceId,
+          })),
+        })
+      }
+    }
+
+    // Update working hours
+    if (workingHours !== undefined) {
+      await prisma.workingHours.deleteMany({
+        where: { staffId: id },
+      })
+      if (workingHours.length) {
+        await prisma.workingHours.createMany({
+          data: workingHours.map((wh) => ({
+            staffId: id,
+            dayOfWeek: wh.dayOfWeek,
+            isActive: wh.isActive,
+            startTime: wh.startTime,
+            endTime: wh.endTime,
+          })),
+        })
+      }
+    }
 
     revalidatePath("/dashboard/staff")
 

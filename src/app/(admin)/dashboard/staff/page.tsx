@@ -9,6 +9,7 @@ import {
 } from "@/components/icons"
 import { getAdminStaffMembers, getAdminStaffStats } from "@/app/actions/staff"
 import { StaffSearch } from "@/components/dashboard/staff-search"
+import { DeleteStaffButton } from "@/components/dashboard/delete-staff-button"
 
 interface StaffPageProps {
   searchParams: Promise<{ search?: string }>
@@ -139,6 +140,10 @@ export default async function StaffPage({ searchParams }: StaffPageProps) {
                       Schedule
                     </Button>
                   </Link>
+                  <DeleteStaffButton
+                    staffId={member.id}
+                    staffName={member.name}
+                  />
                 </div>
               </CardContent>
             </Card>
