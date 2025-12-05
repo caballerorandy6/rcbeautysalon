@@ -614,7 +614,7 @@ export async function getAppointmentById(id: string) {
     where: { id },
     include: {
       staff: { select: { id: true, name: true, email: true, phone: true } },
-      customer: { select: { id: true, name: true, email: true, phone: true } },
+      customer: { select: { id: true, userId: true, name: true, email: true, phone: true } },
       services: {
         include: {
           service: {

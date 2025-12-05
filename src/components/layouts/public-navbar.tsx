@@ -26,9 +26,9 @@ interface NavLink {
 
 const navLinks: NavLink[] = [
   { href: "/#services", label: "Services", isExternal: true },
-  { href: "/#team", label: "Our Team", isExternal: true },
-  { href: "/#shop", label: "Shop", isExternal: true },
   { href: "/#about", label: "About", isExternal: true },
+  { href: "/#team", label: "Team", isExternal: true },
+  { href: "/#shop", label: "Shop", isExternal: true },
   { href: "/#contact", label: "Contact", isExternal: true },
 ]
 
@@ -78,13 +78,13 @@ export function PublicNavbar() {
           <Logo variant="navbar" />
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden items-center gap-6 md:flex">
+        {/* Desktop Navigation - Shows at md (768px+) */}
+        <nav className="hidden items-center gap-0.5 md:flex md:gap-1 lg:gap-2 xl:gap-3 2xl:gap-4">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className={`text-sm font-medium transition-all px-3 py-2 rounded-md ${
+              className={`text-sm font-medium transition-all px-2.5 py-1.5 rounded-md xl:px-3 xl:py-2 ${
                 isActive(link.href)
                   ? "text-primary-foreground bg-primary shadow-sm"
                   : "text-foreground/70 hover:text-primary hover:bg-primary/10"
@@ -93,113 +93,120 @@ export function PublicNavbar() {
               {link.label}
             </Link>
           ))}
-          <ThemeToggle />
-          <NavCartButton />
-          {isLoading ? (
-            <Button variant="ghost" disabled className="w-20">
-              <span className="animate-pulse">...</span>
-            </Button>
-          ) : isAuthenticated ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="text-foreground/80 hover:bg-secondary hover:text-primary gap-2">
-                  <User size={18} />
-                  <span className="max-w-24 truncate">{session.user.name || "Account"}</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem asChild>
-                  <Link href={getDashboardLink()} className="flex items-center gap-2 cursor-pointer">
-                    <Gear size={16} />
-                    {session.user.role === "ADMIN" ? "Dashboard" : session.user.role === "STAFF" ? "Staff Portal" : "My Appointments"}
-                  </Link>
-                </DropdownMenuItem>
-                {session.user.role === "CLIENTE" && (
+          <div className="flex items-center gap-1.5 xl:gap-2 ml-3 xl:ml-4 pl-3 xl:pl-4 border-l border-border/50">
+            <ThemeToggle />
+            <NavCartButton />
+            {isLoading ? (
+              <Button variant="ghost" disabled size="sm" className="w-10">
+                <span className="animate-pulse">...</span>
+              </Button>
+            ) : isAuthenticated ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="text-foreground/80 hover:bg-secondary hover:text-primary gap-1.5">
+                    <User size={18} />
+                    <span className="hidden 2xl:inline max-w-20 truncate">{session.user.name || "Account"}</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
                   <DropdownMenuItem asChild>
-                    <Link href="/my-appointments" className="flex items-center gap-2 cursor-pointer">
-                      <CalendarCheck size={16} />
-                      My Appointments
+                    <Link href={getDashboardLink()} className="flex items-center gap-2 cursor-pointer">
+                      <Gear size={16} />
+                      {session.user.role === "ADMIN" ? "Dashboard" : session.user.role === "STAFF" ? "Staff Portal" : "My Appointments"}
                     </Link>
                   </DropdownMenuItem>
-                )}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => signOut({ callbackUrl: "/" })}
-                  className="flex items-center gap-2 cursor-pointer text-destructive focus:text-destructive"
-                >
-                  <SignOut size={16} />
-                  Sign Out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <Link href="/login">
-              <Button variant="ghost" className="text-foreground/80 hover:bg-secondary hover:text-primary">
-                Login
+                  {session.user.role === "CLIENTE" && (
+                    <DropdownMenuItem asChild>
+                      <Link href="/my-appointments" className="flex items-center gap-2 cursor-pointer">
+                        <CalendarCheck size={16} />
+                        My Appointments
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => signOut({ callbackUrl: "/" })}
+                    className="flex items-center gap-2 cursor-pointer text-destructive focus:text-destructive"
+                  >
+                    <SignOut size={16} />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link href="/login">
+                <Button variant="ghost" size="sm" className="text-foreground/80 hover:bg-secondary hover:text-primary">
+                  Login
+                </Button>
+              </Link>
+            )}
+            <Link href="/booking">
+              <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-md">
+                Book Now
               </Button>
             </Link>
-          )}
-          <Link href="/booking">
-            <Button className="from-primary to-primary/90 bg-linear-to-r text-white hover:opacity-90 shadow-md group">
-              <span className="group-hover:text-accent transition-colors">Book Now</span>
-            </Button>
-          </Link>
+          </div>
         </nav>
 
-        {/* Mobile Menu Button */}
-        <button
-          className="text-foreground/70 hover:text-primary transition-colors md:hidden"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-label="Toggle menu"
-        >
-          {mobileMenuOpen ? (
-            <X size={24} weight="bold" />
-          ) : (
-            <List size={24} weight="bold" />
-          )}
-        </button>
+        {/* Mobile Menu Button - Shows below md (< 768px) */}
+        <div className="flex items-center gap-2 md:hidden">
+          <ThemeToggle />
+          <NavCartButton />
+          <button
+            className="text-foreground/70 hover:text-primary transition-colors p-2 -mr-2"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? (
+              <X size={24} weight="bold" />
+            ) : (
+              <List size={24} weight="bold" />
+            )}
+          </button>
+        </div>
       </div>
 
-      {/* Mobile Navigation */}
+      {/* Mobile Navigation Menu */}
       {mobileMenuOpen && (
         <div className="border-t border-border/50 bg-card/95 backdrop-blur-md md:hidden">
-          <nav className="container mx-auto flex flex-col gap-2 px-4 py-6">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`text-sm font-medium transition-all px-3 py-2 rounded-md ${
-                  isActive(link.href)
-                    ? "text-primary-foreground bg-primary shadow-sm"
-                    : "text-foreground/70 hover:text-primary hover:bg-primary/10"
-                }`}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {link.label}
-              </Link>
-            ))}
-            <div className="flex items-center justify-between pt-4 border-t border-border/50">
-              <div className="flex items-center gap-2">
-                <ThemeToggle />
-                <span className="text-sm text-muted-foreground">Theme</span>
-              </div>
-              <NavCartButton />
+          <nav className="container mx-auto flex flex-col gap-1 px-4 py-4 sm:py-6">
+            {/* Navigation Links */}
+            <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-col sm:gap-1">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`text-sm font-medium transition-all px-3 py-2.5 rounded-md text-center sm:text-left ${
+                    isActive(link.href)
+                      ? "text-primary-foreground bg-primary shadow-sm"
+                      : "text-foreground/70 hover:text-primary hover:bg-primary/10"
+                  }`}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              ))}
             </div>
+
+            {/* Divider */}
+            <div className="my-3 border-t border-border/50" />
+
+            {/* Auth Section */}
             {isLoading ? (
-              <Button variant="ghost" disabled className="w-full">
+              <Button variant="ghost" disabled className="w-full h-11">
                 <span className="animate-pulse">Loading...</span>
               </Button>
             ) : isAuthenticated ? (
-              <>
+              <div className="space-y-1">
                 <Link href={getDashboardLink()} onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="ghost" className="w-full text-foreground/80 hover:bg-secondary hover:text-primary gap-2">
+                  <Button variant="ghost" className="w-full h-11 text-foreground/80 hover:bg-secondary hover:text-primary gap-2 justify-start">
                     <User size={18} />
                     {session.user.name || "Account"}
                   </Button>
                 </Link>
                 {session.user.role === "CLIENTE" && (
                   <Link href="/my-appointments" onClick={() => setMobileMenuOpen(false)}>
-                    <Button variant="ghost" className="w-full text-foreground/80 hover:bg-secondary hover:text-primary gap-2">
+                    <Button variant="ghost" className="w-full h-11 text-foreground/80 hover:bg-secondary hover:text-primary gap-2 justify-start">
                       <CalendarCheck size={18} />
                       My Appointments
                     </Button>
@@ -207,7 +214,7 @@ export function PublicNavbar() {
                 )}
                 <Button
                   variant="ghost"
-                  className="w-full text-destructive hover:bg-destructive/10 gap-2"
+                  className="w-full h-11 text-destructive hover:bg-destructive/10 gap-2 justify-start"
                   onClick={() => {
                     setMobileMenuOpen(false)
                     signOut({ callbackUrl: "/" })
@@ -216,16 +223,18 @@ export function PublicNavbar() {
                   <SignOut size={18} />
                   Sign Out
                 </Button>
-              </>
+              </div>
             ) : (
               <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
-                <Button variant="ghost" className="w-full text-foreground/80 hover:bg-secondary hover:text-primary">
+                <Button variant="ghost" className="w-full h-11 text-foreground/80 hover:bg-secondary hover:text-primary">
                   Login
                 </Button>
               </Link>
             )}
-            <Link href="/booking" onClick={() => setMobileMenuOpen(false)}>
-              <Button className="from-primary to-primary/90 bg-linear-to-r text-white hover:opacity-90 w-full">
+
+            {/* Book Now Button */}
+            <Link href="/booking" onClick={() => setMobileMenuOpen(false)} className="mt-2">
+              <Button className="bg-primary text-primary-foreground hover:bg-primary/90 w-full h-12 text-base">
                 Book Now
               </Button>
             </Link>

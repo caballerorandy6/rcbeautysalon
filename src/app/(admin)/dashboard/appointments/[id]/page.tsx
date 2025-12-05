@@ -208,8 +208,8 @@ export default async function AppointmentDetailPage({ params }: PageProps) {
                   </div>
                 )}
               </div>
-              {appointment.customer && (
-                <Link href={`/dashboard/users?id=${appointment.customer.id}`}>
+              {appointment.customer?.userId && (
+                <Link href={`/dashboard/users/${appointment.customer.userId}`}>
                   <Button variant="outline" className="w-full" size="sm">
                     View Customer Profile
                   </Button>

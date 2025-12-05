@@ -24,8 +24,22 @@ export const metadata: Metadata = {
 
 export const revalidate = 60
 
-export default async function ShopPage() {
-  const products = await getShopProducts()
+interface ShopPageProps {
+  searchParams: Promise<{ search?: string }>
+}
+
+export default async function ShopPage({ searchParams }: ShopPageProps) {
+  const { search } = await searchParams
+  const allProducts = await getShopProducts()
+
+  // Filter products based on search query
+  const products = search
+    ? allProducts.filter(
+        (product) =>
+          product.name.toLowerCase().includes(search.toLowerCase()) ||
+          product.description?.toLowerCase().includes(search.toLowerCase())
+      )
+    : allProducts
 
   return (
     <div className="min-h-screen">
@@ -51,20 +65,9 @@ export default async function ShopPage() {
         <div className="container mx-auto px-4">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <SearchInput className="flex-1 md:max-w-md" />
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm">
-                All Products
-              </Button>
-              <Button variant="outline" size="sm">
-                Hair Care
-              </Button>
-              <Button variant="outline" size="sm">
-                Nail Care
-              </Button>
-              <Button variant="outline" size="sm">
-                Skin Care
-              </Button>
-            </div>
+            <Button variant="outline" size="sm" asChild>
+              <Link href="/shop">All Products</Link>
+            </Button>
           </div>
         </div>
       </div>
@@ -152,7 +155,11 @@ export default async function ShopPage() {
                     }}
                     inStock={inStock}
                   />
-                  <Button variant="outline" className="w-full border-primary/50 hover:bg-primary hover:text-primary-foreground" asChild>
+                  <Button
+                    variant="outline"
+                    className="border-primary/50 hover:bg-primary hover:text-primary-foreground w-full"
+                    asChild
+                  >
                     <Link href={`/shop/${product.id}`}>See Details</Link>
                   </Button>
                 </CardFooter>

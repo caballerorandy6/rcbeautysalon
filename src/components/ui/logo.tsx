@@ -13,7 +13,7 @@ interface LogoProps {
 
 // Preset sizes for different contexts
 const variantSizes: Record<LogoVariant, { width: number; height: number }> = {
-  navbar: { width: 120, height: 40 },
+  navbar: { width: 108, height: 36 },
   sidebar: { width: 100, height: 35 },
   footer: { width: 140, height: 50 },
   auth: { width: 160, height: 55 },
