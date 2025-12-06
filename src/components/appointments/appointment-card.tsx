@@ -23,7 +23,9 @@ import {
 } from "@/components/icons"
 import { format } from "date-fns"
 import { cancelAppointment } from "@/app/actions/appointments"
+import { createDepositCheckoutForAppointment } from "@/app/actions/stripe"
 import { AppointmentCardProps } from "@/lib/interfaces"
+import Link from "next/link"
 
 export function AppointmentCard({
   appointment,
@@ -32,7 +34,22 @@ export function AppointmentCard({
 }: AppointmentCardProps) {
   const router = useRouter()
   const [isCancelling, setIsCancelling] = useState(false)
+  const [isPaying, setIsPaying] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const handlePayNow = async () => {
+    setIsPaying(true)
+    setError(null)
+
+    const result = await createDepositCheckoutForAppointment(appointment.id)
+
+    if (result.success && result.checkoutUrl) {
+      window.location.href = result.checkoutUrl
+    } else {
+      setError(result.error || "Failed to create payment session")
+      setIsPaying(false)
+    }
+  }
 
   const handleCancelAppointment = async () => {
     if (
@@ -187,16 +204,37 @@ export function AppointmentCard({
           )}
           <div className="flex w-full gap-2">
             {!appointment.depositPaid && (
-              <Button className="flex-1 shadow-lg transition-all hover:scale-105">
-                <CurrencyDollarIcon size={18} className="mr-2" weight="regular" />
-                Pay Now
+              <Button
+                className="flex-1 shadow-lg transition-all hover:scale-105"
+                onClick={handlePayNow}
+                disabled={isPaying || isCancelling}
+              >
+                {isPaying ? (
+                  <>
+                    <SpinnerGapIcon
+                      size={18}
+                      className="mr-2 animate-spin"
+                      weight="regular"
+                    />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <CurrencyDollarIcon
+                      size={18}
+                      className="mr-2"
+                      weight="regular"
+                    />
+                    Pay Now
+                  </>
+                )}
               </Button>
             )}
             <Button
               variant="destructive"
               className="flex-1"
               onClick={handleCancelAppointment}
-              disabled={isCancelling}
+              disabled={isCancelling || isPaying}
             >
               {isCancelling ? (
                 <>
@@ -218,8 +256,10 @@ export function AppointmentCard({
       {/* Past appointment actions */}
       {isPast && appointment.status === "COMPLETED" && (
         <CardFooter>
-          <Button variant="outline" className="w-full">
-            Book Again
+          <Button variant="outline" className="w-full" asChild>
+            <Link href={`/booking?service=${appointment.services[0]?.service.slug}`}>
+              Book Again
+            </Link>
           </Button>
         </CardFooter>
       )}

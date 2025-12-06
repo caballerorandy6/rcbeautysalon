@@ -276,3 +276,79 @@ export async function verifyAndCreateAppointment(sessionId: string) {
     }
   }
 }
+
+// Create checkout session for existing unpaid appointment
+export async function createDepositCheckoutForAppointment(appointmentId: string) {
+  try {
+    const session = await auth()
+
+    if (!session?.user) {
+      return { success: false, error: "Unauthorized" }
+    }
+
+    // Fetch the appointment with services
+    const appointment = await prisma.appointment.findUnique({
+      where: { id: appointmentId },
+      include: {
+        services: { include: { service: true } },
+        customer: true,
+      },
+    })
+
+    // Validate appointment exists
+    if (!appointment) {
+      return { success: false, error: "Appointment not found" }
+    }
+
+    // Validate appointment belongs to current user
+    if (appointment.customer?.userId !== session.user.id) {
+      return { success: false, error: "Unauthorized" }
+    }
+
+    // Validate deposit not already paid
+    if (appointment.depositPaid) {
+      return { success: false, error: "Deposit already paid" }
+    }
+
+    // Get service names for description
+    const serviceNames = appointment.services.map((s) => s.service.name).join(", ")
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+
+    // Create Stripe checkout session
+    const checkoutSession = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      mode: "payment",
+      customer_email: session.user.email || undefined,
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: `Appointment Deposit - ${serviceNames}`,
+              description: "Non-refundable deposit for your appointment",
+            },
+            unit_amount: Math.round(appointment.depositAmount.toNumber() * 100),
+          },
+          quantity: 1,
+        },
+      ],
+      metadata: {
+        type: "existing_appointment",
+        appointmentId: appointment.id,
+      },
+      success_url: `${baseUrl}/my-appointments?paid=${appointment.id}`,
+      cancel_url: `${baseUrl}/my-appointments`,
+    })
+
+    return {
+      success: true,
+      checkoutUrl: checkoutSession.url,
+    }
+  } catch (error) {
+    console.error("Error creating checkout for existing appointment:", error)
+    return {
+      success: false,
+      error: "Failed to create payment session",
+    }
+  }
+}

@@ -164,10 +164,10 @@ export async function getAvailableTimeSlots(
 }
 
 //Get single service details for booking
-export async function getServiceForBooking(serviceId: string) {
-  // Fetch service details for booking page
+export async function getServiceForBooking(serviceSlug: string) {
+  // Fetch service details for booking page by slug
   const service = await prisma.service.findUnique({
-    where: { id: serviceId, isActive: true },
+    where: { slug: serviceSlug, isActive: true },
     select: {
       id: true,
       name: true,
@@ -431,7 +431,7 @@ export async function getUserAppointments() {
       services: {
         include: {
           service: {
-            select: { name: true, duration: true, imageUrl: true },
+            select: { slug: true, name: true, duration: true, imageUrl: true },
           },
         },
       },

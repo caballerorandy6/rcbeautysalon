@@ -513,6 +513,7 @@ export interface AppointmentCardProps {
     }
     services: Array<{
       service: {
+        slug: string
         name: string
         duration: number
         imageUrl: string | null
@@ -538,6 +539,7 @@ export interface AppointmentData {
   }
   services: Array<{
     service: {
+      slug: string
       name: string
       duration: number
       imageUrl: string | null

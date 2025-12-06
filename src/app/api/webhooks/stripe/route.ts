@@ -46,7 +46,21 @@ export async function POST(req: Request) {
     }
 
     try {
-      // Parse metadata
+      // Handle existing appointment payment (from "Pay Now" button)
+      if (metadata.type === "existing_appointment" && metadata.appointmentId) {
+        await prisma.appointment.update({
+          where: { id: metadata.appointmentId },
+          data: {
+            depositPaid: true,
+            status: "CONFIRMED",
+            stripePaymentId: session.payment_intent as string,
+          },
+        })
+        console.log(`Existing appointment paid: ${metadata.appointmentId}`)
+        return NextResponse.json({ received: true })
+      }
+
+      // Parse metadata for new appointment
       const serviceIds = JSON.parse(metadata.serviceIds || "[]")
       const staffId = metadata.staffId
       const startTime = new Date(metadata.startTime)

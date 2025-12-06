@@ -14,27 +14,29 @@ interface BookingPageProps {
 export default async function BookingPage(props: BookingPageProps) {
   // Unwrap searchParams Promise
   const searchParams = await props.searchParams
-  const serviceId = searchParams.service
+  const serviceSlug = searchParams.service
 
   // Redirect to services page if no service is selected
-  if (!serviceId) {
+  if (!serviceSlug) {
     redirect("/services")
   }
 
   // Get current session
   const session = await auth()
 
-  // Fetch all initial data on the server
-  const [service, availableStaff, salonConfig] = await Promise.all([
-    getServiceForBooking(serviceId),
-    getAvailableStaff(serviceId),
-    getSalonConfig(),
-  ])
+  // First fetch service by slug to get service.id
+  const service = await getServiceForBooking(serviceSlug)
 
   // Redirect if service not found
   if (!service) {
     redirect("/services")
   }
+
+  // Then fetch staff and config using service.id
+  const [availableStaff, salonConfig] = await Promise.all([
+    getAvailableStaff(service.id),
+    getSalonConfig(),
+  ])
 
   // Prepare default values for authenticated users
   const defaultValues = session?.user

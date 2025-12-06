@@ -201,7 +201,7 @@ export default async function ServiceDetailPage({
               {/* Book Button */}
               <div className="flex flex-col gap-4 sm:flex-row">
                 <Link
-                  href={`/booking?service=${service.id}`}
+                  href={`/booking?service=${service.slug}`}
                   className="flex-1"
                 >
                   <Button
