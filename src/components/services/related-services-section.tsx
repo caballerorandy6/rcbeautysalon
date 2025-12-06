@@ -4,7 +4,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { CalendarBlank, Clock, CurrencyDollar } from "@phosphor-icons/react"
+import { CalendarIcon, ClockIcon, CurrencyDollarIcon } from "@/components/icons"
 import { cloudinaryPresets } from "@/lib/utils/cloudinary"
 
 interface RelatedService {
@@ -70,7 +70,7 @@ export function RelatedServicesSection({
                     />
                   ) : (
                     <div className="from-muted to-muted/50 flex h-full w-full items-center justify-center bg-linear-to-br">
-                      <CalendarBlank size={48} weight="regular" className="text-primary/30" />
+                      <CalendarIcon size={48} weight="regular" className="text-primary/30" />
                     </div>
                   )}
                   <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/20 to-transparent" />
@@ -93,13 +93,13 @@ export function RelatedServicesSection({
                   {/* Service Details */}
                   <div className="mb-4 flex items-center gap-4 text-sm text-muted-foreground">
                     <div className="flex items-center gap-1 group-hover:text-accent transition-colors">
-                      <CurrencyDollar size={16} weight="regular" />
+                      <CurrencyDollarIcon size={16} weight="regular" />
                       <span className="font-semibold">
                         ${service.price}
                       </span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Clock size={16} weight="regular" />
+                      <ClockIcon size={16} weight="regular" />
                       <span>{service.duration} min</span>
                     </div>
                   </div>

@@ -17,12 +17,12 @@ import {
   getAllServiceSlugs,
   getRelatedServices,
 } from "@/app/actions/services"
-import { ReviewsSection } from "@/components/services/reviews-section"
+import { ReviewsSection } from "@/components/reviews/reviews-section"
 import { GallerySection } from "@/components/services/gallery-section"
 import { FAQSection } from "@/components/services/faq-section"
 import { RelatedServicesSection } from "@/components/services/related-services-section"
 import { ServiceBreadcrumbs } from "@/components/services/breadcrumbs"
-import { ReviewForm } from "@/components/services/review-form"
+import { ReviewForm } from "@/components/reviews/review-form"
 import { StaffCard } from "@/components/staff/staff-card"
 import { auth } from "@/lib/auth/auth"
 

@@ -1,7 +1,7 @@
 import { Suspense } from "react"
 import type { Metadata } from "next"
 import { RegisterForm } from "@/components/auth/register-form"
-import { RegisterSkeleton } from "@/components/skeletons/register-skeleton"
+import { RegisterSkeleton } from "@/components/auth/register-skeleton"
 
 export const metadata: Metadata = {
   title: "Create Account | RC Beauty Salon",

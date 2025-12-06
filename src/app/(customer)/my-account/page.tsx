@@ -6,11 +6,12 @@ export const metadata: Metadata = {
   title: "My Account | RC Beauty Salon",
   description: "Manage your profile, view appointments, and update your account settings.",
 }
-import { getUserProfile, getUserStats } from "@/app/actions/account"
+import { getUserProfile, getUserStats, getOrderStats } from "@/app/actions/account"
 import { ProfileHeader } from "@/components/account/profile-header"
 import { PersonalInfoSection } from "@/components/account/personal-info-section"
 import { AppointmentsSummary } from "@/components/account/appointments-summary"
 import { SecuritySection } from "@/components/account/security-section"
+import { OrdersSummary } from "@/components/account/orders-summary"
 
 export default async function MyAccountPage() {
   const session = await auth()
@@ -18,9 +19,10 @@ export default async function MyAccountPage() {
     redirect("/login?callbackUrl=/my-account")
   }
 
-  const [profile, stats] = await Promise.all([
+  const [profile, stats, orderStats] = await Promise.all([
     getUserProfile(),
     getUserStats(),
+    getOrderStats(),
   ])
 
   if (!profile) {
@@ -50,6 +52,9 @@ export default async function MyAccountPage() {
 
           {/* Appointments Summary */}
           <AppointmentsSummary stats={stats} />
+
+          {/* Orders Summary */}
+          <OrdersSummary stats={orderStats} />
         </div>
 
         {/* Security Section */}

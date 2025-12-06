@@ -13,7 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { VerifyEmailSkeleton } from "@/components/skeletons/verify-email-skeleton"
+import { VerifyEmailSkeleton } from "@/components/auth/verify-email-skeleton"
 import { CheckCircleIcon } from "@/components/icons/check-circle-icon"
 import { XCircleIcon } from "@/components/icons/x-circle-icon"
 

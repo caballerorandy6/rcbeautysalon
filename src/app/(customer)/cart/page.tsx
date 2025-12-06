@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft } from "@phosphor-icons/react/dist/ssr"
+import { ArrowLeftIcon } from "@/components/icons"
 import { CartContent } from "@/components/shop/cart-content"
 
 export const metadata: Metadata = {
@@ -20,7 +20,7 @@ export default function CartPage() {
           asChild
         >
           <Link href="/shop">
-            <ArrowLeft className="mr-2 h-4 w-4" />
+            <ArrowLeftIcon size={16} className="mr-2" />
             Back to Shop
           </Link>
         </Button>

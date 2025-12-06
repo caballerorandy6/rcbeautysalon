@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { CalendarBlank } from "@phosphor-icons/react"
+import { CalendarIcon } from "@/components/icons"
 
 interface BookingButtonProps {
   href?: string
@@ -20,7 +20,7 @@ export function BookingButton({
   return (
     <Link href={href}>
       <Button size={size} variant={variant} className={className}>
-        <CalendarBlank size={20} weight="regular" className="mr-2" />
+        <CalendarIcon size={20} weight="regular" className="mr-2" />
         Book Now
       </Button>
     </Link>

@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Clock } from "@phosphor-icons/react"
+import { ClockIcon } from "@/components/icons"
 
 interface ServiceStepProps {
   service: {
@@ -37,7 +37,7 @@ export function ServiceStep({ service }: ServiceStepProps) {
             </Badge>
           </div>
           <p className="text-sm text-muted-foreground">
-            <Clock size={14} className="mr-1 inline" weight="regular" />
+            <ClockIcon size={14} className="mr-1 inline" weight="regular" />
             {service.duration} minutes
           </p>
         </div>

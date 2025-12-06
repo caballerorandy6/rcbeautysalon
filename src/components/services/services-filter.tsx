@@ -11,14 +11,13 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
-import { MagnifyingGlass, X, Sliders } from "@phosphor-icons/react"
+import { SearchIcon, CloseIcon, SlidersIcon } from "@/components/icons"
 import { ServiceFilters, ServicesFilterProps } from "@/lib/interfaces"
 
 export function ServicesFilter({
   categories,
   staff,
   onFilterChange,
-  isLoading
 }: ServicesFilterProps) {
   const [isPending, startTransition] = useTransition()
   const [filters, setFilters] = useState<ServiceFilters>({})
@@ -41,7 +40,7 @@ export function ServicesFilter({
     })
   }
 
-  const hasActiveFilters = Object.keys(filters).some(key => {
+  const hasActiveFilters = Object.keys(filters).some((key) => {
     const value = filters[key as keyof ServiceFilters]
     return value !== undefined && value !== "" && value !== null
   })
@@ -52,14 +51,18 @@ export function ServicesFilter({
       <div className="flex flex-col gap-4 sm:flex-row">
         {/* Search */}
         <div className="relative flex-1">
-          <MagnifyingGlass size={16} weight="regular" className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <SearchIcon
+            size={16}
+            weight="regular"
+            className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2"
+          />
           <Input
             type="text"
             placeholder="Search services..."
             value={filters.search || ""}
             onChange={(e) => handleFilterChange({ search: e.target.value })}
             className="pl-10"
-            disabled={isPending || isLoading}
+            disabled={isPending}
           />
         </div>
 
@@ -69,7 +72,7 @@ export function ServicesFilter({
           onValueChange={(value) =>
             handleFilterChange({ sortBy: value as ServiceFilters["sortBy"] })
           }
-          disabled={isPending || isLoading}
+          disabled={isPending}
         >
           <SelectTrigger className="w-full sm:w-[200px]">
             <SelectValue placeholder="Sort by" />
@@ -93,7 +96,7 @@ export function ServicesFilter({
           onClick={() => setShowAdvanced(!showAdvanced)}
           className="shrink-0"
         >
-          <Sliders size={16} weight="regular" />
+          <SlidersIcon size={16} weight="regular" />
         </Button>
       </div>
 
@@ -106,9 +109,11 @@ export function ServicesFilter({
             <Select
               value={filters.categoryId || "all"}
               onValueChange={(value) =>
-                handleFilterChange({ categoryId: value === "all" ? undefined : value })
+                handleFilterChange({
+                  categoryId: value === "all" ? undefined : value,
+                })
               }
-              disabled={isPending || isLoading}
+              disabled={isPending}
             >
               <SelectTrigger>
                 <SelectValue placeholder="All Categories" />
@@ -130,9 +135,11 @@ export function ServicesFilter({
             <Select
               value={filters.staffId || "all"}
               onValueChange={(value) =>
-                handleFilterChange({ staffId: value === "all" ? undefined : value })
+                handleFilterChange({
+                  staffId: value === "all" ? undefined : value,
+                })
               }
-              disabled={isPending || isLoading}
+              disabled={isPending}
             >
               <SelectTrigger>
                 <SelectValue placeholder="All Staff" />
@@ -158,11 +165,13 @@ export function ServicesFilter({
                 value={filters.minPrice || ""}
                 onChange={(e) =>
                   handleFilterChange({
-                    minPrice: e.target.value ? Number(e.target.value) : undefined,
+                    minPrice: e.target.value
+                      ? Number(e.target.value)
+                      : undefined,
                   })
                 }
                 min={0}
-                disabled={isPending || isLoading}
+                disabled={isPending}
               />
               <Input
                 type="number"
@@ -170,11 +179,13 @@ export function ServicesFilter({
                 value={filters.maxPrice || ""}
                 onChange={(e) =>
                   handleFilterChange({
-                    maxPrice: e.target.value ? Number(e.target.value) : undefined,
+                    maxPrice: e.target.value
+                      ? Number(e.target.value)
+                      : undefined,
                   })
                 }
                 min={0}
-                disabled={isPending || isLoading}
+                disabled={isPending}
               />
             </div>
           </div>
@@ -189,11 +200,13 @@ export function ServicesFilter({
                 value={filters.minDuration || ""}
                 onChange={(e) =>
                   handleFilterChange({
-                    minDuration: e.target.value ? Number(e.target.value) : undefined,
+                    minDuration: e.target.value
+                      ? Number(e.target.value)
+                      : undefined,
                   })
                 }
                 min={0}
-                disabled={isPending || isLoading}
+                disabled={isPending}
               />
               <Input
                 type="number"
@@ -201,11 +214,13 @@ export function ServicesFilter({
                 value={filters.maxDuration || ""}
                 onChange={(e) =>
                   handleFilterChange({
-                    maxDuration: e.target.value ? Number(e.target.value) : undefined,
+                    maxDuration: e.target.value
+                      ? Number(e.target.value)
+                      : undefined,
                   })
                 }
                 min={0}
-                disabled={isPending || isLoading}
+                disabled={isPending}
               />
             </div>
           </div>
@@ -220,17 +235,17 @@ export function ServicesFilter({
             variant="ghost"
             size="sm"
             onClick={clearFilters}
-            disabled={isPending || isLoading}
+            disabled={isPending}
           >
-            <X size={16} weight="regular" className="mr-2" />
+            <CloseIcon size={16} weight="regular" className="mr-2" />
             Clear Filters
           </Button>
         </div>
       )}
 
       {/* Loading Indicator */}
-      {(isPending || isLoading) && (
-        <div className="text-center text-sm text-muted-foreground">
+      {isPending && (
+        <div className="text-muted-foreground text-center text-sm">
           Filtering services...
         </div>
       )}

@@ -4,7 +4,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { CalendarBlank } from "@phosphor-icons/react"
+import { CalendarIcon } from "@/components/icons"
 import { AppointmentCard } from "./appointment-card"
 import { AppointmentsListProps } from "@/lib/interfaces"
 
@@ -26,7 +26,7 @@ export function AppointmentsList({
         {upcomingAppointments.length === 0 ? (
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12">
-              <CalendarBlank
+              <CalendarIcon
                 size={48}
                 className="text-muted-foreground mb-4"
                 weight="regular"
@@ -54,7 +54,7 @@ export function AppointmentsList({
         {pastAppointments.length === 0 ? (
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12">
-              <CalendarBlank
+              <CalendarIcon
                 size={48}
                 className="text-muted-foreground mb-4"
                 weight="regular"

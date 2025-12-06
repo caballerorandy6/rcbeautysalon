@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { ShoppingCart } from "@phosphor-icons/react"
+import { ShoppingCartIcon } from "@/components/icons"
 import { useCartStore } from "@/store/cart-store"
 import { useRouter } from "next/navigation"
 
@@ -25,7 +25,7 @@ export function CartButton({
       size={size}
       className={`${mobile ? "rounded-full shadow-lg" : ""} ${className}`}
     >
-      <ShoppingCart size={20} weight="regular" className="mr-2" />
+      <ShoppingCartIcon size={20} weight="regular" className="mr-2" />
       Cart {itemCount > 0 && `(${itemCount})`}
     </Button>
   )

@@ -1,5 +1,6 @@
 "use server"
 
+import { cache } from "react"
 import { prisma } from "@/lib/prisma"
 import { CreateStaffInput } from "@/lib/interfaces"
 import { revalidatePath } from "next/cache"
@@ -70,7 +71,8 @@ export const getStaffMembers = async () => {
 }
 
 //Get Staff Member by Slug
-export const getStaffMemberBySlug = async (slug: string) => {
+// Cached to avoid duplicate fetches in generateMetadata + page component
+export const getStaffMemberBySlug = cache(async (slug: string) => {
   // Get all active staff and find by slug match
   const staffMembers = await prisma.staff.findMany({
     where: {
@@ -119,7 +121,7 @@ export const getStaffMemberBySlug = async (slug: string) => {
       },
     })),
   }
-}
+})
 
 //Get Admin Staff Members
 export const getAdminStaffMembers = async (search?: string) => {

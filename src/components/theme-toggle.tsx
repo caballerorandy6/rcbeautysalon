@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Moon, Sun, Desktop } from "@phosphor-icons/react"
+import { MoonIcon, SunIcon, DesktopIcon } from "@/components/icons"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import {
@@ -20,9 +20,9 @@ export function ThemeToggle() {
   }, [])
 
   const items = [
-    { key: "light", label: "Light", icon: Sun },
-    { key: "dark", label: "Dark", icon: Moon },
-    { key: "system", label: "System", icon: Desktop },
+    { key: "light", label: "Light", icon: SunIcon },
+    { key: "dark", label: "Dark", icon: MoonIcon },
+    { key: "system", label: "System", icon: DesktopIcon },
   ]
 
   const handleThemeChange = (newTheme: string) => {
@@ -34,7 +34,7 @@ export function ThemeToggle() {
   if (!mounted) {
     return (
       <Button variant="ghost" size="icon" className="group hover:bg-primary/10">
-        <Moon size={20} weight="fill" className="text-primary" />
+        <MoonIcon size={20} weight="fill" className="text-primary" />
         <span className="sr-only">Toggle theme</span>
       </Button>
     )
@@ -51,13 +51,13 @@ export function ThemeToggle() {
           className="group hover:bg-primary/10"
         >
           {isDark ? (
-            <Sun
+            <SunIcon
               size={20}
               weight="fill"
               className="text-accent transition-transform group-hover:scale-110"
             />
           ) : (
-            <Moon
+            <MoonIcon
               size={20}
               weight="fill"
               className="text-primary transition-transform group-hover:scale-110"

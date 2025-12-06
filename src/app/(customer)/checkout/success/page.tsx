@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { CheckCircle, ShoppingBag, House, CircleNotch } from "@phosphor-icons/react"
+import { CheckCircleIcon, ShoppingBagIcon, HouseIcon, SpinnerIcon, ReceiptIcon } from "@/components/icons"
 import { verifyProductOrder } from "@/app/actions/product-checkout"
 import { useCartStore } from "@/store/cart-store"
 
@@ -54,7 +54,7 @@ export default function CheckoutSuccessPage() {
         <Card className="w-full max-w-md text-center">
           <CardHeader>
             <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
-              <CircleNotch size={40} className="text-primary animate-spin" />
+              <SpinnerIcon size={40} className="text-primary animate-spin" />
             </div>
             <CardTitle className="text-2xl">Processing your order...</CardTitle>
           </CardHeader>
@@ -98,7 +98,7 @@ export default function CheckoutSuccessPage() {
       <Card className="w-full max-w-md text-center">
         <CardHeader>
           <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
-            <CheckCircle size={48} weight="fill" className="text-green-600" />
+            <CheckCircleIcon size={48} weight="fill" className="text-green-600" />
           </div>
           <CardTitle className="text-2xl">Order Confirmed!</CardTitle>
         </CardHeader>
@@ -117,15 +117,23 @@ export default function CheckoutSuccessPage() {
           </p>
         </CardContent>
         <CardFooter className="flex flex-col gap-3">
-          <Button asChild className="w-full">
+          {orderId && (
+            <Button asChild className="w-full">
+              <Link href={`/my-orders/${orderId}`}>
+                <ReceiptIcon className="mr-2 h-4 w-4" />
+                View Order Details
+              </Link>
+            </Button>
+          )}
+          <Button variant={orderId ? "outline" : "default"} asChild className="w-full">
             <Link href="/shop">
-              <ShoppingBag className="mr-2 h-4 w-4" />
+              <ShoppingBagIcon className="mr-2 h-4 w-4" />
               Continue Shopping
             </Link>
           </Button>
-          <Button variant="outline" asChild className="w-full">
+          <Button variant="ghost" asChild className="w-full">
             <Link href="/">
-              <House className="mr-2 h-4 w-4" />
+              <HouseIcon className="mr-2 h-4 w-4" />
               Back to Home
             </Link>
           </Button>

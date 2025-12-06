@@ -14,7 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { List, X, User, SignOut, CalendarCheck, Gear } from "@phosphor-icons/react"
+import { MenuIcon, CloseIcon, UserIcon, LogoutIcon, CalendarCheckIcon, SettingsIcon, ReceiptIcon, UserCogIcon, StarIcon } from "@/components/icons"
 import { useNavigationStore } from "@/store/navigation-store"
 import { NavCartButton } from "@/components/shop/nav-cart-button"
 
@@ -40,15 +40,6 @@ export function PublicNavbar() {
 
   const isLoading = status === "loading"
   const isAuthenticated = !!session?.user
-
-  // Get dashboard link based on role
-  const getDashboardLink = () => {
-    if (!session?.user) return "/login"
-    const role = session.user.role
-    if (role === "ADMIN") return "/dashboard"
-    if (role === "STAFF") return "/staff-portal"
-    return "/my-appointments"
-  }
 
   const isActive = (href: string) => {
     // Home page
@@ -104,31 +95,61 @@ export function PublicNavbar() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" className="text-foreground/80 hover:bg-secondary hover:text-primary gap-1.5">
-                    <User size={18} />
+                    <UserIcon size={18} />
                     <span className="hidden 2xl:inline max-w-20 truncate">{session.user.name || "Account"}</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem asChild>
-                    <Link href={getDashboardLink()} className="flex items-center gap-2 cursor-pointer">
-                      <Gear size={16} />
-                      {session.user.role === "ADMIN" ? "Dashboard" : session.user.role === "STAFF" ? "Staff Portal" : "My Appointments"}
-                    </Link>
-                  </DropdownMenuItem>
-                  {session.user.role === "CLIENTE" && (
+                  {session.user.role === "ADMIN" && (
                     <DropdownMenuItem asChild>
-                      <Link href="/my-appointments" className="flex items-center gap-2 cursor-pointer">
-                        <CalendarCheck size={16} />
-                        My Appointments
+                      <Link href="/dashboard" className="flex items-center gap-2 cursor-pointer">
+                        <SettingsIcon size={16} />
+                        Dashboard
                       </Link>
                     </DropdownMenuItem>
+                  )}
+                  {session.user.role === "STAFF" && (
+                    <DropdownMenuItem asChild>
+                      <Link href="/staff-portal" className="flex items-center gap-2 cursor-pointer">
+                        <SettingsIcon size={16} />
+                        Staff Portal
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  {session.user.role === "CLIENTE" && (
+                    <>
+                      <DropdownMenuItem asChild>
+                        <Link href="/my-account" className="flex items-center gap-2 cursor-pointer">
+                          <UserCogIcon size={16} />
+                          My Account
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/my-appointments" className="flex items-center gap-2 cursor-pointer">
+                          <CalendarCheckIcon size={16} />
+                          My Appointments
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/my-orders" className="flex items-center gap-2 cursor-pointer">
+                          <ReceiptIcon size={16} />
+                          My Orders
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/my-reviews" className="flex items-center gap-2 cursor-pointer">
+                          <StarIcon size={16} />
+                          My Reviews
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
                   )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     onClick={() => signOut({ callbackUrl: "/" })}
                     className="flex items-center gap-2 cursor-pointer text-destructive focus:text-destructive"
                   >
-                    <SignOut size={16} />
+                    <LogoutIcon size={16} />
                     Sign Out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -158,9 +179,9 @@ export function PublicNavbar() {
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? (
-              <X size={24} weight="bold" />
+              <CloseIcon size={24} weight="bold" />
             ) : (
-              <List size={24} weight="bold" />
+              <MenuIcon size={24} weight="bold" />
             )}
           </button>
         </div>
@@ -198,19 +219,54 @@ export function PublicNavbar() {
               </Button>
             ) : isAuthenticated ? (
               <div className="space-y-1">
-                <Link href={getDashboardLink()} onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="ghost" className="w-full h-11 text-foreground/80 hover:bg-secondary hover:text-primary gap-2 justify-start">
-                    <User size={18} />
-                    {session.user.name || "Account"}
-                  </Button>
-                </Link>
-                {session.user.role === "CLIENTE" && (
-                  <Link href="/my-appointments" onClick={() => setMobileMenuOpen(false)}>
+                {/* User name header */}
+                <div className="px-3 py-2 text-sm font-medium text-muted-foreground">
+                  {session.user.name || "Account"}
+                </div>
+
+                {session.user.role === "ADMIN" && (
+                  <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
                     <Button variant="ghost" className="w-full h-11 text-foreground/80 hover:bg-secondary hover:text-primary gap-2 justify-start">
-                      <CalendarCheck size={18} />
-                      My Appointments
+                      <SettingsIcon size={18} />
+                      Dashboard
                     </Button>
                   </Link>
+                )}
+                {session.user.role === "STAFF" && (
+                  <Link href="/staff-portal" onClick={() => setMobileMenuOpen(false)}>
+                    <Button variant="ghost" className="w-full h-11 text-foreground/80 hover:bg-secondary hover:text-primary gap-2 justify-start">
+                      <SettingsIcon size={18} />
+                      Staff Portal
+                    </Button>
+                  </Link>
+                )}
+                {session.user.role === "CLIENTE" && (
+                  <>
+                    <Link href="/my-account" onClick={() => setMobileMenuOpen(false)}>
+                      <Button variant="ghost" className="w-full h-11 text-foreground/80 hover:bg-secondary hover:text-primary gap-2 justify-start">
+                        <UserCogIcon size={18} />
+                        My Account
+                      </Button>
+                    </Link>
+                    <Link href="/my-appointments" onClick={() => setMobileMenuOpen(false)}>
+                      <Button variant="ghost" className="w-full h-11 text-foreground/80 hover:bg-secondary hover:text-primary gap-2 justify-start">
+                        <CalendarCheckIcon size={18} />
+                        My Appointments
+                      </Button>
+                    </Link>
+                    <Link href="/my-orders" onClick={() => setMobileMenuOpen(false)}>
+                      <Button variant="ghost" className="w-full h-11 text-foreground/80 hover:bg-secondary hover:text-primary gap-2 justify-start">
+                        <ReceiptIcon size={18} />
+                        My Orders
+                      </Button>
+                    </Link>
+                    <Link href="/my-reviews" onClick={() => setMobileMenuOpen(false)}>
+                      <Button variant="ghost" className="w-full h-11 text-foreground/80 hover:bg-secondary hover:text-primary gap-2 justify-start">
+                        <StarIcon size={18} />
+                        My Reviews
+                      </Button>
+                    </Link>
+                  </>
                 )}
                 <Button
                   variant="ghost"
@@ -220,7 +276,7 @@ export function PublicNavbar() {
                     signOut({ callbackUrl: "/" })
                   }}
                 >
-                  <SignOut size={18} />
+                  <LogoutIcon size={18} />
                   Sign Out
                 </Button>
               </div>

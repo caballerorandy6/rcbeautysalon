@@ -62,6 +62,64 @@ export async function getUserProfile() {
   return user
 }
 
+// Get order stats for customer
+export async function getOrderStats() {
+  const session = await auth()
+
+  if (!session?.user?.id) {
+    return null
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    include: { customer: true },
+  })
+
+  if (!user?.customer) {
+    return {
+      totalOrders: 0,
+      completedOrders: 0,
+      pendingOrders: 0,
+      totalSpent: 0,
+    }
+  }
+
+  const [totalOrders, completedOrders, pendingOrders, totalSpentResult] =
+    await Promise.all([
+      prisma.order.count({
+        where: { customerId: user.customer.id },
+      }),
+      prisma.order.count({
+        where: {
+          customerId: user.customer.id,
+          status: "COMPLETED",
+        },
+      }),
+      prisma.order.count({
+        where: {
+          customerId: user.customer.id,
+          status: { in: ["PENDING", "PAID"] },
+        },
+      }),
+      prisma.order.aggregate({
+        where: {
+          customerId: user.customer.id,
+          status: { in: ["PAID", "COMPLETED"] },
+        },
+        _sum: {
+          total: true,
+        },
+      }),
+    ])
+
+  return {
+    totalOrders,
+    completedOrders,
+    pendingOrders,
+    totalSpent: totalSpentResult._sum.total?.toNumber() || 0,
+  }
+}
+
 //Get current stats
 export async function getUserStats() {
   const session = await auth()

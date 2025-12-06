@@ -284,7 +284,6 @@ export interface ServicesFilterProps {
   categories: CategoryOption[]
   staff: StaffOption[]
   onFilterChange: (filters: ServiceFilters) => void
-  isLoading: boolean
 }
 
 export interface ServiceListItem {

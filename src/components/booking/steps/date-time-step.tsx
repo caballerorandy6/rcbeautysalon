@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Calendar } from "@/components/ui/calendar"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { SpinnerGap } from "@phosphor-icons/react"
+import { SpinnerGapIcon } from "@/components/icons"
 import { format, addDays } from "date-fns"
 import { getAvailableTimeSlots } from "@/app/actions/appointments"
 import { TimeSlot } from "@/lib/interfaces"
@@ -103,7 +103,7 @@ export function DateTimeStep({
                 </Label>
                 {loadingSlots ? (
                   <div className="flex justify-center py-8">
-                    <SpinnerGap size={32} className="animate-spin text-primary" weight="regular" />
+                    <SpinnerGapIcon size={32} className="animate-spin text-primary" weight="regular" />
                   </div>
                 ) : availableSlots.length === 0 ? (
                   <p className="text-center text-muted-foreground">

@@ -4,7 +4,7 @@ import { useState } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
-import { Minus, Plus, Trash, Package } from "@phosphor-icons/react"
+import { MinusIcon, PlusIcon, TrashIcon, PackageIcon } from "@/components/icons"
 import type { CartItem as CartItemType } from "@/store/cart-store"
 import { useCartStore } from "@/store/cart-store"
 import { toast } from "sonner"
@@ -48,7 +48,7 @@ export function CartItem({ item }: CartItemProps) {
           />
         ) : (
           <div className="from-muted to-muted/50 flex h-full w-full items-center justify-center bg-linear-to-br">
-            <Package
+            <PackageIcon
               size={36}
               weight="light"
               className="text-muted-foreground/40"
@@ -76,7 +76,7 @@ export function CartItem({ item }: CartItemProps) {
             size="icon"
             className="border-border/50 hover:bg-primary/10 hover:text-primary hover:border-primary/30 h-9 w-9 rounded-lg"
           >
-            <Minus size={16} weight="bold" />
+            <MinusIcon size={16} weight="bold" />
           </Button>
           <span className="w-12 text-center text-lg font-semibold">
             {item.quantity}
@@ -87,7 +87,7 @@ export function CartItem({ item }: CartItemProps) {
             size="icon"
             className="border-border/50 hover:bg-primary/10 hover:text-primary hover:border-primary/30 h-9 w-9 rounded-lg"
           >
-            <Plus size={16} weight="bold" />
+            <PlusIcon size={16} weight="bold" />
           </Button>
         </div>
       </div>
@@ -110,7 +110,7 @@ export function CartItem({ item }: CartItemProps) {
           size="icon"
           className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive h-9 w-9 rounded-lg"
         >
-          <Trash size={18} />
+          <TrashIcon size={18} />
         </Button>
       </div>
 

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
-import { MagnifyingGlass } from "@phosphor-icons/react"
+import { SearchIcon } from "@/components/icons"
 import { useSearchParams, useRouter } from "next/navigation"
 
 interface SearchInputProps {
@@ -46,7 +46,7 @@ export function SearchInput({
 
   return (
     <div className={`relative ${className}`}>
-      <MagnifyingGlass
+      <SearchIcon
         size={16}
         weight="regular"
         className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2"

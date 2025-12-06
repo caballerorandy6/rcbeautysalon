@@ -2,7 +2,7 @@ import { Suspense } from "react"
 import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 import { ResetPasswordForm } from "@/components/auth/reset-password-form"
-import { ResetPasswordSkeleton } from "@/components/skeletons/reset-password-skeleton"
+import { ResetPasswordSkeleton } from "@/components/auth/reset-password-skeleton"
 
 export const metadata: Metadata = {
   title: "Reset Password | RC Beauty Salon",

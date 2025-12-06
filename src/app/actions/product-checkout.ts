@@ -144,7 +144,7 @@ export async function createProductCheckoutSession(
         type: "product_order",
       },
       success_url: `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${baseUrl}/cart`,
+      cancel_url: `${baseUrl}/checkout/cancel`,
     })
 
     return {
@@ -248,3 +248,5 @@ export async function verifyProductOrder(sessionId: string) {
     }
   }
 }
+
+

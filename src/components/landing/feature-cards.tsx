@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Sparkle, Users, ShoppingBag } from "@phosphor-icons/react"
+import { SparkleIcon, UsersIcon, ShoppingBagIcon } from "@/components/icons"
 
 export function FeatureCards() {
   return (
@@ -15,7 +15,7 @@ export function FeatureCards() {
       <Card className="border-primary/20 from-primary/5 hover:border-primary/30 group bg-linear-to-br to-transparent transition-all hover:shadow-lg">
         <CardHeader>
           <div className="from-primary to-primary/80 group-hover:shadow-accent/20 mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-linear-to-br shadow-md transition-shadow">
-            <Sparkle size={24} weight="duotone" className="text-white" />
+            <SparkleIcon size={24} weight="duotone" className="text-white" />
           </div>
           <CardTitle className="group-hover:text-primary transition-colors">
             Easy Booking
@@ -28,7 +28,7 @@ export function FeatureCards() {
       <Card className="border-primary/30 from-primary/8 hover:border-primary/40 group bg-linear-to-br to-transparent transition-all hover:shadow-xl">
         <CardHeader>
           <div className="from-primary to-primary/80 ring-accent/30 group-hover:shadow-accent/30 mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-linear-to-br shadow-md ring-2 transition-all">
-            <Users size={24} weight="duotone" className="text-white" />
+            <UsersIcon size={24} weight="duotone" className="text-white" />
           </div>
           <CardTitle className="group-hover:text-primary transition-colors">
             Expert Stylists
@@ -42,7 +42,7 @@ export function FeatureCards() {
       <Card className="border-primary/20 from-primary/5 hover:border-primary/30 group bg-linear-to-br to-transparent transition-all hover:shadow-lg">
         <CardHeader>
           <div className="from-primary to-primary/80 group-hover:shadow-accent/20 mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-linear-to-br shadow-md transition-shadow">
-            <ShoppingBag size={24} weight="duotone" className="text-white" />
+            <ShoppingBagIcon size={24} weight="duotone" className="text-white" />
           </div>
           <CardTitle className="group-hover:text-primary transition-colors">
             Premium Products

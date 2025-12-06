@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
-import { CircleNotch } from "@phosphor-icons/react"
+import { SpinnerIcon } from "@/components/icons"
 import { toast } from "sonner"
 import { Logo } from "@/components/ui/logo"
 import { registerSchema, type RegisterInput } from "@/lib/validations/auth"
@@ -144,7 +144,7 @@ export function RegisterForm() {
             >
               {isSubmitting ? (
                 <>
-                  <CircleNotch
+                  <SpinnerIcon
                     size={16}
                     weight="bold"
                     className="mr-2 animate-spin"

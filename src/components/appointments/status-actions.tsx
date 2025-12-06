@@ -1,11 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { SpinnerIcon } from "@/components/icons"
 import { updateAppointmentStatus } from "@/app/actions/appointments"
 import { AppointmentStatus } from "@/lib/types"
 import { StatusActionsProps } from "@/lib/interfaces"
+import { toast } from "sonner"
 
 const statusTransitions: Record<
   AppointmentStatus,
@@ -34,20 +36,25 @@ export function AppointmentStatusActions({
   currentStatus,
 }: StatusActionsProps) {
   const router = useRouter()
-  const [loading, setLoading] = useState<string | null>(null)
+  const [isPending, startTransition] = useTransition()
+  const [pendingStatus, setPendingStatus] = useState<string | null>(null)
 
   const actions = statusTransitions[currentStatus] || []
 
-  const handleStatusChange = async (newStatus: AppointmentStatus) => {
-    setLoading(newStatus)
-    try {
-      await updateAppointmentStatus(appointmentId, newStatus)
-      router.refresh()
-    } catch (error) {
-      console.error("Failed to update status:", error)
-    } finally {
-      setLoading(null)
-    }
+  const handleStatusChange = (newStatus: AppointmentStatus) => {
+    setPendingStatus(newStatus)
+    startTransition(async () => {
+      try {
+        await updateAppointmentStatus(appointmentId, newStatus)
+        toast.success(`Status updated to ${newStatus.replace("_", " ")}`)
+        router.refresh()
+      } catch (error) {
+        console.error("Failed to update status:", error)
+        toast.error("Failed to update status")
+      } finally {
+        setPendingStatus(null)
+      }
+    })
   }
 
   if (actions.length === 0) {
@@ -65,10 +72,14 @@ export function AppointmentStatusActions({
           key={action.status}
           variant={action.variant || "outline"}
           size="sm"
-          disabled={loading !== null}
+          disabled={isPending}
           onClick={() => handleStatusChange(action.status)}
         >
-          {loading === action.status ? "Updating..." : action.label}
+          {pendingStatus === action.status ? (
+            <SpinnerIcon size={16} className="animate-spin" />
+          ) : (
+            action.label
+          )}
         </Button>
       ))}
     </div>

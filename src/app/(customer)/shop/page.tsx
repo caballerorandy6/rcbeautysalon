@@ -12,7 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { CartButton } from "@/components/shop/cart-button"
 import { SearchInput } from "@/components/shop/search-input"
-import { Package } from "@phosphor-icons/react/dist/ssr"
+import { PackageIcon } from "@/components/icons"
 import { AddToCartButton } from "@/components/shop/add-to-cart-button"
 import { getShopProducts } from "@/app/actions/products"
 
@@ -96,7 +96,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
                       />
                     ) : (
                       <div className="from-muted to-muted/50 flex h-full w-full items-center justify-center bg-linear-to-br">
-                        <Package
+                        <PackageIcon
                           size={48}
                           weight="light"
                           className="text-muted-foreground/50"

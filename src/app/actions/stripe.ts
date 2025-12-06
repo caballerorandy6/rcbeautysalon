@@ -73,7 +73,7 @@ export async function createCheckoutSession(data: CreateCheckoutSessionData) {
         customerName,
       },
       success_url: `${baseUrl}/booking/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${baseUrl}/booking/cancel`,
+      cancel_url: `${baseUrl}/checkout/cancel`,
     })
 
     return {

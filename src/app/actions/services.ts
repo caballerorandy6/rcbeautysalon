@@ -1,9 +1,9 @@
 "use server"
 
+import { cache } from "react"
 import { prisma } from "@/lib/prisma"
 import { Prisma } from "@prisma/client"
-import { ReviewFormData, ServiceFilters } from "@/lib/interfaces"
-import { auth } from "@/lib/auth/auth"
+import { ServiceFilters } from "@/lib/interfaces"
 import { revalidatePath } from "next/cache"
 import { CreateServiceInput } from "@/lib/interfaces"
 
@@ -65,7 +65,8 @@ export async function getAllServicesGroupedByCategory() {
 }
 
 // Get detailed service info by slug for /services/[slug] page
-export async function getServiceBySlug(slug: string) {
+// Cached to avoid duplicate fetches in generateMetadata + page component
+export const getServiceBySlug = cache(async (slug: string) => {
   return await prisma.service.findFirst({
     where: {
       slug,
@@ -108,7 +109,7 @@ export async function getServiceBySlug(slug: string) {
       },
     },
   })
-}
+})
 
 // Get all active service slugs for generateStaticParams
 export async function getAllServiceSlugs() {
@@ -355,77 +356,6 @@ export async function getAllCategories() {
     orderBy: { name: "asc" },
   })
   return categories
-}
-
-// Create a new review for a service
-export async function createReview(data: ReviewFormData) {
-  // Ensure user is authenticated
-  const session = await auth()
-
-  if (!session?.user) {
-    return {
-      success: false,
-      error: "You must be logged in to submit a review.",
-    }
-  }
-
-  // Validate rating (1-5)
-  if (data.rating < 1 || data.rating > 5) {
-    return {
-      success: false,
-      error: "Rating must be between 1 and 5.",
-    }
-  }
-
-  // Validate comment (minimum 10 characters, maximum 1000)
-  const comment = data.comment.trim()
-  if (comment.length < 10 || comment.length > 1000) {
-    return {
-      success: false,
-      error: "Comment must be between 10 and 1000 characters.",
-    }
-  }
-
-  // Verify service exists and is active
-  const service = await prisma.service.findUnique({
-    where: { id: data.serviceId },
-    select: { id: true, slug: true, isActive: true },
-  })
-
-  if (!service || !service.isActive) {
-    return {
-      success: false,
-      error: "Service not found or not available.",
-    }
-  }
-
-  try {
-    // Create review with auto-approval
-    const review = await prisma.review.create({
-      data: {
-        rating: data.rating,
-        comment,
-        userId: session.user.id,
-        serviceId: data.serviceId,
-        isActive: true, // Auto-approve all reviews
-      },
-    })
-
-    // Revalidate service page and services list
-    revalidatePath(`/services/${service.slug}`)
-    revalidatePath("/services")
-
-    return {
-      success: true,
-      review,
-    }
-  } catch (error) {
-    console.error("Error creating review:", error)
-    return {
-      success: false,
-      error: "Failed to create review. Please try again.",
-    }
-  }
 }
 
 // Get Active Services for Booking

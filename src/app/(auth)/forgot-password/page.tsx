@@ -1,7 +1,7 @@
 import { Suspense } from "react"
 import type { Metadata } from "next"
 import { ForgotPasswordForm } from "@/components/auth/forgot-password-form"
-import { ForgotPasswordSkeleton } from "@/components/skeletons/forgot-password-skeleton"
+import { ForgotPasswordSkeleton } from "@/components/auth/forgot-password-skeleton"
 
 export const metadata: Metadata = {
   title: "Forgot Password | RC Beauty Salon",

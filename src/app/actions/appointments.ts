@@ -1,5 +1,6 @@
 "use server"
 
+import { cache } from "react"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth/auth"
 import { revalidatePath } from "next/cache"
@@ -602,7 +603,8 @@ export async function getAdminAppointments(filters?: AdminAppointmentsFilter) {
   }))
 }
 
-export async function getAppointmentById(id: string) {
+// Cached version to avoid duplicate fetches in generateMetadata + page component
+export const getAppointmentById = cache(async (id: string) => {
   const session = await auth()
 
   // Ensure user is authenticated
@@ -635,7 +637,7 @@ export async function getAppointmentById(id: string) {
     totalPrice: appointment.totalPrice.toNumber(),
     depositAmount: appointment.depositAmount.toNumber(),
   }
-}
+})
 
 // Mark past appointments as NO_SHOW
 export async function markNoShowAppointments() {

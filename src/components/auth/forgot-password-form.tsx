@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
-import { CircleNotch, EnvelopeSimple } from "@phosphor-icons/react"
+import { SpinnerIcon, EnvelopeIcon } from "@/components/icons"
 import { Logo } from "@/components/ui/logo"
 import {
   forgotPasswordSchema,
@@ -66,7 +66,7 @@ export function ForgotPasswordForm() {
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <div className="relative">
-                <EnvelopeSimple
+                <EnvelopeIcon
                   size={18}
                   className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2"
                 />
@@ -96,7 +96,7 @@ export function ForgotPasswordForm() {
             >
               {isSubmitting ? (
                 <>
-                  <CircleNotch
+                  <SpinnerIcon
                     size={16}
                     weight="bold"
                     className="mr-2 animate-spin"

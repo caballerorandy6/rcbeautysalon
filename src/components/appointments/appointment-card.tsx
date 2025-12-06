@@ -13,14 +13,14 @@ import {
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
-  CalendarBlank,
-  Clock,
-  CurrencyDollar,
-  User,
-  WarningCircle,
-  CheckCircle,
-  SpinnerGap,
-} from "@phosphor-icons/react"
+  CalendarIcon,
+  ClockIcon,
+  CurrencyDollarIcon,
+  UserIcon,
+  WarningCircleIcon,
+  CheckCircleIcon,
+  SpinnerGapIcon,
+} from "@/components/icons"
 import { format } from "date-fns"
 import { cancelAppointment } from "@/app/actions/appointments"
 import { AppointmentCardProps } from "@/lib/interfaces"
@@ -98,7 +98,7 @@ export function AppointmentCard({
               )}
             </CardTitle>
             <CardDescription className="mt-2 flex items-center gap-1">
-              <CalendarBlank size={14} weight="regular" />
+              <CalendarIcon size={14} weight="regular" />
               {format(new Date(appointment.startTime), "MMMM d, yyyy")} at{" "}
               {format(new Date(appointment.startTime), "h:mm a")}
             </CardDescription>
@@ -108,15 +108,15 @@ export function AppointmentCard({
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="text-muted-foreground flex items-center text-sm">
-          <User size={16} className="mr-2" weight="regular" />
+          <UserIcon size={16} className="mr-2" weight="regular" />
           <span>With {appointment.staff.name}</span>
         </div>
         <div className="text-muted-foreground flex items-center text-sm">
-          <Clock size={16} className="mr-2" weight="regular" />
+          <ClockIcon size={16} className="mr-2" weight="regular" />
           <span>Duration: {totalDuration} minutes</span>
         </div>
         <div className="text-muted-foreground flex items-center text-sm">
-          <CurrencyDollar size={16} className="mr-2" weight="regular" />
+          <CurrencyDollarIcon size={16} className="mr-2" weight="regular" />
           <span>Total Price: ${appointment.totalPrice.toFixed(2)}</span>
         </div>
 
@@ -126,7 +126,7 @@ export function AppointmentCard({
             {appointment.depositPaid ? (
               <div className="mt-4 rounded-lg border-2 border-green-200 bg-green-50 p-3 dark:border-green-900/50 dark:bg-green-950/20">
                 <div className="flex items-center gap-2">
-                  <CheckCircle
+                  <CheckCircleIcon
                     size={20}
                     weight="fill"
                     className="shrink-0 text-green-600 dark:text-green-500"
@@ -144,7 +144,7 @@ export function AppointmentCard({
             ) : (
               <div className="mt-4 rounded-lg border-2 border-amber-200 bg-amber-50 p-3 dark:border-amber-900/50 dark:bg-amber-950/20">
                 <div className="flex items-center gap-2">
-                  <WarningCircle
+                  <WarningCircleIcon
                     size={20}
                     weight="fill"
                     className="shrink-0 text-amber-600 dark:text-amber-500"
@@ -177,7 +177,7 @@ export function AppointmentCard({
         <CardFooter className="flex flex-col gap-3">
           {error && (
             <div className="border-destructive/30 bg-destructive/10 text-destructive w-full rounded-lg border-2 p-3 text-sm">
-              <WarningCircle
+              <WarningCircleIcon
                 size={16}
                 className="mr-1 inline"
                 weight="regular"
@@ -188,7 +188,7 @@ export function AppointmentCard({
           <div className="flex w-full gap-2">
             {!appointment.depositPaid && (
               <Button className="flex-1 shadow-lg transition-all hover:scale-105">
-                <CurrencyDollar size={18} className="mr-2" weight="regular" />
+                <CurrencyDollarIcon size={18} className="mr-2" weight="regular" />
                 Pay Now
               </Button>
             )}
@@ -200,7 +200,7 @@ export function AppointmentCard({
             >
               {isCancelling ? (
                 <>
-                  <SpinnerGap
+                  <SpinnerGapIcon
                     size={18}
                     className="mr-2 animate-spin"
                     weight="regular"

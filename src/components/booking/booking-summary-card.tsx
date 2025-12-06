@@ -8,12 +8,12 @@ import {
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import {
-  WarningCircle,
-  CalendarBlank,
-  Clock,
-  CurrencyDollar,
-  SpinnerGap,
-} from "@phosphor-icons/react"
+  WarningCircleIcon,
+  CalendarIcon,
+  ClockIcon,
+  CurrencyDollarIcon,
+  SpinnerGapIcon,
+} from "@/components/icons"
 import { format } from "date-fns"
 import { AvailableStaffMember, TimeSlot } from "@/lib/interfaces"
 
@@ -72,7 +72,7 @@ export function BookingSummaryCard({
               <p className="text-base">
                 {selectedDate && selectedTime ? (
                   <>
-                    <CalendarBlank
+                    <CalendarIcon
                       size={14}
                       className="mr-1 inline"
                       weight="regular"
@@ -89,7 +89,7 @@ export function BookingSummaryCard({
             <div>
               <p className="text-muted-foreground font-semibold">Duration</p>
               <p className="text-base">
-                <Clock size={14} className="mr-1 inline" weight="regular" />
+                <ClockIcon size={14} className="mr-1 inline" weight="regular" />
                 {service.duration} minutes
               </p>
             </div>
@@ -119,7 +119,7 @@ export function BookingSummaryCard({
             }}
           >
             <div className="flex gap-3">
-              <WarningCircle
+              <WarningCircleIcon
                 size={32}
                 weight="fill"
                 className="shrink-0"
@@ -144,7 +144,7 @@ export function BookingSummaryCard({
         <CardFooter className="flex-col gap-3 pt-6">
           {error && (
             <div className="border-destructive/30 bg-destructive/10 text-destructive w-full rounded-lg border-2 p-3 text-sm">
-              <WarningCircle
+              <WarningCircleIcon
                 size={16}
                 className="mr-1 inline"
                 weight="regular"
@@ -160,7 +160,7 @@ export function BookingSummaryCard({
           >
             {submitting ? (
               <>
-                <SpinnerGap
+                <SpinnerGapIcon
                   size={20}
                   className="mr-2 animate-spin"
                   weight="regular"
@@ -169,7 +169,7 @@ export function BookingSummaryCard({
               </>
             ) : (
               <>
-                <CurrencyDollar size={20} className="mr-2" weight="regular" />
+                <CurrencyDollarIcon size={20} className="mr-2" weight="regular" />
                 Pay ${salonConfig.bookingDeposit.toFixed(2)} & Confirm Booking
               </>
             )}

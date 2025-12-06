@@ -1,33 +1,33 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useTransition } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { CalendarBlank } from "@phosphor-icons/react"
+import { CalendarIcon } from "@/components/icons"
 import { cloudinaryPresets } from "@/lib/utils/cloudinary"
 import { ServicesFilter } from "./services-filter"
 import { filterServices } from "@/app/actions/services"
 import { ServiceFilters, ServicesListProps } from "@/lib/interfaces"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ServicesGridSkeleton } from "./services-grid-skeleton"
 
 export function ServicesList({
   initialServices,
   categories,
-  staff
+  staff,
 }: ServicesListProps) {
   const [services, setServices] = useState(initialServices)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isPending, startTransition] = useTransition()
 
   const handleFilterChange = async (filters: ServiceFilters) => {
-    setIsLoading(true)
-    try {
-      const filtered = await filterServices(filters)
-      setServices(filtered)
-    } catch (error) {
-      console.error("Error filtering services:", error)
-    } finally {
-      setIsLoading(false)
-    }
+    startTransition(async () => {
+      try {
+        const filtered = await filterServices(filters)
+        setServices(filtered)
+      } catch (error) {
+        console.error("Error filtering services:", error)
+      }
+    })
   }
 
   const serviceCategories = Object.keys(services)
@@ -39,7 +39,7 @@ export function ServicesList({
         categories={categories}
         staff={staff}
         onFilterChange={handleFilterChange}
-        isLoading={isLoading}
+        
       />
 
       {/* Services Grid */}
@@ -69,13 +69,19 @@ export function ServicesList({
                     <Link
                       key={service.id}
                       href={`/services/${service.slug}`}
-                      className="group border-primary/10 relative w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] xl:w-[calc(25%-1.125rem)] overflow-hidden rounded-lg border shadow-sm transition-all duration-500 hover:shadow-xl"
+                      className="group border-primary/10 relative w-full overflow-hidden rounded-lg border shadow-sm transition-all duration-500 hover:shadow-xl sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] xl:w-[calc(25%-1.125rem)]"
                     >
                       {/* Background Image */}
                       <div className="relative h-[280px] overflow-hidden">
                         {service.imageUrl ? (
                           <Image
-                            src={service.imageUrl.startsWith('http') ? service.imageUrl : cloudinaryPresets.serviceCard(service.imageUrl)}
+                            src={
+                              service.imageUrl.startsWith("http")
+                                ? service.imageUrl
+                                : cloudinaryPresets.serviceCard(
+                                    service.imageUrl
+                                  )
+                            }
                             alt={service.name}
                             fill
                             className="object-cover transition-transform duration-700 group-hover:scale-110"
@@ -84,7 +90,11 @@ export function ServicesList({
                           <div className="from-muted to-muted/50 flex h-full w-full items-center justify-center bg-linear-to-br">
                             <div className="p-4 text-center">
                               <div className="bg-primary/10 mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full">
-                                <CalendarBlank size={32} weight="regular" className="text-primary/50" />
+                                <CalendarIcon
+                                  size={32}
+                                  weight="regular"
+                                  className="text-primary/50"
+                                />
                               </div>
                               <span className="text-muted-foreground text-sm font-medium">
                                 {service.name}
@@ -149,10 +159,12 @@ export function ServicesList({
             </TabsContent>
           ))}
         </Tabs>
+      ) : isPending ? (
+        <ServicesGridSkeleton />
       ) : (
         <div className="py-12 text-center">
           <p className="text-muted-foreground text-lg">
-            {isLoading ? "Loading services..." : "No services found matching your filters."}
+            No services found matching your filters.
           </p>
         </div>
       )}

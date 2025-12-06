@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { DayPicker } from "react-day-picker"
-import { CaretLeft, CaretRight } from "@phosphor-icons/react"
+import { CaretLeftIcon, CaretRightIcon } from "@/components/icons"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 
@@ -56,9 +56,9 @@ function Calendar({
       components={{
         Chevron: ({ orientation }) => {
           if (orientation === "left") {
-            return <CaretLeft className="h-4 w-4" />
+            return <CaretLeftIcon className="h-4 w-4" />
           }
-          return <CaretRight className="h-4 w-4" />
+          return <CaretRightIcon className="h-4 w-4" />
         },
       }}
       {...props}

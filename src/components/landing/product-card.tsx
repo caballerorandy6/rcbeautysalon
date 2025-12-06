@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import Image from "next/image"
-import { Tote } from "@phosphor-icons/react"
+import { ToteIcon } from "@/components/icons"
 
 interface ProductCardProps {
   id: string
@@ -33,7 +33,7 @@ export function ProductCard({ id, name, price, category, image }: ProductCardPro
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-muted to-muted/50">
-            <Tote size={48} weight="light" className="text-muted-foreground/50" />
+            <ToteIcon size={48} weight="light" className="text-muted-foreground/50" />
           </div>
         )}
         <div className="absolute top-2 right-2">
@@ -59,7 +59,7 @@ export function ProductCard({ id, name, price, category, image }: ProductCardPro
             </Button>
           </Link>
           <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
-            <Tote size={16} />
+            <ToteIcon size={16} />
           </Button>
         </div>
       </CardContent>

@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { House } from "@phosphor-icons/react"
+import { HouseIcon } from "@/components/icons"
 import { Fragment } from "react"
 import {
   Breadcrumb,
@@ -29,7 +29,7 @@ export function ServiceBreadcrumbs({ items }: ServiceBreadcrumbsProps) {
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
             <Link href="/" className="flex items-center gap-1">
-              <House size={16} weight="regular" />
+              <HouseIcon size={16} weight="regular" />
               <span className="sr-only sm:not-sr-only">Home</span>
             </Link>
           </BreadcrumbLink>

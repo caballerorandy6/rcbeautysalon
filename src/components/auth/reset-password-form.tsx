@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
-import { CircleNotch, Lock } from "@phosphor-icons/react"
+import { SpinnerIcon, LockIcon } from "@/components/icons"
 import { Logo } from "@/components/ui/logo"
 import {
   resetPasswordSchema,
@@ -76,7 +76,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
             <div className="space-y-2">
               <Label htmlFor="password">New Password</Label>
               <div className="relative">
-                <Lock
+                <LockIcon
                   size={18}
                   className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2"
                 />
@@ -100,7 +100,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">Confirm Password</Label>
               <div className="relative">
-                <Lock
+                <LockIcon
                   size={18}
                   className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2"
                 />
@@ -130,7 +130,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
             >
               {isSubmitting ? (
                 <>
-                  <CircleNotch
+                  <SpinnerIcon
                     size={16}
                     weight="bold"
                     className="mr-2 animate-spin"

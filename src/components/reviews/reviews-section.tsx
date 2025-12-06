@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Star, StarHalf } from "@phosphor-icons/react"
+import { StarIcon, StarHalfIcon } from "@/components/icons"
 import { cloudinaryPresets } from "@/lib/utils/cloudinary"
 
 interface Review {
@@ -29,15 +29,15 @@ function StarRating({ rating }: { rating: number }) {
     <div className="flex items-center gap-1">
       {/* Full stars */}
       {Array.from({ length: fullStars }).map((_, i) => (
-        <Star key={`full-${i}`} size={16} weight="fill" className="text-accent" />
+        <StarIcon key={`full-${i}`} size={16} weight="fill" className="text-accent" />
       ))}
 
       {/* Half star */}
-      {hasHalfStar && <StarHalf size={16} weight="fill" className="text-accent" />}
+      {hasHalfStar && <StarHalfIcon size={16} weight="fill" className="text-accent" />}
 
       {/* Empty stars */}
       {Array.from({ length: emptyStars }).map((_, i) => (
-        <Star key={`empty-${i}`} size={16} weight="regular" className="text-muted-foreground/30" />
+        <StarIcon key={`empty-${i}`} size={16} weight="regular" className="text-muted-foreground/30" />
       ))}
     </div>
   )

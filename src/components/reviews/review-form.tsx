@@ -7,8 +7,8 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { Star } from "@phosphor-icons/react"
-import { createReview } from "@/app/actions/services"
+import { StarIcon } from "@/components/icons"
+import { createReview } from "@/app/actions/reviews"
 import { ReviewFormProps } from "@/lib/interfaces"
 import { reviewSchema, ReviewInput } from "@/lib/validations/review"
 
@@ -74,7 +74,7 @@ export function ReviewForm({ serviceId, serviceName }: ReviewFormProps) {
               className="transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
               disabled={isPending}
             >
-              <Star
+              <StarIcon
                 size={32}
                 weight={star <= (hoveredRating || rating) ? "fill" : "regular"}
                 className={`${

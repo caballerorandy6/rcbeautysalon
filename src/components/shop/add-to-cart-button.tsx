@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { useCartStore } from "@/store/cart-store"
-import { ShoppingCart } from "@phosphor-icons/react"
+import { ShoppingCartIcon } from "@/components/icons"
 
 interface AddToCartButtonProps {
   product: {
@@ -27,7 +27,7 @@ export function AddToCartButton({ product, inStock = true }: AddToCartButtonProp
   }
   return (
     <Button onClick={handleAddToCart} variant={inStock ? "default" : "secondary"}  disabled={!inStock} className="w-full">
-      <ShoppingCart className="mr-2 h-4 w-4" />
+      <ShoppingCartIcon className="mr-2 h-4 w-4" />
       {inStock ? "Add to Cart" : "Out of Stock"}
     </Button>
   )

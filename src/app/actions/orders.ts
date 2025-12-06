@@ -3,9 +3,16 @@
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { OrderStatus } from "@prisma/client"
+import { auth } from "@/lib/auth/auth"
 
 // Admin: Get all orders with customer and items
 export async function getAdminOrders(search?: string) {
+  const session = await auth()
+
+  if (!session?.user || session.user.role !== "ADMIN") {
+    throw new Error("Unauthorized")
+  }
+
   const orders = await prisma.order.findMany({
     where: search
       ? {
@@ -39,6 +46,12 @@ export async function getAdminOrders(search?: string) {
 
 // Admin: Get order statistics
 export async function getOrderStats() {
+  const session = await auth()
+
+  if (!session?.user || session.user.role !== "ADMIN") {
+    throw new Error("Unauthorized")
+  }
+
   const now = new Date()
   const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate())
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
@@ -76,6 +89,12 @@ export async function getOrderStats() {
 
 // Admin: Get order by ID with full details
 export async function getOrderById(id: string) {
+  const session = await auth()
+
+  if (!session?.user || session.user.role !== "ADMIN") {
+    throw new Error("Unauthorized")
+  }
+
   const order = await prisma.order.findUnique({
     where: { id },
     include: {
@@ -104,6 +123,12 @@ export async function getOrderById(id: string) {
 
 // Update order status
 export async function updateOrderStatus(id: string, status: OrderStatus) {
+  const session = await auth()
+
+  if (!session?.user || session.user.role !== "ADMIN") {
+    throw new Error("Unauthorized")
+  }
+
   try {
     const order = await prisma.order.update({
       where: { id },
@@ -116,5 +141,84 @@ export async function updateOrderStatus(id: string, status: OrderStatus) {
   } catch (error) {
     console.error("Error updating order status:", error)
     return { success: false, error: "Failed to update order status." }
+  }
+}
+
+// Customer: Get order by ID (only their own orders)
+export async function getOrderByIdForCustomer(id: string) {
+  const session = await auth()
+
+  if (!session?.user) {
+    return null
+  }
+
+  const order = await prisma.order.findFirst({
+    where: {
+      id,
+      customer: { userId: session.user.id },
+    },
+    include: {
+      customer: true,
+      items: {
+        include: {
+          product: true,
+        },
+      },
+    },
+  })
+
+  if (!order) return null
+
+  return {
+    ...order,
+    subtotal: order.subtotal.toNumber(),
+    tax: order.tax.toNumber(),
+    total: order.total.toNumber(),
+    items: order.items.map((item) => ({
+      ...item,
+      price: item.price.toNumber(),
+    })),
+  }
+}
+
+// Customer: Get all orders for the current user
+export async function getCustomerOrders() {
+  const session = await auth()
+
+  if (!session?.user) {
+    return {
+      success: false,
+      error: "You must be logged in to view orders",
+    }
+  }
+
+  const orders = await prisma.order.findMany({
+    where: { customer: { userId: session.user.id } },
+    include: {
+      items: {
+        include: {
+          product: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  })
+
+  const convertedOrders = orders.map((order) => ({
+    ...order,
+    subtotal: order.subtotal.toNumber(),
+    tax: order.tax.toNumber(),
+    total: order.total.toNumber(),
+    items: order.items.map((item) => ({
+      ...item,
+      price: item.price.toNumber(),
+    })),
+  }))
+
+  return {
+    success: true,
+    orders: convertedOrders,
   }
 }

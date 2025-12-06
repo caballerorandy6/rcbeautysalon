@@ -1,5 +1,6 @@
 "use server"
 
+import { cache } from "react"
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 
@@ -68,7 +69,8 @@ export async function getUserStats() {
 }
 
 // Admin: Get user by ID with full details
-export async function getUserById(id: string) {
+// Cached to avoid duplicate fetches in generateMetadata + page component
+export const getUserById = cache(async (id: string) => {
   return await prisma.user.findUnique({
     where: { id },
     include: {
@@ -102,7 +104,7 @@ export async function getUserById(id: string) {
       staff: true,
     },
   })
-}
+})
 
 // Calculate total spent by customer
 export async function getCustomerTotalSpent(customerId: string) {

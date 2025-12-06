@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { CalendarBlank as Calendar } from "@phosphor-icons/react"
+import { CalendarIcon } from "@/components/icons"
 
 interface CTAButtonProps {
   href: string
@@ -26,7 +26,7 @@ export function CTAButton({
         variant={variant}
         className={className}
       >
-        <Calendar className="group-hover:text-accent mr-2 h-5 w-5 transition-colors" />
+        <CalendarIcon className="group-hover:text-accent mr-2 h-5 w-5 transition-colors" />
         {children}
       </Button>
     </Link>

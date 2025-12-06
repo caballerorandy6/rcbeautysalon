@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { CheckCircle } from "@phosphor-icons/react"
+import { CheckCircleIcon } from "@/components/icons"
 import { AvailableStaffMember } from "@/lib/interfaces"
 import { cloudinaryPresets } from "@/lib/utils/cloudinary"
 
@@ -49,7 +49,7 @@ export function StaffStep({
                 }`}
               >
                 {selectedStaffId === staff.id && (
-                  <CheckCircle
+                  <CheckCircleIcon
                     size={32}
                     weight="fill"
                     className="absolute right-4 top-4 text-primary"

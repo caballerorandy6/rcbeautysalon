@@ -1,5 +1,6 @@
 "use server"
 
+import { cache } from "react"
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { CreateProductInput } from "@/lib/interfaces"
@@ -76,8 +77,9 @@ export async function getProductStats() {
   return { totalProducts, inStock, lowStock, outOfStock }
 }
 
-// Admin: Get product by ID
-export async function getProductById(id: string) {
+// Get product by ID
+// Cached to avoid duplicate fetches in generateMetadata + page component
+export const getProductById = cache(async (id: string) => {
   const product = await prisma.product.findUnique({
     where: { id },
     include: { category: true },
@@ -90,7 +92,7 @@ export async function getProductById(id: string) {
     price: product.price.toNumber(),
     compareAtPrice: product.compareAtPrice?.toNumber() ?? null,
   }
-}
+})
 
 // Create product
 export async function createProduct(data: CreateProductInput) {

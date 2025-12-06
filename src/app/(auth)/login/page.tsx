@@ -1,7 +1,7 @@
 import { Suspense } from "react"
 import type { Metadata } from "next"
 import { LoginForm } from "@/components/auth/login-form"
-import { LoginSkeleton } from "@/components/skeletons/login-skeleton"
+import { LoginSkeleton } from "@/components/auth/login-skeleton"
 
 export const metadata: Metadata = {
   title: "Sign In | RC Beauty Salon",
