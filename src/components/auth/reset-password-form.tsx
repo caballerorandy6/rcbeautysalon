@@ -128,18 +128,14 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
               type="submit"
               disabled={isSubmitting}
             >
-              {isSubmitting ? (
-                <>
-                  <SpinnerIcon
-                    size={16}
-                    weight="bold"
-                    className="mr-2 animate-spin"
-                  />
-                  Resetting password...
-                </>
-              ) : (
-                "Reset Password"
+              {isSubmitting && (
+                <SpinnerIcon
+                  size={16}
+                  weight="bold"
+                  className="mr-2 animate-spin"
+                />
               )}
+              Reset Password
             </Button>
 
             <Separator />

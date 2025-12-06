@@ -119,14 +119,10 @@ export function LoginForm() {
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <Button className="w-full" size="lg" type="submit" disabled={isSubmitting}>
-              {isSubmitting ? (
-                <>
-                  <SpinnerIcon size={16} weight="bold" className="mr-2 animate-spin" />
-                  Signing in...
-                </>
-              ) : (
-                "Sign In"
+              {isSubmitting && (
+                <SpinnerIcon size={16} weight="bold" className="mr-2 animate-spin" />
               )}
+              Sign In
             </Button>
 
             <Separator />

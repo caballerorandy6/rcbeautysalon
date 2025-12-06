@@ -245,14 +245,10 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
             <p className="text-muted-foreground">Configure your salon settings</p>
           </div>
           <Button type="submit" disabled={isSubmitting || isResetting}>
-            {isSubmitting ? (
-              <>
-                <SpinnerIcon size={16} className="mr-2 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              "Save All Changes"
+            {isSubmitting && (
+              <SpinnerIcon size={16} className="mr-2 animate-spin" />
             )}
+            Save All Changes
           </Button>
         </div>
 
@@ -337,9 +333,11 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
                   ) : (
                     <ImageIcon size={48} className="text-muted-foreground/50" />
                   )}
-                  <p className="text-muted-foreground mt-4 text-sm">
-                    {isUploading ? "Uploading..." : "Click to upload an image"}
-                  </p>
+                  {!isUploading && (
+                    <p className="text-muted-foreground mt-4 text-sm">
+                      Click to upload an image
+                    </p>
+                  )}
                 </div>
               )}
               <input
@@ -558,10 +556,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
                   disabled={isSubmitting || isResetting}
                 >
                   {isResetting ? (
-                    <>
-                      <SpinnerIcon size={14} className="mr-2 animate-spin" />
-                      Resetting...
-                    </>
+                    <SpinnerIcon size={14} className="animate-spin" />
                   ) : (
                     "Reset"
                   )}

@@ -21,7 +21,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { CalendarIcon } from "@/components/icons"
+import { CalendarIcon, SpinnerGapIcon } from "@/components/icons"
 import { format, setHours, setMinutes } from "date-fns"
 import { cn } from "@/lib/utils"
 import {
@@ -413,7 +413,10 @@ export default function AdminAppointmentForm({
           Cancel
         </Button>
         <Button type="submit" className="flex-1" disabled={isLoading}>
-          {isLoading ? "Creating..." : "Create Appointment"}
+          {isLoading && (
+            <SpinnerGapIcon size={18} className="mr-2 animate-spin" />
+          )}
+          Create Appointment
         </Button>
       </div>
     </form>

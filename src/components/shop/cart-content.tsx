@@ -196,10 +196,7 @@ export function CartContent() {
                 onClick={handleCheckout}
               >
                 {isCheckingOut ? (
-                  <>
-                    <CircleNotch size={20} className="mr-2 animate-spin" />
-                    Processing...
-                  </>
+                  <CircleNotch size={20} className="animate-spin" />
                 ) : (
                   "Proceed to Checkout"
                 )}

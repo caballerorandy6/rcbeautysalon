@@ -14,7 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { MenuIcon, CloseIcon, UserIcon, LogoutIcon, CalendarCheckIcon, SettingsIcon, ReceiptIcon, UserCogIcon, StarIcon } from "@/components/icons"
+import { MenuIcon, CloseIcon, UserIcon, LogoutIcon, CalendarCheckIcon, SettingsIcon, ReceiptIcon, UserCogIcon, StarIcon, SpinnerGapIcon } from "@/components/icons"
 import { useNavigationStore } from "@/store/navigation-store"
 import { NavCartButton } from "@/components/shop/nav-cart-button"
 
@@ -89,7 +89,7 @@ export function PublicNavbar() {
             <NavCartButton />
             {isLoading ? (
               <Button variant="ghost" disabled size="sm" className="w-10">
-                <span className="animate-pulse">...</span>
+                <SpinnerGapIcon size={18} className="animate-spin" />
               </Button>
             ) : isAuthenticated ? (
               <DropdownMenu>
@@ -215,7 +215,7 @@ export function PublicNavbar() {
             {/* Auth Section */}
             {isLoading ? (
               <Button variant="ghost" disabled className="w-full h-11">
-                <span className="animate-pulse">Loading...</span>
+                <SpinnerGapIcon size={20} className="animate-spin" />
               </Button>
             ) : isAuthenticated ? (
               <div className="space-y-1">

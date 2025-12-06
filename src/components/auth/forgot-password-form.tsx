@@ -94,18 +94,14 @@ export function ForgotPasswordForm() {
               type="submit"
               disabled={isSubmitting}
             >
-              {isSubmitting ? (
-                <>
-                  <SpinnerIcon
-                    size={16}
-                    weight="bold"
-                    className="mr-2 animate-spin"
-                  />
-                  Sending reset link...
-                </>
-              ) : (
-                "Send Reset Link"
+              {isSubmitting && (
+                <SpinnerIcon
+                  size={16}
+                  weight="bold"
+                  className="mr-2 animate-spin"
+                />
               )}
+              Send Reset Link
             </Button>
 
             <Separator />

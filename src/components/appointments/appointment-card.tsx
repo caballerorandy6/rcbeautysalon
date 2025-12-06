@@ -209,15 +209,12 @@ export function AppointmentCard({
                 onClick={handlePayNow}
                 disabled={isPaying || isCancelling}
               >
-                {isPaying ? (
-                  <>
-                    <SpinnerGapIcon
-                      size={18}
-                      className="mr-2 animate-spin"
-                      weight="regular"
-                    />
-                    Processing...
-                  </>
+                  {isPaying ? (
+                  <SpinnerGapIcon
+                    size={18}
+                    className="animate-spin"
+                    weight="regular"
+                  />
                 ) : (
                   <>
                     <CurrencyDollarIcon
@@ -237,14 +234,11 @@ export function AppointmentCard({
               disabled={isCancelling || isPaying}
             >
               {isCancelling ? (
-                <>
-                  <SpinnerGapIcon
-                    size={18}
-                    className="mr-2 animate-spin"
-                    weight="regular"
-                  />
-                  Cancelling...
-                </>
+                <SpinnerGapIcon
+                  size={18}
+                  className="animate-spin"
+                  weight="regular"
+                />
               ) : (
                 "Cancel Appointment"
               )}

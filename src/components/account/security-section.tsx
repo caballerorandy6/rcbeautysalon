@@ -91,14 +91,10 @@ export function SecuritySection({ email }: SecuritySectionProps) {
                 onClick={handleSendResetEmail}
                 disabled={isSending}
               >
-                {isSending ? (
-                  <>
-                    <SpinnerIcon size={16} className="mr-2 animate-spin" />
-                    Sending...
-                  </>
-                ) : (
-                  "Change Password"
+                {isSending && (
+                  <SpinnerIcon size={16} className="mr-2 animate-spin" />
                 )}
+                Change Password
               </Button>
             </div>
             <p className="text-muted-foreground text-xs">

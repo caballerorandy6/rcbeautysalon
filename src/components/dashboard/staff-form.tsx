@@ -345,9 +345,11 @@ export function StaffForm({ services, staff, mode = "create", onSubmit, onDelete
                   ) : (
                     <ImageIcon size={48} className="text-muted-foreground/50" />
                   )}
-                  <p className="text-muted-foreground mt-4 text-sm">
-                    {isUploading ? "Uploading..." : "Click to upload an image"}
-                  </p>
+                  {!isUploading && (
+                    <p className="text-muted-foreground mt-4 text-sm">
+                      Click to upload an image
+                    </p>
+                  )}
                 </div>
               )}
               <input
@@ -469,14 +471,10 @@ export function StaffForm({ services, staff, mode = "create", onSubmit, onDelete
           {/* Actions */}
           <div className="flex flex-col gap-2">
             <Button type="submit" className="w-full" disabled={isSubmitting || isDeleting}>
-              {isSubmitting ? (
-                <>
-                  <SpinnerIcon size={16} className="mr-2 animate-spin" />
-                  {isEditMode ? "Updating..." : "Creating..."}
-                </>
-              ) : (
-                isEditMode ? "Update Staff Member" : "Create Staff Member"
+              {isSubmitting && (
+                <SpinnerIcon size={16} className="mr-2 animate-spin" />
               )}
+              {isEditMode ? "Update Staff Member" : "Create Staff Member"}
             </Button>
             <Button
               type="button"
@@ -496,10 +494,7 @@ export function StaffForm({ services, staff, mode = "create", onSubmit, onDelete
                 disabled={isSubmitting || isDeleting}
               >
                 {isDeleting ? (
-                  <>
-                    <SpinnerIcon size={16} className="mr-2 animate-spin" />
-                    Deleting...
-                  </>
+                  <SpinnerIcon size={16} className="animate-spin" />
                 ) : (
                   <>
                     <TrashIcon size={16} className="mr-2" />

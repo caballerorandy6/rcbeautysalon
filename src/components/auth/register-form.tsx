@@ -142,18 +142,14 @@ export function RegisterForm() {
               type="submit"
               disabled={isSubmitting}
             >
-              {isSubmitting ? (
-                <>
-                  <SpinnerIcon
-                    size={16}
-                    weight="bold"
-                    className="mr-2 animate-spin"
-                  />
-                  Creating account...
-                </>
-              ) : (
-                "Create Account"
+              {isSubmitting && (
+                <SpinnerIcon
+                  size={16}
+                  weight="bold"
+                  className="mr-2 animate-spin"
+                />
               )}
+              Create Account
             </Button>
 
             <Separator />

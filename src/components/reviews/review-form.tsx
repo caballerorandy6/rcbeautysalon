@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { StarIcon } from "@/components/icons"
+import { StarIcon, SpinnerGapIcon } from "@/components/icons"
 import { createReview } from "@/app/actions/reviews"
 import { ReviewFormProps } from "@/lib/interfaces"
 import { reviewSchema, ReviewInput } from "@/lib/validations/review"
@@ -129,7 +129,10 @@ export function ReviewForm({ serviceId, serviceName }: ReviewFormProps) {
       )}
 
       <Button type="submit" disabled={isPending} className="w-full">
-        {isPending ? "Submitting..." : "Submit Review"}
+        {isPending && (
+          <SpinnerGapIcon size={18} className="mr-2 animate-spin" />
+        )}
+        Submit Review
       </Button>
     </form>
   )

@@ -56,7 +56,7 @@ export default function CheckoutSuccessPage() {
             <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
               <SpinnerIcon size={40} className="text-primary animate-spin" />
             </div>
-            <CardTitle className="text-2xl">Processing your order...</CardTitle>
+            <CardTitle className="text-2xl">Verifying Your Order</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground">

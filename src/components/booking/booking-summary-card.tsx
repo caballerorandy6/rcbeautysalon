@@ -159,14 +159,11 @@ export function BookingSummaryCard({
             disabled={submitting}
           >
             {submitting ? (
-              <>
-                <SpinnerGapIcon
-                  size={20}
-                  className="mr-2 animate-spin"
-                  weight="regular"
-                />
-                Processing...
-              </>
+              <SpinnerGapIcon
+                size={20}
+                className="animate-spin"
+                weight="regular"
+              />
             ) : (
               <>
                 <CurrencyDollarIcon size={20} className="mr-2" weight="regular" />

@@ -151,10 +151,7 @@ export function UserEditForm({
                 </SelectContent>
               </Select>
               {isSavingRole && (
-                <p className="text-muted-foreground flex items-center gap-2 text-sm">
-                  <SpinnerIcon size={14} className="animate-spin" />
-                  Saving...
-                </p>
+                <SpinnerIcon size={14} className="text-muted-foreground animate-spin" />
               )}
             </div>
             <div className="bg-muted/50 rounded-lg p-4">
@@ -191,14 +188,10 @@ export function UserEditForm({
                 onClick={handleSaveNotes}
                 disabled={isSavingNotes || notes === currentNotes}
               >
-                {isSavingNotes ? (
-                  <>
-                    <SpinnerIcon size={16} className="mr-2 animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  "Save Notes"
+                {isSavingNotes && (
+                  <SpinnerIcon size={16} className="mr-2 animate-spin" />
                 )}
+                Save Notes
               </Button>
             </CardContent>
           </Card>
@@ -245,10 +238,7 @@ export function UserEditForm({
                   disabled={isDeleting}
                 >
                   {isDeleting ? (
-                    <>
-                      <SpinnerIcon size={14} className="mr-2 animate-spin" />
-                      Deleting...
-                    </>
+                    <SpinnerIcon size={14} className="animate-spin" />
                   ) : (
                     <>
                       <TrashIcon size={14} className="mr-2" />

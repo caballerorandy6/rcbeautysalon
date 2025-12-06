@@ -121,14 +121,10 @@ export function PersonalInfoSection({ profile }: PersonalInfoSectionProps) {
 
             <div className="flex gap-2 pt-2">
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? (
-                  <>
-                    <SpinnerIcon size={16} className="mr-2 animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  "Save Changes"
+                {isSubmitting && (
+                  <SpinnerIcon size={16} className="mr-2 animate-spin" />
                 )}
+                Save Changes
               </Button>
               <Button
                 type="button"

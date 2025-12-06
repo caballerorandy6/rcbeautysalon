@@ -417,9 +417,11 @@ export function ServiceForm({
                   ) : (
                     <ImageIcon size={48} className="text-muted-foreground/50" />
                   )}
-                  <p className="text-muted-foreground mt-4 text-sm">
-                    {isUploading ? "Uploading..." : "Click to upload an image"}
-                  </p>
+                  {!isUploading && (
+                    <p className="text-muted-foreground mt-4 text-sm">
+                      Click to upload an image
+                    </p>
+                  )}
                 </div>
               )}
               <input
@@ -512,16 +514,10 @@ export function ServiceForm({
               className="w-full"
               disabled={isSubmitting || isDeleting}
             >
-              {isSubmitting ? (
-                <>
-                  <SpinnerIcon size={16} className="mr-2 animate-spin" />
-                  {isEditMode ? "Updating..." : "Creating..."}
-                </>
-              ) : isEditMode ? (
-                "Update Service"
-              ) : (
-                "Create Service"
+              {isSubmitting && (
+                <SpinnerIcon size={16} className="mr-2 animate-spin" />
               )}
+              {isEditMode ? "Update Service" : "Create Service"}
             </Button>
             <Button
               type="button"
@@ -541,10 +537,7 @@ export function ServiceForm({
                 disabled={isSubmitting || isDeleting}
               >
                 {isDeleting ? (
-                  <>
-                    <SpinnerIcon size={16} className="mr-2 animate-spin" />
-                    Deleting...
-                  </>
+                  <SpinnerIcon size={16} className="animate-spin" />
                 ) : (
                   <>
                     <TrashIcon size={16} className="mr-2" />

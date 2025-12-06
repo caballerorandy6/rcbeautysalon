@@ -163,14 +163,10 @@ export function EditReviewDialog({
               Cancel
             </Button>
             <Button type="submit" disabled={isPending}>
-              {isPending ? (
-                <>
-                  <SpinnerIcon size={16} className="mr-2 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                "Save Changes"
+              {isPending && (
+                <SpinnerIcon size={16} className="mr-2 animate-spin" />
               )}
+              Save Changes
             </Button>
           </DialogFooter>
         </form>
