@@ -508,6 +508,7 @@ export interface AppointmentCardProps {
     depositPaid: boolean
     notes: string | null
     staff: {
+      id: string
       name: string
       image: string | null
     }
@@ -534,6 +535,7 @@ export interface AppointmentData {
   depositPaid: boolean
   notes: string | null
   staff: {
+    id: string
     name: string
     image: string | null
   }

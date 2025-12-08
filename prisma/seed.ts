@@ -20,11 +20,11 @@ async function main() {
       email: 'info@rcbeautysalon.org',
       phone: '+1 (555) 123-4567',
       address: '123 Beauty Street',
-      city: 'Miami',
-      state: 'FL',
-      zipCode: '33101',
+      city: 'Houston',
+      state: 'TX',
+      zipCode: '77001',
       country: 'US',
-      timezone: 'America/New_York',
+      timezone: 'America/Chicago',
       currency: 'USD',
       locale: 'en',
       primaryColor: '#000000',
@@ -32,7 +32,7 @@ async function main() {
       accentColor: '#d4af37',
       bookingDeposit: 50.0,
       depositRefundable: false,
-      minBookingAdvance: 24,
+      minBookingAdvance: 0,
       maxBookingAdvance: 30,
       cancellationPolicy:
         'Cancellations must be made at least 24 hours in advance. The $50 deposit is non-refundable.',
@@ -712,19 +712,26 @@ async function main() {
 
   await prisma.appointment.deleteMany({})
 
-  const tomorrow = addDays(new Date(), 1)
-  const nextWeek = addDays(new Date(), 7)
-  const lastWeek = addDays(new Date(), -7)
+  const today = new Date()
+  const tomorrow = addDays(today, 1)
+  const dayAfterTomorrow = addDays(today, 2)
+  const nextWeek = addDays(today, 7)
+  const twoDaysAgo = addDays(today, -2)
+  const threeDaysAgo = addDays(today, -3)
+  const lastWeek = addDays(today, -7)
+  const twoWeeksAgo = addDays(today, -14)
 
-  // Future appointment (confirmed)
-  const apt1 = await prisma.appointment.create({
+  // === FUTURE APPOINTMENTS ===
+
+  // Tomorrow - Confirmed (paid)
+  await prisma.appointment.create({
     data: {
       staffId: staffLaura.id,
       customerId: customerJohn.id,
       startTime: setMinutes(setHours(tomorrow, 10), 0),
       endTime: setMinutes(setHours(tomorrow, 11), 0),
       status: 'CONFIRMED',
-      notes: 'Regular haircut',
+      notes: 'Regular haircut - prefers shorter on sides',
       totalPrice: 75.0,
       depositAmount: 50.0,
       depositPaid: true,
@@ -734,13 +741,30 @@ async function main() {
     },
   })
 
-  // Future appointment (pending payment)
-  const apt2 = await prisma.appointment.create({
+  // Tomorrow - Confirmed (paid) - Another client
+  await prisma.appointment.create({
+    data: {
+      staffId: staffSofia.id,
+      customerId: customerEmily.id,
+      startTime: setMinutes(setHours(tomorrow, 14), 0),
+      endTime: setMinutes(setHours(tomorrow, 15), 0),
+      status: 'CONFIRMED',
+      totalPrice: 55.0,
+      depositAmount: 50.0,
+      depositPaid: true,
+      services: {
+        create: [{ serviceId: gelNails.id }],
+      },
+    },
+  })
+
+  // Day after tomorrow - Pending payment
+  await prisma.appointment.create({
     data: {
       staffId: staffAna.id,
-      customerId: customerEmily.id,
-      startTime: setMinutes(setHours(nextWeek, 14), 0),
-      endTime: setMinutes(setHours(nextWeek, 15), 30),
+      customerId: customerMichael.id,
+      startTime: setMinutes(setHours(dayAfterTomorrow, 11), 0),
+      endTime: setMinutes(setHours(dayAfterTomorrow, 12), 30),
       status: 'PENDING',
       totalPrice: 120.0,
       depositAmount: 50.0,
@@ -751,13 +775,36 @@ async function main() {
     },
   })
 
-  // Completed appointment
-  const apt3 = await prisma.appointment.create({
+  // Next week - Confirmed (multiple services)
+  await prisma.appointment.create({
+    data: {
+      staffId: staffMaria.id,
+      customerId: customerEmily.id,
+      startTime: setMinutes(setHours(nextWeek, 10), 0),
+      endTime: setMinutes(setHours(nextWeek, 14), 30),
+      status: 'CONFIRMED',
+      notes: 'Full color transformation',
+      totalPrice: 330.0,
+      depositAmount: 50.0,
+      depositPaid: true,
+      services: {
+        create: [
+          { serviceId: coloring.id },
+          { serviceId: highlights.id },
+        ],
+      },
+    },
+  })
+
+  // === PAST APPOINTMENTS ===
+
+  // 2 days ago - Completed
+  await prisma.appointment.create({
     data: {
       staffId: staffSofia.id,
       customerId: customerEmily.id,
-      startTime: setMinutes(setHours(lastWeek, 11), 0),
-      endTime: setMinutes(setHours(lastWeek, 12), 0),
+      startTime: setMinutes(setHours(twoDaysAgo, 11), 0),
+      endTime: setMinutes(setHours(twoDaysAgo, 12), 0),
       status: 'COMPLETED',
       totalPrice: 50.0,
       depositAmount: 50.0,
@@ -768,7 +815,98 @@ async function main() {
     },
   })
 
-  console.log('✅ Appointments: 3 (1 confirmed, 1 pending, 1 completed)')
+  // 3 days ago - Completed
+  await prisma.appointment.create({
+    data: {
+      staffId: staffLaura.id,
+      customerId: customerMichael.id,
+      startTime: setMinutes(setHours(threeDaysAgo, 15), 0),
+      endTime: setMinutes(setHours(threeDaysAgo, 16), 0),
+      status: 'COMPLETED',
+      totalPrice: 75.0,
+      depositAmount: 50.0,
+      depositPaid: true,
+      services: {
+        create: [{ serviceId: haircut.id }],
+      },
+    },
+  })
+
+  // Last week - NO_SHOW (client didn't show up, lost deposit)
+  await prisma.appointment.create({
+    data: {
+      staffId: staffAna.id,
+      customerId: customerJessica.id,
+      startTime: setMinutes(setHours(lastWeek, 14), 0),
+      endTime: setMinutes(setHours(lastWeek, 15), 30),
+      status: 'NO_SHOW',
+      notes: 'Client did not show up - deposit forfeited',
+      totalPrice: 130.0,
+      depositAmount: 50.0,
+      depositPaid: true,
+      services: {
+        create: [{ serviceId: hotStone.id }],
+      },
+    },
+  })
+
+  // Last week - CANCELLED by client
+  await prisma.appointment.create({
+    data: {
+      staffId: staffMaria.id,
+      customerId: customerJohn.id,
+      startTime: setMinutes(setHours(lastWeek, 10), 0),
+      endTime: setMinutes(setHours(lastWeek, 12), 0),
+      status: 'CANCELLED',
+      notes: 'Cancelled by client - emergency',
+      totalPrice: 150.0,
+      depositAmount: 50.0,
+      depositPaid: true,
+      services: {
+        create: [{ serviceId: coloring.id }],
+      },
+    },
+  })
+
+  // 2 weeks ago - Completed
+  await prisma.appointment.create({
+    data: {
+      staffId: staffSofia.id,
+      customerId: customerJohn.id,
+      startTime: setMinutes(setHours(twoWeeksAgo, 16), 0),
+      endTime: setMinutes(setHours(twoWeeksAgo, 17), 0),
+      status: 'COMPLETED',
+      totalPrice: 35.0,
+      depositAmount: 50.0,
+      depositPaid: true,
+      services: {
+        create: [{ serviceId: manicure.id }],
+      },
+    },
+  })
+
+  // 2 weeks ago - Completed (walk-in guest)
+  await prisma.appointment.create({
+    data: {
+      staffId: staffAna.id,
+      guestName: 'Sarah Williams',
+      guestEmail: 'sarah.w@example.com',
+      guestPhone: '+1 (555) 999-0000',
+      startTime: setMinutes(setHours(twoWeeksAgo, 11), 0),
+      endTime: setMinutes(setHours(twoWeeksAgo, 12), 0),
+      status: 'COMPLETED',
+      totalPrice: 90.0,
+      depositAmount: 50.0,
+      depositPaid: true,
+      services: {
+        create: [{ serviceId: massage.id }],
+      },
+    },
+  })
+
+  console.log('✅ Appointments: 10 (4 future, 6 past)')
+  console.log('   → Future: 3 CONFIRMED, 1 PENDING')
+  console.log('   → Past: 4 COMPLETED, 1 NO_SHOW, 1 CANCELLED')
 
   // ============================================
   // 13. PRODUCTS
@@ -853,6 +991,142 @@ async function main() {
   })
   console.log('✅ Products: 6 (3 featured)')
 
+  // Get products for orders
+  const products = await prisma.product.findMany()
+  const shampoo = products.find(p => p.sku === 'SHP-001')!
+  const conditioner = products.find(p => p.sku === 'CND-001')!
+  const serum = products.find(p => p.sku === 'SRM-001')!
+  const nailPolish = products.find(p => p.sku === 'NPL-001')!
+  const faceCream = products.find(p => p.sku === 'FCR-001')!
+  const hairSerum = products.find(p => p.sku === 'HGS-001')!
+
+  // ============================================
+  // 14. SAMPLE ORDERS (for testing)
+  // ============================================
+  console.log('\nCreating sample orders...')
+
+  await prisma.order.deleteMany({})
+
+  // Order 1 - COMPLETED (picked up) - 1 week ago
+  const order1 = await prisma.order.create({
+    data: {
+      customerId: customerJohn.id,
+      subtotal: 60.0,
+      tax: 4.95,
+      total: 64.95,
+      status: 'COMPLETED',
+      stripePaymentIntentId: 'pi_test_completed_1',
+      createdAt: lastWeek,
+      items: {
+        create: [
+          { productId: shampoo.id, quantity: 1, price: 28.0 },
+          { productId: conditioner.id, quantity: 1, price: 32.0 },
+        ],
+      },
+    },
+  })
+
+  // Order 2 - COMPLETED - 2 weeks ago
+  const order2 = await prisma.order.create({
+    data: {
+      customerId: customerEmily.id,
+      subtotal: 107.0,
+      tax: 8.83,
+      total: 115.83,
+      status: 'COMPLETED',
+      stripePaymentIntentId: 'pi_test_completed_2',
+      createdAt: twoWeeksAgo,
+      items: {
+        create: [
+          { productId: serum.id, quantity: 1, price: 65.0 },
+          { productId: faceCream.id, quantity: 1, price: 42.0 },
+        ],
+      },
+    },
+  })
+
+  // Order 3 - PAID (ready for pickup) - yesterday
+  const yesterday = addDays(today, -1)
+  const order3 = await prisma.order.create({
+    data: {
+      customerId: customerMichael.id,
+      subtotal: 58.0,
+      tax: 4.79,
+      total: 62.79,
+      status: 'PAID',
+      stripePaymentIntentId: 'pi_test_paid_1',
+      createdAt: yesterday,
+      items: {
+        create: [
+          { productId: hairSerum.id, quantity: 1, price: 58.0 },
+        ],
+      },
+    },
+  })
+
+  // Order 4 - PENDING (not paid yet) - today
+  const order4 = await prisma.order.create({
+    data: {
+      customerId: customerEmily.id,
+      subtotal: 73.0,
+      tax: 6.02,
+      total: 79.02,
+      status: 'PENDING',
+      createdAt: today,
+      items: {
+        create: [
+          { productId: shampoo.id, quantity: 1, price: 28.0 },
+          { productId: nailPolish.id, quantity: 1, price: 45.0 },
+        ],
+      },
+    },
+  })
+
+  // Order 5 - CANCELLED - 3 days ago
+  const order5 = await prisma.order.create({
+    data: {
+      customerId: customerJohn.id,
+      subtotal: 65.0,
+      tax: 5.36,
+      total: 70.36,
+      status: 'CANCELLED',
+      notes: 'Customer changed mind',
+      createdAt: threeDaysAgo,
+      items: {
+        create: [
+          { productId: serum.id, quantity: 1, price: 65.0 },
+        ],
+      },
+    },
+  })
+
+  // Order 6 - COMPLETED (guest order) - 5 days ago
+  const fiveDaysAgo = addDays(today, -5)
+  const order6 = await prisma.order.create({
+    data: {
+      guestName: 'Amanda Wilson',
+      guestEmail: 'amanda.w@example.com',
+      guestPhone: '+1 (555) 888-7777',
+      subtotal: 135.0,
+      tax: 11.14,
+      total: 146.14,
+      status: 'COMPLETED',
+      stripePaymentIntentId: 'pi_test_guest_1',
+      createdAt: fiveDaysAgo,
+      items: {
+        create: [
+          { productId: shampoo.id, quantity: 1, price: 28.0 },
+          { productId: conditioner.id, quantity: 1, price: 32.0 },
+          { productId: serum.id, quantity: 1, price: 65.0 },
+          { productId: faceCream.id, quantity: 1, price: 42.0 },
+        ],
+      },
+    },
+  })
+
+  console.log('✅ Orders: 6')
+  console.log('   → 3 COMPLETED, 1 PAID, 1 PENDING, 1 CANCELLED')
+
   // ============================================
   // SUMMARY
   // ============================================
@@ -886,8 +1160,12 @@ async function main() {
   console.log(`   ⭐ Reviews: 5`)
   console.log(`   📸 Gallery Images: 5`)
   console.log(`   ❓ FAQs: 5`)
-  console.log(`   📅 Appointments: 3 (sample data)`)
+  console.log(`   📅 Appointments: 10 (4 future, 6 past)`)
+  console.log(`      → Future: 3 CONFIRMED, 1 PENDING`)
+  console.log(`      → Past: 4 COMPLETED, 1 NO_SHOW, 1 CANCELLED`)
   console.log(`   🛍️  Products: 6 (3 featured)`)
+  console.log(`   🛒 Orders: 6`)
+  console.log(`      → 3 COMPLETED, 1 PAID, 1 PENDING, 1 CANCELLED`)
   console.log(`   🕐 Working Hours: 20 entries (Mon-Fri, 9am-6pm)`)
 
   console.log('\n🌐 CLOUDINARY IMAGES NEEDED:')

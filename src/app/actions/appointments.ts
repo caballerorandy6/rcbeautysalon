@@ -18,6 +18,8 @@ import { AdminAppointmentsFilter } from "@/lib/interfaces"
 import { sendNoShowNotificationEmail } from "@/lib/email/no-show-notification"
 import { sendAppointmentCompletedEmail } from "@/lib/email/appointment-completed"
 import { sendAppointmentCancelledEmail } from "@/lib/email/appointment-cancelled"
+import { sendAppointmentRescheduledEmail } from "@/lib/email/appointment-rescheduled"
+import { sendAppointmentExpiredEmail } from "@/lib/email/appointment-expired"
 
 // Get salon configuration
 export async function getSalonConfig() {
@@ -36,10 +38,10 @@ export async function getSalonConfig() {
     return {
       bookingDeposit: 50,
       depositRefundable: false,
-      minBookingAdvance: 24,
+      minBookingAdvance: 0,
       maxBookingAdvance: 30,
       cancellationPolicy: null,
-      timezone: "America/New_York",
+      timezone: "America/Chicago",
     }
   }
   return {
@@ -426,7 +428,7 @@ export async function getUserAppointments() {
     where: { customerId: user.customer.id },
     include: {
       staff: {
-        select: { name: true, image: true },
+        select: { name: true, image: true, id: true },
       },
       services: {
         include: {
@@ -511,11 +513,13 @@ export async function getAdminAppointments(filters?: AdminAppointmentsFilter) {
     throw new Error("Unauthorized")
   }
 
-  // Automatically mark past appointments as NO_SHOW before fetching
+  // Automatically handle past appointments before fetching
   const now = new Date()
-  const appointmentsToMarkNoShow = await prisma.appointment.findMany({
+
+  // 1. Handle PENDING (unpaid) appointments - cancel and notify
+  const pendingToCancel = await prisma.appointment.findMany({
     where: {
-      status: { in: ["PENDING", "CONFIRMED"] },
+      status: "PENDING",
       endTime: { lt: now },
     },
     include: {
@@ -525,7 +529,45 @@ export async function getAdminAppointments(filters?: AdminAppointmentsFilter) {
     },
   })
 
-  for (const apt of appointmentsToMarkNoShow) {
+  for (const apt of pendingToCancel) {
+    const customerEmail = apt.customer?.email || apt.guestEmail
+    const customerName = apt.customer?.name || apt.guestName || "Customer"
+
+    if (customerEmail) {
+      await sendAppointmentExpiredEmail({
+        email: customerEmail,
+        customerName,
+        serviceName: apt.services.map((s) => s.service.name).join(", "),
+        staffName: apt.staff?.name || "Our Staff",
+        appointmentDate: apt.startTime,
+        appointmentTime: format(apt.startTime, "h:mm a"),
+        depositAmount: apt.depositAmount.toNumber(),
+      })
+    }
+  }
+
+  await prisma.appointment.updateMany({
+    where: {
+      status: "PENDING",
+      endTime: { lt: now },
+    },
+    data: { status: "CANCELLED" },
+  })
+
+  // 2. Handle CONFIRMED (paid) appointments - mark as NO_SHOW
+  const confirmedToNoShow = await prisma.appointment.findMany({
+    where: {
+      status: "CONFIRMED",
+      endTime: { lt: now },
+    },
+    include: {
+      customer: { select: { name: true, email: true } },
+      staff: { select: { name: true } },
+      services: { include: { service: { select: { name: true } } } },
+    },
+  })
+
+  for (const apt of confirmedToNoShow) {
     const customerEmail = apt.customer?.email || apt.guestEmail
     const customerName = apt.customer?.name || apt.guestName || "Customer"
 
@@ -545,7 +587,7 @@ export async function getAdminAppointments(filters?: AdminAppointmentsFilter) {
 
   await prisma.appointment.updateMany({
     where: {
-      status: { in: ["PENDING", "CONFIRMED"] },
+      status: "CONFIRMED",
       endTime: { lt: now },
     },
     data: { status: "NO_SHOW" },
@@ -616,7 +658,15 @@ export const getAppointmentById = cache(async (id: string) => {
     where: { id },
     include: {
       staff: { select: { id: true, name: true, email: true, phone: true } },
-      customer: { select: { id: true, userId: true, name: true, email: true, phone: true } },
+      customer: {
+        select: {
+          id: true,
+          userId: true,
+          name: true,
+          email: true,
+          phone: true,
+        },
+      },
       services: {
         include: {
           service: {
@@ -691,7 +741,11 @@ export async function updateAppointmentStatus(
     include: {
       customer: { select: { name: true, email: true } },
       staff: { select: { name: true } },
-      services: { include: { service: { select: { id: true, name: true, duration: true } } } },
+      services: {
+        include: {
+          service: { select: { id: true, name: true, duration: true } },
+        },
+      },
     },
   })
 
@@ -706,9 +760,15 @@ export async function updateAppointmentStatus(
   })
 
   // Send email notification based on new status
-  const customerEmail = appointmentDetails.customer?.email || appointmentDetails.guestEmail
-  const customerName = appointmentDetails.customer?.name || appointmentDetails.guestName || "Customer"
-  const serviceName = appointmentDetails.services.map((s) => s.service.name).join(", ")
+  const customerEmail =
+    appointmentDetails.customer?.email || appointmentDetails.guestEmail
+  const customerName =
+    appointmentDetails.customer?.name ||
+    appointmentDetails.guestName ||
+    "Customer"
+  const serviceName = appointmentDetails.services
+    .map((s) => s.service.name)
+    .join(", ")
   const staffName = appointmentDetails.staff?.name || "Our Staff"
 
   if (customerEmail) {
@@ -782,5 +842,138 @@ export async function updateAppointmentStatus(
     ...appointment,
     totalPrice: appointment.totalPrice.toNumber(),
     depositAmount: appointment.depositAmount.toNumber(),
+  }
+}
+
+export async function rescheduleAppointment(
+  appointmentId: string,
+  newStartTime: Date
+) {
+  const session = await auth()
+
+  if (!session?.user) {
+    return {
+      success: false,
+      error: "You must be logged in to reschedule appointments",
+    }
+  }
+
+  const appointment = await prisma.appointment.findUnique({
+    where: { id: appointmentId },
+    include: {
+      customer: {
+        include: {
+          user: true,
+        },
+      },
+      staff: { select: { name: true, id: true } },
+      services: {
+        include: {
+          service: { select: { name: true, duration: true } },
+        },
+      },
+    },
+  })
+
+  if (!appointment) {
+    return {
+      success: false,
+      error: "Appointment not found",
+    }
+  }
+
+  // Check permissions: owner or admin
+  const isAdmin = session.user.role === "ADMIN"
+  const isOwner = appointment.customer?.userId === session.user.id
+
+  if (!isAdmin && !isOwner) {
+    return {
+      success: false,
+      error: "You don't have permission to reschedule this appointment",
+    }
+  }
+
+  // Validate status
+  if (appointment.status === "CANCELLED" || appointment.status === "NO_SHOW") {
+    return {
+      success: false,
+      error: "You cannot reschedule a cancelled or no-show appointment",
+    }
+  }
+
+  // Validate original appointment is not in the past
+  if (new Date(appointment.startTime) < new Date()) {
+    return {
+      success: false,
+      error: "Cannot reschedule past appointments",
+    }
+  }
+
+  // Validate new time is not in the past
+  if (newStartTime < new Date()) {
+    return {
+      success: false,
+      error: "Cannot reschedule to a past time",
+    }
+  }
+
+  const totalDuration = appointment.services.reduce(
+    (sum, s) => sum + s.service.duration,
+    0
+  )
+
+  const newEndTime = addMinutes(newStartTime, totalDuration)
+
+  const slots = await getAvailableTimeSlots(
+    appointment.staffId,
+    newStartTime,
+    totalDuration
+  )
+
+  const requestedTime = format(newStartTime, "HH:mm")
+  const slotAvailable = slots.find(
+    (slot) => slot.time === requestedTime && slot.available
+  )
+
+  if (!slotAvailable) {
+    return {
+      success: false,
+      error: "Selected time slot is not available",
+    }
+  }
+
+  await prisma.appointment.update({
+    where: { id: appointmentId },
+    data: {
+      startTime: newStartTime,
+      endTime: newEndTime,
+    },
+  })
+
+  revalidatePath("/my-appointments")
+  revalidatePath("/dashboard/appointments")
+
+  const customerEmail = appointment.customer?.email || appointment.guestEmail
+  const customerName =
+    appointment.customer?.name || appointment.guestName || "Customer"
+  const serviceName = appointment.services.map((s) => s.service.name).join(", ")
+  const staffName = appointment.staff?.name || "Our Staff"
+
+  if (customerEmail) {
+    await sendAppointmentRescheduledEmail({
+      email: customerEmail,
+      customerName,
+      serviceName,
+      staffName,
+      oldDate: appointment.startTime,
+      oldTime: format(appointment.startTime, "h:mm a"),
+      newDate: newStartTime,
+      newTime: format(newStartTime, "h:mm a"),
+      duration: totalDuration,
+    })
+  }
+
+  return {
+    success: true,
   }
 }
