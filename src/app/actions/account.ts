@@ -6,12 +6,14 @@ import { revalidatePath } from "next/cache"
 import bcrypt from "bcryptjs"
 import crypto from "crypto"
 import { sendPasswordResetEmail } from "@/lib/email/password-reset"
+import { notificationPreferencesSchema } from "@/lib/validations/reschedule"
 import {
   updateProfileSchema,
   changePasswordSchema,
   type UpdateProfileInput,
   type ChangePasswordInput,
 } from "@/lib/validations/profile"
+import type { Payment } from "@/lib/interfaces"
 
 // Update user profile image
 export async function updateProfileImage(imageUrl: string) {
@@ -120,7 +122,7 @@ export async function getOrderStats() {
   }
 }
 
-//Get current stats
+// Get current stats
 export async function getUserStats() {
   const session = await auth()
 
@@ -309,5 +311,141 @@ export async function sendPasswordResetFromAccount() {
   } catch (error) {
     console.error("Send password reset error:", error)
     return { success: false, error: "Failed to send reset email" }
+  }
+}
+
+// Get notification preferences for the current user
+export async function getNotificationPreferences() {
+  const session = await auth()
+
+  if (!session?.user?.id) {
+    return {
+      emailReminders: true,
+      reminderTime: "24h",
+      promotionalEmails: false,
+      appointmentUpdates: true,
+    }
+  }
+
+  // TODO: Implementar la lógica
+  // 1. Buscar las preferencias del usuario en la tabla NotificationPreferences
+  // 2. Si no existen, retornar los valores por defecto
+  // 3. Si existen, retornar los valores guardados
+  //
+  // Hint: usa prisma.notificationPreferences.findUnique({ where: { userId: session.user.id } })
+
+  // Por ahora retorna valores por defecto
+  return {
+    emailReminders: true,
+    reminderTime: "24h",
+    promotionalEmails: false,
+    appointmentUpdates: true,
+  }
+}
+
+// Update notification preferences
+export async function updateNotificationPreferences(data: {
+  emailReminders: boolean
+  reminderTime: string
+  promotionalEmails: boolean
+  appointmentUpdates: boolean
+}) {
+  const session = await auth()
+
+  if (!session?.user?.id) {
+    return { success: false, error: "Not authenticated" }
+  }
+
+  try {
+    const validated = notificationPreferencesSchema.safeParse(data)
+
+    if (!validated.success) {
+      return { success: false, error: "Invalid data" }
+    }
+
+    const prefs = await prisma.notificationPreferences.upsert({
+      where: { userId: session.user.id },
+      create: { userId: session.user.id, ...data },
+      update: data,
+    })
+    revalidatePath("/my-account")
+    return { success: true, preferences: prefs }
+  } catch (error) {
+    console.error("Update notification preferences error:", error)
+    return { success: false, error: "Failed to update preferences" }
+  }
+}
+
+// Get payment history for the current user
+export async function getPaymentHistory(): Promise<Payment[]> {
+  const session = await auth()
+
+  if (!session?.user?.id) {
+    return []
+  }
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      include: { customer: true },
+    })
+
+    if (!user?.customer) {
+      return []
+    }
+
+    const [appointments, orders] = await Promise.all([
+      prisma.appointment.findMany({
+        where: { customerId: user.customer.id, depositPaid: true },
+        include: {
+          services: { include: { service: { select: { name: true } } } },
+        },
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.order.findMany({
+        where: {
+          customerId: user.customer.id,
+          status: { in: ["PAID", "COMPLETED"] },
+        },
+        orderBy: { createdAt: "desc" },
+      }),
+    ])
+
+    const payments: Payment[] = []
+
+    // Map appointments to Payment
+    for (const appt of appointments) {
+      const serviceNames = appt.services.map((s) => s.service.name).join(", ")
+      payments.push({
+        id: appt.id,
+        type: "APPOINTMENT_DEPOSIT",
+        amount: appt.depositAmount.toNumber(),
+        status: "COMPLETED",
+        createdAt: appt.createdAt,
+        description: serviceNames || "Appointment Deposit",
+        referenceId: appt.id,
+      })
+    }
+
+    // Map orders to Payment
+    for (const order of orders) {
+      payments.push({
+        id: order.id,
+        type: "PRODUCT_ORDER",
+        amount: order.total.toNumber(),
+        status: order.status === "COMPLETED" ? "COMPLETED" : "PENDING",
+        createdAt: order.createdAt,
+        description: `Order #${order.id.slice(-6).toUpperCase()}`,
+        referenceId: order.id,
+      })
+    }
+
+    // Sort by date descending
+    return payments.sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+    )
+  } catch (error) {
+    console.error("Get payment history error:", error)
+    return []
   }
 }

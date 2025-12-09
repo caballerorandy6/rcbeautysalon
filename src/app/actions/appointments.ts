@@ -730,8 +730,8 @@ export async function updateAppointmentStatus(
 ) {
   const session = await auth()
 
-  // Ensure user is authenticated
-  if (!session?.user || session.user.role !== "ADMIN") {
+  // Ensure user is authenticated (ADMIN or STAFF can update)
+  if (!session?.user || !["ADMIN", "STAFF"].includes(session.user.role)) {
     throw new Error("Unauthorized")
   }
 

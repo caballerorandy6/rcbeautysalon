@@ -31,7 +31,26 @@ export const createStaffSchema = staffBaseSchema
 // Schema for updating staff
 export const updateStaffSchema = staffBaseSchema
 
+// Schema for staff self-update (limited fields)
+export const staffSelfUpdateSchema = z.object({
+  name: z
+    .string()
+    .min(2, "Name must be at least 2 characters")
+    .max(100, "Name must be less than 100 characters"),
+  phone: z
+    .string()
+    .regex(/^[\d\s\-+()]*$/, "Invalid phone number format")
+    .optional()
+    .or(z.literal("")),
+  bio: z
+    .string()
+    .max(500, "Bio must be less than 500 characters")
+    .optional()
+    .or(z.literal("")),
+})
+
 export type WorkingHourFormData = z.infer<typeof workingHourSchema>
 export type CreateStaffFormData = z.infer<typeof createStaffSchema>
 export type UpdateStaffFormData = z.infer<typeof updateStaffSchema>
 export type StaffFormData = CreateStaffFormData | UpdateStaffFormData
+export type StaffSelfUpdateFormData = z.infer<typeof staffSelfUpdateSchema>

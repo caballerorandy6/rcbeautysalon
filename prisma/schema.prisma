@@ -58,8 +58,25 @@ model User {
   staff    Staff?    // If role=STAFF, MUST exist
   customer Customer? // If role=CLIENTE, MUST exist
 
+  // Notification preferences
+  notificationPreferences NotificationPreferences?
+
   @@index([email])
   @@index([role])
+}
+
+model NotificationPreferences {
+  id                  String  @id @default(cuid())
+  userId              String  @unique
+  emailReminders      Boolean @default(true)
+  reminderTime        String  @default("24h") // "24h" | "48h" | "1week"
+  promotionalEmails   Boolean @default(false)
+  appointmentUpdates  Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum UserRole {

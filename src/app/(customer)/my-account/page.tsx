@@ -6,12 +6,20 @@ export const metadata: Metadata = {
   title: "My Account | RC Beauty Salon",
   description: "Manage your profile, view appointments, and update your account settings.",
 }
-import { getUserProfile, getUserStats, getOrderStats } from "@/app/actions/account"
+import {
+  getUserProfile,
+  getUserStats,
+  getOrderStats,
+  getNotificationPreferences,
+  getPaymentHistory,
+} from "@/app/actions/account"
 import { ProfileHeader } from "@/components/account/profile-header"
 import { PersonalInfoSection } from "@/components/account/personal-info-section"
 import { AppointmentsSummary } from "@/components/account/appointments-summary"
 import { SecuritySection } from "@/components/account/security-section"
 import { OrdersSummary } from "@/components/account/orders-summary"
+import { NotificationPreferences } from "@/components/account/notification-preferences"
+import { PaymentHistory } from "@/components/account/payment-history"
 
 export default async function MyAccountPage() {
   const session = await auth()
@@ -19,10 +27,12 @@ export default async function MyAccountPage() {
     redirect("/login?callbackUrl=/my-account")
   }
 
-  const [profile, stats, orderStats] = await Promise.all([
+  const [profile, stats, orderStats, notificationPrefs, payments] = await Promise.all([
     getUserProfile(),
     getUserStats(),
     getOrderStats(),
+    getNotificationPreferences(),
+    getPaymentHistory(),
   ])
 
   if (!profile) {
@@ -55,6 +65,14 @@ export default async function MyAccountPage() {
 
           {/* Orders Summary */}
           <OrdersSummary stats={orderStats} />
+
+          {/* Notification Preferences */}
+          <NotificationPreferences preferences={notificationPrefs} />
+        </div>
+
+        {/* Payment History - Full Width */}
+        <div className="mt-6">
+          <PaymentHistory payments={payments} />
         </div>
 
         {/* Security Section */}

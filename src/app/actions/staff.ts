@@ -4,6 +4,16 @@ import { cache } from "react"
 import { prisma } from "@/lib/prisma"
 import { CreateStaffInput } from "@/lib/interfaces"
 import { revalidatePath } from "next/cache"
+import { auth } from "@/lib/auth/auth"
+import {
+  startOfDay,
+  endOfDay,
+  startOfMonth,
+  endOfMonth,
+  startOfWeek,
+  endOfWeek,
+} from "date-fns"
+import { StaffAppointmentFilters } from "@/lib/interfaces"
 
 export type UpdateStaffInput = Partial<CreateStaffInput> & {
   serviceIds?: string[]
@@ -206,7 +216,10 @@ export const createStaffMember = async (data: UpdateStaffInput) => {
       })
 
       if (existingStaff) {
-        return { success: false, error: "A staff member with this email already exists" }
+        return {
+          success: false,
+          error: "A staff member with this email already exists",
+        }
       }
     }
 
@@ -382,5 +395,341 @@ export const toggleStaffActiveStatus = async (id: string) => {
   } catch (error) {
     console.error("Error toggling staff active status:", error)
     return { success: false, error: "Failed to toggle staff active status." }
+  }
+}
+
+// Get Current Staff Member
+export const getCurrentStaffMember = async () => {
+  const session = await auth()
+
+  if (!session?.user.role || session.user.role !== "STAFF") {
+    return {
+      success: false,
+      error: "Unauthorized",
+    }
+  }
+
+  try {
+    const staffMember = await prisma.staff.findUnique({
+      where: { userId: session.user.id },
+      include: {
+        services: {
+          include: {
+            service: {
+              select: {
+                id: true,
+                name: true,
+                duration: true,
+                price: true,
+                description: true,
+                category: true,
+              },
+            },
+          },
+        },
+        workingHours: true,
+      },
+    })
+
+    if (!staffMember) {
+      return {
+        success: false,
+        error: "Staff profile not found",
+      }
+    }
+
+    return {
+      success: true,
+      staff: {
+        ...staffMember,
+        services: staffMember?.services.map((ss) => ({
+          ...ss,
+          service: {
+            ...ss.service,
+            price: Number(ss.service.price),
+          },
+        })),
+      },
+    }
+  } catch (error) {
+    console.error("Error fetching current staff member:", error)
+    return {
+      success: false,
+      error: "Failed to fetch current staff member.",
+    }
+  }
+}
+
+// Get Staff Portal Stats
+export const getStaffPortalStats = async () => {
+  const session = await auth()
+
+  if (!session?.user.role || session.user.role !== "STAFF") {
+    return {
+      success: false,
+      error: "Unauthorized",
+    }
+  }
+
+  try {
+    const now = new Date()
+    const dayStart = startOfDay(now)
+    const dayEnd = endOfDay(now)
+    const monthStart = startOfMonth(now)
+    const monthEnd = endOfMonth(now)
+
+    const staffMember = await prisma.staff.findUnique({
+      where: { userId: session.user.id },
+    })
+
+    if (!staffMember) {
+      return {
+        success: false,
+        error: "Staff profile not found",
+      }
+    }
+
+    const [todaysAppointments, monthlyAppointments] = await Promise.all([
+      prisma.appointment.count({
+        where: {
+          staffId: staffMember.id,
+          startTime: { gte: dayStart, lte: dayEnd },
+        },
+      }),
+      prisma.appointment.count({
+        where: {
+          staffId: staffMember.id,
+          startTime: { gte: monthStart, lte: monthEnd },
+        },
+      }),
+    ])
+
+    const completedThisMonthAppointments = await prisma.appointment.findMany({
+      where: {
+        staffId: staffMember.id,
+        status: "COMPLETED",
+        startTime: { gte: monthStart, lte: monthEnd },
+      },
+    })
+
+    const monthlyEarnings = completedThisMonthAppointments.reduce(
+      (sum, appointment) => sum + Number(appointment.totalPrice),
+      0
+    )
+
+    return {
+      success: true,
+      stats: {
+        todaysAppointments,
+        monthlyAppointments,
+        monthlyEarnings,
+        completedThisMonthAppointments: completedThisMonthAppointments.length,
+      },
+    }
+  } catch (error) {
+    console.error("Error fetching staff portal stats:", error)
+    return {
+      success: false,
+      error: "Failed to fetch staff portal stats.",
+    }
+  }
+}
+
+//Get Staff Today's Appointments
+export const getStaffTodaysAppointments = async () => {
+  const session = await auth()
+
+  if (!session?.user.role || session.user.role !== "STAFF") {
+    return {
+      success: false,
+      error: "Unauthorized",
+    }
+  }
+
+  try {
+    const now = new Date()
+    const dayStart = startOfDay(now)
+    const dayEnd = endOfDay(now)
+
+    const staffMember = await prisma.staff.findUnique({
+      where: { userId: session.user.id },
+      include: {
+        appointments: {
+          where: {
+            startTime: { gte: dayStart, lte: dayEnd },
+            status: { in: ["CONFIRMED", "PENDING"] },
+          },
+          include: {
+            customer: {
+              select: {
+                name: true,
+                email: true,
+                phone: true,
+              },
+            },
+            services: {
+              include: {
+                service: {
+                  select: {
+                    name: true,
+                    duration: true,
+                    price: true,
+                  },
+                },
+              },
+            },
+          },
+          orderBy: {
+            startTime: "asc",
+          },
+        },
+      },
+    })
+
+    if (!staffMember) {
+      return {
+        success: false,
+        error: "Staff profile not found",
+      }
+    }
+
+    return {
+      success: true,
+      appointments: staffMember.appointments.map((apt) => ({
+        ...apt,
+        totalPrice: Number(apt.totalPrice),
+        customerName: apt.customer?.name || apt.guestName || "Walk-in",
+        services: apt.services.map((s) => ({
+          ...s,
+          service: { ...s.service, price: Number(s.service.price) },
+        })),
+      })),
+    }
+  } catch (error) {
+    console.error("Error fetching staff today's appointments:", error)
+    return {
+      success: false,
+      error: "Failed to fetch staff today's appointments.",
+    }
+  }
+}
+
+//Get Staff Appointments
+export const getStaffAppointments = async (
+  filters: StaffAppointmentFilters
+) => {
+  const session = await auth()
+
+  if (!session?.user.role || session.user.role !== "STAFF") {
+    return {
+      success: false,
+      error: "Unauthorized",
+    }
+  }
+
+  try {
+    const now = new Date()
+
+    // Calculate date range based on filter
+    let dateStart: Date | undefined
+    let dateEnd: Date | undefined
+
+    switch (filters.dateFilter) {
+      case "today":
+        dateStart = startOfDay(now)
+        dateEnd = endOfDay(now)
+        break
+      case "week":
+        dateStart = startOfWeek(now, { weekStartsOn: 1 })
+        dateEnd = endOfWeek(now, { weekStartsOn: 1 })
+        break
+      case "month":
+        dateStart = startOfMonth(now)
+        dateEnd = endOfMonth(now)
+        break
+      case "all":
+      default:
+        // No date filter
+        dateStart = undefined
+        dateEnd = undefined
+    }
+
+    // Build status filter
+    const statusFilter =
+      filters.statusFilter && filters.statusFilter !== "ALL"
+        ? filters.statusFilter
+        : undefined
+
+    // Get staff member
+    const staff = await prisma.staff.findUnique({
+      where: { userId: session.user.id },
+      select: { id: true },
+    })
+
+    if (!staff) {
+      return {
+        success: false,
+        error: "Staff profile not found",
+      }
+    }
+
+    // Build where clause
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const whereClause: any = {
+      staffId: staff.id,
+    }
+
+    if (dateStart && dateEnd) {
+      whereClause.startTime = { gte: dateStart, lte: dateEnd }
+    }
+
+    if (statusFilter) {
+      whereClause.status = statusFilter
+    }
+
+    // Search filter by customer name or guest name
+    if (filters.search) {
+      whereClause.OR = [
+        { customer: { name: { contains: filters.search, mode: "insensitive" } } },
+        { guestName: { contains: filters.search, mode: "insensitive" } },
+      ]
+    }
+
+    const appointments = await prisma.appointment.findMany({
+      where: whereClause,
+      include: {
+        customer: {
+          select: { name: true, email: true, phone: true },
+        },
+        services: {
+          include: {
+            service: {
+              select: { name: true, duration: true, price: true },
+            },
+          },
+        },
+      },
+      orderBy: { startTime: "desc" },
+    })
+
+    return {
+      success: true,
+      appointments: appointments.map((apt) => ({
+        ...apt,
+        totalPrice: Number(apt.totalPrice),
+        depositAmount: Number(apt.depositAmount),
+        customerName: apt.customer?.name || apt.guestName || "Walk-in",
+        services: apt.services.map((s) => ({
+          ...s,
+          service: { ...s.service, price: Number(s.service.price) },
+        })),
+      })),
+    }
+  } catch (error) {
+    console.error("Error fetching staff appointments:", error)
+    return {
+      success: false,
+      error: "Failed to fetch staff appointments.",
+    }
   }
 }

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { toast } from "sonner"
 import {
   Card,
   CardContent,
@@ -19,6 +20,7 @@ import {
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { BellIcon, EnvelopeIcon, SpinnerGapIcon } from "@/components/icons"
+import { updateNotificationPreferences } from "@/app/actions/account"
 
 interface NotificationPreferencesProps {
   preferences: {
@@ -35,6 +37,7 @@ export function NotificationPreferences({ preferences }: NotificationPreferences
   const [hasChanges, setHasChanges] = useState(false)
 
   const handleToggle = (field: keyof typeof formData) => {
+    if (field === "reminderTime") return // reminderTime is string, not boolean
     setFormData((prev) => ({ ...prev, [field]: !prev[field] }))
     setHasChanges(true)
   }
@@ -46,15 +49,19 @@ export function NotificationPreferences({ preferences }: NotificationPreferences
 
   const handleSave = async () => {
     setIsSaving(true)
-    // TODO: Implement save logic
-    // const result = await updateNotificationPreferences(formData)
-    // if (result.success) {
-    //   toast.success("Preferences saved")
-    //   setHasChanges(false)
-    // } else {
-    //   toast.error(result.error)
-    // }
-    setIsSaving(false)
+    try {
+      const result = await updateNotificationPreferences(formData)
+      if (result.success) {
+        toast.success("Preferences saved successfully")
+        setHasChanges(false)
+      } else {
+        toast.error(result.error || "Failed to save preferences")
+      }
+    } catch {
+      toast.error("An error occurred while saving")
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   return (

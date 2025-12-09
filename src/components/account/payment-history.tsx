@@ -21,20 +21,7 @@ import {
   XCircleIcon,
 } from "@/components/icons"
 import { format } from "date-fns"
-
-// Payment types
-type PaymentType = "APPOINTMENT_DEPOSIT" | "PRODUCT_ORDER"
-type PaymentStatus = "COMPLETED" | "PENDING" | "REFUNDED" | "FAILED"
-
-interface Payment {
-  id: string
-  type: PaymentType
-  amount: number
-  status: PaymentStatus
-  createdAt: Date
-  description: string
-  referenceId: string // appointmentId or orderId
-}
+import type { Payment, PaymentStatus, PaymentType } from "@/lib/interfaces"
 
 interface PaymentHistoryProps {
   payments: Payment[]

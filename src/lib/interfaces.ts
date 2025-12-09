@@ -596,3 +596,29 @@ export interface BookingFormValues {
   phone: string
   notes: string
 }
+
+// Payment History Types
+export type PaymentType = "APPOINTMENT_DEPOSIT" | "PRODUCT_ORDER"
+export type PaymentStatus = "COMPLETED" | "PENDING" | "REFUNDED" | "FAILED"
+
+export interface Payment {
+  id: string
+  type: PaymentType
+  amount: number
+  status: PaymentStatus
+  createdAt: Date
+  description: string
+  referenceId: string
+}
+
+export interface StaffAppointmentFilters {
+  dateFilter?: "today" | "week" | "month" | "all"
+  statusFilter?:
+    | "ALL"
+    | "PENDING"
+    | "CONFIRMED"
+    | "COMPLETED"
+    | "CANCELLED"
+    | "NO_SHOW"
+  search?: string //customer name
+}
