@@ -1,10 +1,7 @@
-"use client"
-
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import {
-  StarIcon,
   CalendarCheckIcon,
   ClockIcon,
   EnvelopeIcon,
@@ -20,9 +17,7 @@ interface StaffProfile {
   bio: string | null
   isActive: boolean
   createdAt: Date
-  rating?: number
-  reviewCount?: number
-  completedAppointments?: number
+  totalCompletedAppointments: number
 }
 
 interface StaffProfileHeaderProps {
@@ -30,8 +25,6 @@ interface StaffProfileHeaderProps {
 }
 
 export function StaffProfileHeader({ profile }: StaffProfileHeaderProps) {
-  // TODO: Implement loading state
-
   if (!profile) {
     return (
       <Card>
@@ -56,7 +49,7 @@ export function StaffProfileHeader({ profile }: StaffProfileHeaderProps) {
   return (
     <Card className="overflow-hidden">
       {/* Gradient Header Background */}
-      <div className="from-primary/20 via-primary/10 to-transparent h-24 bg-gradient-to-r sm:h-32" />
+      <div className="from-primary/20 via-primary/10 to-transparent h-24 bg-linear-to-r sm:h-32" />
 
       <CardContent className="-mt-12 pb-6 sm:-mt-16">
         <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-end sm:gap-6">
@@ -106,26 +99,13 @@ export function StaffProfileHeader({ profile }: StaffProfileHeaderProps) {
         </div>
 
         {/* Stats Grid */}
-        <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
-          {/* Rating */}
-          <div className="bg-muted/50 rounded-xl p-3 text-center sm:p-4">
-            <div className="flex items-center justify-center gap-1.5">
-              <StarIcon size={18} className="text-yellow-500" weight="fill" />
-              <span className="text-lg font-bold sm:text-xl">
-                {profile.rating?.toFixed(1) || "N/A"}
-              </span>
-            </div>
-            <p className="text-muted-foreground mt-1 text-xs sm:text-sm">
-              {profile.reviewCount || 0} reviews
-            </p>
-          </div>
-
-          {/* Completed */}
+        <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4">
+          {/* Completed Appointments */}
           <div className="bg-muted/50 rounded-xl p-3 text-center sm:p-4">
             <div className="flex items-center justify-center gap-1.5">
               <CalendarCheckIcon size={18} className="text-primary" />
               <span className="text-lg font-bold sm:text-xl">
-                {profile.completedAppointments || 0}
+                {profile.totalCompletedAppointments}
               </span>
             </div>
             <p className="text-muted-foreground mt-1 text-xs sm:text-sm">
@@ -134,13 +114,16 @@ export function StaffProfileHeader({ profile }: StaffProfileHeaderProps) {
           </div>
 
           {/* Member Since */}
-          <div className="bg-muted/50 col-span-2 rounded-xl p-3 text-center sm:col-span-2 sm:p-4">
+          <div className="bg-muted/50 rounded-xl p-3 text-center sm:p-4">
             <div className="flex items-center justify-center gap-1.5">
               <ClockIcon size={18} className="text-muted-foreground" />
               <span className="text-sm font-medium sm:text-base">
-                Member since {memberSince}
+                {memberSince}
               </span>
             </div>
+            <p className="text-muted-foreground mt-1 text-xs sm:text-sm">
+              Member since
+            </p>
           </div>
         </div>
       </CardContent>

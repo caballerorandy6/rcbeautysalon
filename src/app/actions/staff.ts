@@ -14,6 +14,7 @@ import {
   endOfWeek,
 } from "date-fns"
 import { StaffAppointmentFilters } from "@/lib/interfaces"
+import { StaffSelfUpdateFormData } from "@/lib/validations/staff"
 
 export type UpdateStaffInput = Partial<CreateStaffInput> & {
   serviceIds?: string[]
@@ -690,7 +691,9 @@ export const getStaffAppointments = async (
     // Search filter by customer name or guest name
     if (filters.search) {
       whereClause.OR = [
-        { customer: { name: { contains: filters.search, mode: "insensitive" } } },
+        {
+          customer: { name: { contains: filters.search, mode: "insensitive" } },
+        },
         { guestName: { contains: filters.search, mode: "insensitive" } },
       ]
     }
@@ -730,6 +733,164 @@ export const getStaffAppointments = async (
     return {
       success: false,
       error: "Failed to fetch staff appointments.",
+    }
+  }
+}
+
+//Get Staff Profile
+export const getStaffProfile = async () => {
+  const session = await auth()
+
+  if (!session?.user.role || session.user.role !== "STAFF") {
+    return {
+      success: false,
+      error: "Unauthorized",
+    }
+  }
+
+  try {
+    const staffMember = await prisma.staff.findUnique({
+      where: { userId: session.user.id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        bio: true,
+        image: true,
+        isActive: true,
+        createdAt: true,
+        services: {
+          select: {
+            service: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+        appointments: {
+          where: { status: "COMPLETED" },
+          select: { id: true },
+        },
+      },
+    })
+
+    if (!staffMember) {
+      return {
+        success: false,
+        error: "Staff member not found",
+      }
+    }
+
+    return {
+      success: true,
+      staff: {
+        ...staffMember,
+        totalCompletedAppointments: staffMember.appointments.length,
+      },
+    }
+  } catch (error) {
+    console.error("Error fetching staff profile:", error)
+    return {
+      success: false,
+      error: "Failed to fetch staff profile.",
+    }
+  }
+}
+
+//Get Staff Assigned Services
+export const getStaffAssignedServices = async () => {
+  const session = await auth()
+
+  if (!session?.user.role || session.user.role !== "STAFF") {
+    return {
+      success: false,
+      error: "Unauthorized",
+    }
+  }
+
+  try {
+    const staffMember = await prisma.staff.findUnique({
+      where: { userId: session.user.id },
+      select: {
+        services: {
+          select: {
+            service: {
+              select: {
+                id: true,
+                name: true,
+                duration: true,
+                price: true,
+                category: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    })
+
+    if (!staffMember) {
+      return {
+        success: false,
+        error: "Staff profile not found",
+      }
+    }
+
+    return {
+      success: true,
+      services: staffMember.services.map((ss) => ({
+        ...ss.service,
+        price: Number(ss.service.price),
+      })),
+    }
+  } catch (error) {
+    console.error("Error fetching staff assigned services:", error)
+    return {
+      success: false,
+      error: "Failed to fetch staff assigned services.",
+    }
+  }
+}
+
+//Update Staff Self Profile
+export const updateStaffSelfProfile = async (data: StaffSelfUpdateFormData) => {
+  const session = await auth()
+
+  if (!session?.user.role || session.user.role !== "STAFF") {
+    return {
+      success: false,
+      error: "Unauthorized",
+    }
+  }
+
+  try {
+    const updatedStaff = await prisma.staff.update({
+      where: { userId: session.user.id },
+      data: {
+        name: data.name,
+        phone: data.phone,
+        bio: data.bio,
+      },
+    })
+
+    revalidatePath("/staff/profile")
+
+    return {
+      success: true,
+      staff: updatedStaff,
+    }
+  } catch (error) {
+    console.log("Error updating staff self profile:", error)
+    return {
+      success: false,
+      error: "Failed to update staff profile.",
     }
   }
 }
