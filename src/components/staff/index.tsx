@@ -13,7 +13,6 @@ export { StaffAppointmentsList } from "./staff-appointments-list"
 
 // Schedule Components
 export { StaffWeeklySchedule } from "./staff-weekly-schedule"
-export { StaffTimeOffRequests } from "./staff-time-off-requests"
 
 // Profile Components
 export { StaffProfileHeader } from "./staff-profile-header"

@@ -894,3 +894,51 @@ export const updateStaffSelfProfile = async (data: StaffSelfUpdateFormData) => {
     }
   }
 }
+
+//Get Staff Working Hours
+export const getStaffWorkingHours = async () => {
+  const session = await auth()
+
+  if (!session?.user.role || session.user.role !== "STAFF") {
+    return {
+      success: false,
+      error: "Unauthorized",
+    }
+  }
+
+  try {
+    const staffMember = await prisma.staff.findUnique({
+      where: { userId: session.user.id },
+      select: {
+        workingHours: {
+          select: {
+            id: true,
+            dayOfWeek: true,
+            startTime: true,
+            endTime: true,
+            isActive: true,
+          },
+          orderBy: { dayOfWeek: "asc" },
+        },
+      },
+    })
+
+    if (!staffMember) {
+      return {
+        success: false,
+        error: "Staff member not found",
+      }
+    }
+
+    return {
+      success: true,
+      workingHours: staffMember.workingHours,
+    }
+  } catch (error) {
+    console.error("Error fetching staff working hours:", error)
+    return {
+      success: false,
+      error: "Failed to fetch staff working hours.",
+    }
+  }
+}
