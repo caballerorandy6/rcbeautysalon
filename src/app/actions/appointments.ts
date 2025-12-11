@@ -21,6 +21,23 @@ import { sendAppointmentCancelledEmail } from "@/lib/email/appointment-cancelled
 import { sendAppointmentRescheduledEmail } from "@/lib/email/appointment-rescheduled"
 import { sendAppointmentExpiredEmail } from "@/lib/email/appointment-expired"
 
+// Get current user's staff ID (if they are a staff member)
+// Used to prevent staff from booking appointments with themselves
+export async function getCurrentUserStaffId(): Promise<string | null> {
+  const session = await auth()
+
+  if (!session?.user || !["STAFF", "ADMIN"].includes(session.user.role)) {
+    return null
+  }
+
+  const staff = await prisma.staff.findUnique({
+    where: { userId: session.user.id },
+    select: { id: true },
+  })
+
+  return staff?.id || null
+}
+
 // Get salon configuration
 export async function getSalonConfig() {
   const config = await prisma.salonConfig.findUnique({
@@ -74,6 +91,56 @@ export async function getAvailableStaff(
     },
   })
   return availableStaff.map((s) => s.staff)
+}
+
+// Get staff member with their services for booking (staff-first flow)
+export async function getStaffForBooking(staffId: string) {
+  const staff = await prisma.staff.findUnique({
+    where: { id: staffId, isActive: true },
+    include: {
+      services: {
+        where: {
+          service: { isActive: true },
+        },
+        include: {
+          service: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              description: true,
+              price: true,
+              duration: true,
+              imageUrl: true,
+              category: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+
+  if (!staff) return null
+
+  return {
+    id: staff.id,
+    name: staff.name,
+    email: staff.email,
+    phone: staff.phone,
+    bio: staff.bio,
+    image: staff.image,
+    isActive: staff.isActive,
+    services: staff.services.map((s) => ({
+      ...s.service,
+      price: Number(s.service.price),
+    })),
+  }
 }
 
 //Get available time slots for a staff member on a specific date
@@ -179,7 +246,7 @@ export async function getServiceForBooking(serviceSlug: string) {
       duration: true,
       imageUrl: true,
       category: {
-        select: { name: true },
+        select: { id: true, name: true, slug: true },
       },
     },
   })
@@ -237,20 +304,42 @@ export async function createAppointment(
       return { success: false, error: "Customer information is required" }
     }
 
+    // Prevent employees from booking appointments with themselves
+    if (data.isEmployee && session?.user) {
+      const currentUserStaff = await prisma.staff.findUnique({
+        where: { userId: session.user.id },
+        select: { id: true },
+      })
+      if (currentUserStaff && currentUserStaff.id === data.staffId) {
+        return { success: false, error: "You cannot book an appointment with yourself" }
+      }
+    }
+
     // Fetch selected services and calculate totals
     const services = await getServicesForBooking(data.serviceIds)
     if (services.length === 0) {
       return { success: false, error: "Invalid service selection" }
     }
 
-    const totalPrice = services.reduce((sum, s) => sum + s.price, 0)
+    const baseTotalPrice = services.reduce((sum, s) => sum + s.price, 0)
     const totalDuration = services.reduce((sum, s) => sum + s.duration, 0)
+
+    // Apply 20% employee discount if applicable
+    const employeeDiscountRate = 0.20
+    const totalPrice = data.isEmployee
+      ? baseTotalPrice * (1 - employeeDiscountRate)
+      : baseTotalPrice
 
     // Calculate appointment end time based on total duration
     const endTime = addMinutes(new Date(data.startTime), totalDuration)
 
     // Get salon configuration for deposit amount
     const config = await getSalonConfig()
+
+    // Employee bookings don't require deposit
+    const depositAmount = data.isEmployee ? 0 : config.bookingDeposit
+    const depositPaid = data.isEmployee ? true : false // Employees don't need to pay deposit
+    const appointmentStatus = data.isEmployee ? "CONFIRMED" : "PENDING"
 
     // Verify the requested time slot is available
     const slots = await getAvailableTimeSlots(
@@ -342,11 +431,11 @@ export async function createAppointment(
         guestPhone: !customerId ? data.guestPhone : null,
         startTime: new Date(data.startTime),
         endTime,
-        status: "PENDING",
+        status: appointmentStatus,
         notes: data.notes,
         totalPrice,
-        depositAmount: config.bookingDeposit,
-        depositPaid: false,
+        depositAmount,
+        depositPaid,
         // Create appointment-service relationships
         services: {
           create: data.serviceIds.map((serviceId) => ({

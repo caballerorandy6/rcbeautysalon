@@ -3,6 +3,7 @@ import { Rouge_Script, Poppins } from "next/font/google"
 import { SessionProvider } from "@/components/providers/session-provider"
 import { ThemeProvider } from "@/components/providers/theme-provider"
 import { CartProvider } from "@/components/providers/cart-provider"
+import { TooltipProvider } from "@/components/providers/tooltip-provider"
 
 import { Toaster } from "sonner"
 import "./globals.css"
@@ -55,10 +56,12 @@ export default function RootLayout({
         >
           <SessionProvider>
             <CartProvider>
-              {children}
+              <TooltipProvider>
+                {children}
 
-              {/* Footer - Appears on ALL pages (public, customer, admin) */}
-              <Footer />
+                {/* Footer - Appears on ALL pages (public, customer, admin) */}
+                <Footer />
+              </TooltipProvider>
             </CartProvider>
 
             <Toaster position="top-right" richColors />

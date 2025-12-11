@@ -2,9 +2,11 @@ import type { Metadata } from "next"
 import { StaffStatsCards } from "@/components/staff/staff-stats-cards"
 import { StaffTodayAppointments } from "@/components/staff/staff-today-appointments"
 import { StaffQuickActions } from "@/components/staff/staff-quick-actions"
+import { StaffProfileCard } from "@/components/staff/staff-profile-card"
 import {
   getStaffPortalStats,
   getStaffTodaysAppointments,
+  getStaffProfile,
 } from "@/app/actions/staff"
 
 export const metadata: Metadata = {
@@ -13,10 +15,13 @@ export const metadata: Metadata = {
 }
 
 export default async function StaffDashboardPage() {
-  const [stats, appointments] = await Promise.all([
+  const [stats, appointments, staffProfile] = await Promise.all([
     getStaffPortalStats(),
     getStaffTodaysAppointments(),
+    getStaffProfile(),
   ])
+
+  const profile = staffProfile.success ? staffProfile.staff ?? null : null
 
   return (
     <div className="space-y-8">
@@ -50,8 +55,12 @@ export default async function StaffDashboardPage() {
           />
         </div>
 
-        {/* Quick Actions */}
-        <div>
+        {/* Sidebar - Profile & Quick Actions */}
+        <div className="space-y-6">
+          {/* Profile Card */}
+          <StaffProfileCard profile={profile} />
+
+          {/* Quick Actions */}
           <StaffQuickActions />
         </div>
       </div>

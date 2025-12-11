@@ -9,6 +9,11 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 export function ThemeToggle() {
   const [mounted, setMounted] = useState(false)
@@ -44,28 +49,35 @@ export function ThemeToggle() {
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="group hover:bg-primary/10"
-        >
-          {isDark ? (
-            <SunIcon
-              size={20}
-              weight="fill"
-              className="text-accent transition-transform group-hover:scale-110"
-            />
-          ) : (
-            <MoonIcon
-              size={20}
-              weight="fill"
-              className="text-primary transition-transform group-hover:scale-110"
-            />
-          )}
-          <span className="sr-only">Toggle theme</span>
-        </Button>
-      </DropdownMenuTrigger>
+      <Tooltip open={open ? false : undefined}>
+        <TooltipTrigger asChild>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="group hover:bg-primary/10"
+            >
+              {isDark ? (
+                <SunIcon
+                  size={20}
+                  weight="fill"
+                  className="text-accent transition-transform group-hover:scale-110"
+                />
+              ) : (
+                <MoonIcon
+                  size={20}
+                  weight="fill"
+                  className="text-primary transition-transform group-hover:scale-110"
+                />
+              )}
+              <span className="sr-only">Toggle theme</span>
+            </Button>
+          </DropdownMenuTrigger>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Theme</p>
+        </TooltipContent>
+      </Tooltip>
       <DropdownMenuContent align="end" className="mt-2 min-w-[140px] space-y-1 bg-card border-border">
         {items.map(({ key, label, icon: Icon }) => {
           const isActive = theme === key

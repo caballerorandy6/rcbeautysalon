@@ -14,6 +14,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { MenuIcon, CloseIcon, UserIcon, LogoutIcon, CalendarCheckIcon, SettingsIcon, ReceiptIcon, UserCogIcon, StarIcon, SpinnerGapIcon } from "@/components/icons"
 import { useNavigationStore } from "@/store/navigation-store"
 import { NavCartButton } from "@/components/shop/nav-cart-button"
@@ -35,6 +40,7 @@ const navLinks: NavLink[] = [
 export function PublicNavbar() {
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
   const { data: session, status } = useSession()
   const { activeSection } = useNavigationStore()
 
@@ -92,13 +98,20 @@ export function PublicNavbar() {
                 <SpinnerGapIcon size={18} className="animate-spin" />
               </Button>
             ) : isAuthenticated ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="text-foreground/80 hover:bg-secondary hover:text-primary gap-1.5">
-                    <UserIcon size={18} />
-                    <span className="hidden 2xl:inline max-w-20 truncate">{session.user.name || "Account"}</span>
-                  </Button>
-                </DropdownMenuTrigger>
+              <DropdownMenu open={userMenuOpen} onOpenChange={setUserMenuOpen}>
+                <Tooltip open={userMenuOpen ? false : undefined}>
+                  <TooltipTrigger asChild>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm" className="text-foreground/80 hover:bg-secondary hover:text-primary gap-1.5">
+                        <UserIcon size={18} />
+                        <span className="hidden 2xl:inline max-w-20 truncate">{session.user.name || "Account"}</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Account</p>
+                  </TooltipContent>
+                </Tooltip>
                 <DropdownMenuContent align="end" className="w-48">
                   {session.user.role === "ADMIN" && (
                     <DropdownMenuItem asChild>

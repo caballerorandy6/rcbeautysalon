@@ -381,6 +381,8 @@ export interface CreateAppointmentData {
   guestEmail?: string
   guestPhone?: string
   notes?: string
+  // Employee booking (20% discount, no deposit required)
+  isEmployee?: boolean
 }
 
 export interface AppointmentCreationResult {
@@ -430,6 +432,7 @@ export interface CreateCheckoutSessionData {
   guestEmail?: string
   guestPhone?: string
   notes?: string
+  isEmployee?: boolean // Employee discount flag
 }
 
 export interface AdminAppointmentsFilter {
@@ -564,27 +567,46 @@ export interface ResetPasswordFormProps {
   token: string
 }
 
-export interface BookingFormProps {
-  service: {
-    id: string
-    name: string
-    price: number
-    duration: number
-    category: { name: string } | null
-  }
-  availableStaff: AvailableStaffMember[]
-  salonConfig: {
-    bookingDeposit: number
-    depositRefundable: boolean
-    maxBookingAdvance: number
-  }
+// Salon config for booking
+export interface BookingSalonConfig {
+  bookingDeposit: number
+  depositRefundable: boolean
+  maxBookingAdvance: number
+}
+
+// Base props shared by both booking modes
+interface BookingFormBaseProps {
+  salonConfig: BookingSalonConfig
   isAuthenticated: boolean
+  isEmployee: boolean
   defaultValues?: {
     firstName?: string
     lastName?: string
     email?: string
   }
 }
+
+// Service-first mode: service is preselected, user picks staff
+interface BookingFormServiceFirstProps extends BookingFormBaseProps {
+  mode: "service-first"
+  service: ServiceListItem
+  availableStaff: AvailableStaffMember[]
+  preselectedStaff?: never
+  staffServices?: never
+}
+
+// Staff-first mode: staff is preselected, user picks service
+interface BookingFormStaffFirstProps extends BookingFormBaseProps {
+  mode: "staff-first"
+  preselectedStaff: AvailableStaffMember
+  staffServices: ServiceListItem[]
+  service?: never
+  availableStaff?: never
+}
+
+export type BookingFormProps =
+  | BookingFormServiceFirstProps
+  | BookingFormStaffFirstProps
 
 export interface BookingFormValues {
   staffId: string

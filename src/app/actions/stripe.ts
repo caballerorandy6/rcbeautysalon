@@ -42,6 +42,18 @@ export async function createCheckoutSession(data: CreateCheckoutSessionData) {
     // Get base URL for redirects
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
 
+    // Calculate deposit with employee discount (20% off)
+    const employeeDiscountRate = 0.20
+    const originalDeposit = config.bookingDeposit
+    const depositAmount = data.isEmployee
+      ? originalDeposit * (1 - employeeDiscountRate)
+      : originalDeposit
+
+    // Build product description
+    const depositDescription = data.isEmployee
+      ? `Non-refundable deposit for your appointment (20% employee discount applied)`
+      : `Non-refundable deposit for your appointment`
+
     // Create Stripe Checkout session
     const checkoutSession = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
@@ -53,9 +65,9 @@ export async function createCheckoutSession(data: CreateCheckoutSessionData) {
             currency: "usd",
             product_data: {
               name: `Appointment Deposit - ${serviceNames}`,
-              description: `Non-refundable deposit for your appointment`,
+              description: depositDescription,
             },
-            unit_amount: Math.round(config.bookingDeposit * 100), // Convert to cents
+            unit_amount: Math.round(depositAmount * 100), // Convert to cents
           },
           quantity: 1,
         },
@@ -71,6 +83,7 @@ export async function createCheckoutSession(data: CreateCheckoutSessionData) {
         notes: data.notes || "",
         userId: session?.user?.id || "",
         customerName,
+        isEmployee: data.isEmployee ? "true" : "false",
       },
       success_url: `${baseUrl}/booking/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/booking/cancel`,
