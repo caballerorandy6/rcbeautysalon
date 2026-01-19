@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
+import { after } from "next/server"
 import {
   forgotPasswordSchema,
   ForgotPasswordInput,
@@ -96,8 +97,10 @@ export async function registerUser(data: RegisterInput) {
       },
     })
 
-    // Send verification email
-    await sendVerificationEmail(email, verificationToken)
+    // Send verification email in background (non-blocking)
+    after(async () => {
+      await sendVerificationEmail(email, verificationToken)
+    })
     revalidatePath("/dashboard/users")
 
     return {
@@ -143,7 +146,10 @@ export async function forgotPassword(data: ForgotPasswordInput) {
       },
     })
 
-    await sendPasswordResetEmail(email, token)
+    // Send email in background (non-blocking)
+    after(async () => {
+      await sendPasswordResetEmail(email, token)
+    })
 
     return { success: true }
   } catch (error) {
@@ -243,9 +249,11 @@ export async function verifyEmail(token: string) {
       where: { token },
     })
 
-    // Send account activated email
+    // Send account activated email in background (non-blocking)
     if (user.email) {
-      await sendAccountActivatedEmail(user.email, user.name || undefined)
+      after(async () => {
+        await sendAccountActivatedEmail(user.email!, user.name || undefined)
+      })
     }
 
     return { success: true }

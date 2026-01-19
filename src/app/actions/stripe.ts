@@ -4,6 +4,7 @@ import { stripe } from "@/lib/stripe"
 import { auth } from "@/lib/auth/auth"
 import { prisma } from "@/lib/prisma"
 import { addMinutes, format } from "date-fns"
+import { after } from "next/server"
 import { getServicesForBooking, getSalonConfig } from "./appointments"
 import { CreateCheckoutSessionData } from "@/lib/interfaces"
 import { sendAppointmentConfirmationEmail } from "@/lib/email/appointment-confirmation"
@@ -256,22 +257,24 @@ export async function verifyAndCreateAppointment(sessionId: string) {
       },
     })
 
-    // Send confirmation email
+    // Send confirmation email in background (non-blocking)
     const customerEmail = guestEmail || checkoutSession.customer_email
     if (customerEmail) {
       const serviceNames = services.map((s) => s.name).join(", ")
 
-      await sendAppointmentConfirmationEmail({
-        email: customerEmail,
-        customerName,
-        serviceName: serviceNames,
-        staffName: staff?.name || "Our Staff",
-        appointmentDate: startTime,
-        appointmentTime: format(startTime, "h:mm a"),
-        duration: totalDuration,
-        totalPrice,
-        depositAmount: config.bookingDeposit,
-        appointmentId: appointment.id,
+      after(async () => {
+        await sendAppointmentConfirmationEmail({
+          email: customerEmail,
+          customerName,
+          serviceName: serviceNames,
+          staffName: staff?.name || "Our Staff",
+          appointmentDate: startTime,
+          appointmentTime: format(startTime, "h:mm a"),
+          duration: totalDuration,
+          totalPrice,
+          depositAmount: config.bookingDeposit,
+          appointmentId: appointment.id,
+        })
       })
     }
 

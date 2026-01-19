@@ -4,6 +4,7 @@ import { cache } from "react"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth/auth"
 import { revalidatePath } from "next/cache"
+import { after } from "next/server"
 import {
   AvailableStaffMember,
   TimeSlot,
@@ -462,17 +463,20 @@ export async function createAppointment(
     if (customerEmail && customerName) {
       const serviceNames = services.map((s) => s.name).join(", ")
 
-      await sendAppointmentConfirmationEmail({
-        email: customerEmail as string,
-        customerName: customerName as string,
-        serviceName: serviceNames,
-        staffName: staff?.name || "Our Staff",
-        appointmentDate: new Date(data.startTime),
-        appointmentTime: format(new Date(data.startTime), "h:mm a"),
-        duration: totalDuration,
-        totalPrice,
-        depositAmount: config.bookingDeposit,
-        appointmentId: appointment.id,
+      // Send email in background (non-blocking)
+      after(async () => {
+        await sendAppointmentConfirmationEmail({
+          email: customerEmail as string,
+          customerName: customerName as string,
+          serviceName: serviceNames,
+          staffName: staff?.name || "Our Staff",
+          appointmentDate: new Date(data.startTime),
+          appointmentTime: format(new Date(data.startTime), "h:mm a"),
+          duration: totalDuration,
+          totalPrice,
+          depositAmount: config.bookingDeposit,
+          appointmentId: appointment.id,
+        })
       })
     }
 
@@ -623,14 +627,17 @@ export async function getAdminAppointments(filters?: AdminAppointmentsFilter) {
     const customerName = apt.customer?.name || apt.guestName || "Customer"
 
     if (customerEmail) {
-      await sendAppointmentExpiredEmail({
-        email: customerEmail,
-        customerName,
-        serviceName: apt.services.map((s) => s.service.name).join(", "),
-        staffName: apt.staff?.name || "Our Staff",
-        appointmentDate: apt.startTime,
-        appointmentTime: format(apt.startTime, "h:mm a"),
-        depositAmount: apt.depositAmount.toNumber(),
+      // Send email in background (non-blocking)
+      after(async () => {
+        await sendAppointmentExpiredEmail({
+          email: customerEmail,
+          customerName,
+          serviceName: apt.services.map((s) => s.service.name).join(", "),
+          staffName: apt.staff?.name || "Our Staff",
+          appointmentDate: apt.startTime,
+          appointmentTime: format(apt.startTime, "h:mm a"),
+          depositAmount: apt.depositAmount.toNumber(),
+        })
       })
     }
   }
@@ -661,15 +668,18 @@ export async function getAdminAppointments(filters?: AdminAppointmentsFilter) {
     const customerName = apt.customer?.name || apt.guestName || "Customer"
 
     if (customerEmail) {
-      await sendNoShowNotificationEmail({
-        email: customerEmail,
-        customerName,
-        serviceName: apt.services.map((s) => s.service.name).join(", "),
-        staffName: apt.staff?.name || "Our Staff",
-        appointmentDate: apt.startTime,
-        appointmentTime: format(apt.startTime, "h:mm a"),
-        depositAmount: apt.depositAmount.toNumber(),
-        appointmentId: apt.id,
+      // Send email in background (non-blocking)
+      after(async () => {
+        await sendNoShowNotificationEmail({
+          email: customerEmail,
+          customerName,
+          serviceName: apt.services.map((s) => s.service.name).join(", "),
+          staffName: apt.staff?.name || "Our Staff",
+          appointmentDate: apt.startTime,
+          appointmentTime: format(apt.startTime, "h:mm a"),
+          depositAmount: apt.depositAmount.toNumber(),
+          appointmentId: apt.id,
+        })
       })
     }
   }
@@ -867,58 +877,67 @@ export async function updateAppointmentStatus(
       0
     )
 
+    // Send email in background (non-blocking)
     switch (status) {
       case "CONFIRMED":
-        await sendAppointmentConfirmationEmail({
-          email: customerEmail,
-          customerName,
-          serviceName,
-          staffName,
-          appointmentDate: appointmentDetails.startTime,
-          appointmentTime: format(appointmentDetails.startTime, "h:mm a"),
-          duration: totalDuration,
-          totalPrice: appointmentDetails.totalPrice.toNumber(),
-          depositAmount: appointmentDetails.depositAmount.toNumber(),
-          appointmentId: id,
+        after(async () => {
+          await sendAppointmentConfirmationEmail({
+            email: customerEmail,
+            customerName,
+            serviceName,
+            staffName,
+            appointmentDate: appointmentDetails.startTime,
+            appointmentTime: format(appointmentDetails.startTime, "h:mm a"),
+            duration: totalDuration,
+            totalPrice: appointmentDetails.totalPrice.toNumber(),
+            depositAmount: appointmentDetails.depositAmount.toNumber(),
+            appointmentId: id,
+          })
         })
         break
 
       case "COMPLETED":
-        await sendAppointmentCompletedEmail({
-          email: customerEmail,
-          customerName,
-          serviceName,
-          staffName,
-          appointmentDate: appointmentDetails.startTime,
-          appointmentTime: format(appointmentDetails.startTime, "h:mm a"),
-          totalPrice: appointmentDetails.totalPrice.toNumber(),
-          appointmentId: id,
+        after(async () => {
+          await sendAppointmentCompletedEmail({
+            email: customerEmail,
+            customerName,
+            serviceName,
+            staffName,
+            appointmentDate: appointmentDetails.startTime,
+            appointmentTime: format(appointmentDetails.startTime, "h:mm a"),
+            totalPrice: appointmentDetails.totalPrice.toNumber(),
+            appointmentId: id,
+          })
         })
         break
 
       case "CANCELLED":
-        await sendAppointmentCancelledEmail({
-          email: customerEmail,
-          customerName,
-          serviceName,
-          staffName,
-          appointmentDate: appointmentDetails.startTime,
-          appointmentTime: format(appointmentDetails.startTime, "h:mm a"),
-          appointmentId: id,
-          cancelledByAdmin: true,
+        after(async () => {
+          await sendAppointmentCancelledEmail({
+            email: customerEmail,
+            customerName,
+            serviceName,
+            staffName,
+            appointmentDate: appointmentDetails.startTime,
+            appointmentTime: format(appointmentDetails.startTime, "h:mm a"),
+            appointmentId: id,
+            cancelledByAdmin: true,
+          })
         })
         break
 
       case "NO_SHOW":
-        await sendNoShowNotificationEmail({
-          email: customerEmail,
-          customerName,
-          serviceName,
-          staffName,
-          appointmentDate: appointmentDetails.startTime,
-          appointmentTime: format(appointmentDetails.startTime, "h:mm a"),
-          depositAmount: appointmentDetails.depositAmount.toNumber(),
-          appointmentId: id,
+        after(async () => {
+          await sendNoShowNotificationEmail({
+            email: customerEmail,
+            customerName,
+            serviceName,
+            staffName,
+            appointmentDate: appointmentDetails.startTime,
+            appointmentTime: format(appointmentDetails.startTime, "h:mm a"),
+            depositAmount: appointmentDetails.depositAmount.toNumber(),
+            appointmentId: id,
+          })
         })
         break
     }
@@ -1049,16 +1068,19 @@ export async function rescheduleAppointment(
   const staffName = appointment.staff?.name || "Our Staff"
 
   if (customerEmail) {
-    await sendAppointmentRescheduledEmail({
-      email: customerEmail,
-      customerName,
-      serviceName,
-      staffName,
-      oldDate: appointment.startTime,
-      oldTime: format(appointment.startTime, "h:mm a"),
-      newDate: newStartTime,
-      newTime: format(newStartTime, "h:mm a"),
-      duration: totalDuration,
+    // Send email in background (non-blocking)
+    after(async () => {
+      await sendAppointmentRescheduledEmail({
+        email: customerEmail,
+        customerName,
+        serviceName,
+        staffName,
+        oldDate: appointment.startTime,
+        oldTime: format(appointment.startTime, "h:mm a"),
+        newDate: newStartTime,
+        newTime: format(newStartTime, "h:mm a"),
+        duration: totalDuration,
+      })
     })
   }
 
