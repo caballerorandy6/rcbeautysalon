@@ -1,6 +1,4 @@
-"use client"
-
-import { Star } from "@phosphor-icons/react"
+import { Star } from "@phosphor-icons/react/dist/ssr"
 
 interface StarIconProps {
   size?: number

@@ -1,6 +1,4 @@
-"use client"
-
-import { Clock } from "@phosphor-icons/react"
+import { Clock } from "@phosphor-icons/react/dist/ssr"
 
 interface ClockIconProps {
   size?: number

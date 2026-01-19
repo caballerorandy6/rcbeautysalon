@@ -1,6 +1,4 @@
-"use client"
-
-import { CheckCircle } from "@phosphor-icons/react"
+import { CheckCircle } from "@phosphor-icons/react/dist/ssr"
 
 interface CheckCircleIconProps {
   size?: number

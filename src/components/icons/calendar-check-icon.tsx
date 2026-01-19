@@ -1,6 +1,4 @@
-"use client"
-
-import { CalendarCheck } from "@phosphor-icons/react"
+import { CalendarCheck } from "@phosphor-icons/react/dist/ssr"
 
 interface CalendarCheckIconProps {
   size?: number

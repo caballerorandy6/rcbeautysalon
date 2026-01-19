@@ -1,6 +1,4 @@
-"use client"
-
-import { Phone } from "@phosphor-icons/react"
+import { Phone } from "@phosphor-icons/react/dist/ssr"
 
 interface PhoneIconProps {
   size?: number

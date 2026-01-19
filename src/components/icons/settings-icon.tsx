@@ -1,6 +1,4 @@
-"use client"
-
-import { Gear } from "@phosphor-icons/react"
+import { Gear } from "@phosphor-icons/react/dist/ssr"
 
 interface SettingsIconProps {
   size?: number

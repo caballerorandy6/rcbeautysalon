@@ -1,6 +1,4 @@
-"use client"
-
-import { Trash } from "@phosphor-icons/react"
+import { Trash } from "@phosphor-icons/react/dist/ssr"
 
 interface TrashIconProps {
   size?: number

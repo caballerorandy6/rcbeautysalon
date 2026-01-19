@@ -1,6 +1,4 @@
-"use client"
-
-import { MagnifyingGlass } from "@phosphor-icons/react"
+import { MagnifyingGlass } from "@phosphor-icons/react/dist/ssr"
 
 interface SearchIconProps {
   size?: number

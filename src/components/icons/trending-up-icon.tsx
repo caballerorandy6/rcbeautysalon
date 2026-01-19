@@ -1,6 +1,4 @@
-"use client"
-
-import { TrendUp } from "@phosphor-icons/react"
+import { TrendUp } from "@phosphor-icons/react/dist/ssr"
 
 interface TrendingUpIconProps {
   size?: number

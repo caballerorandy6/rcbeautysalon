@@ -1,6 +1,4 @@
-"use client"
-
-import { Eye } from "@phosphor-icons/react"
+import { Eye } from "@phosphor-icons/react/dist/ssr"
 
 interface EyeIconProps {
   size?: number

@@ -1,6 +1,4 @@
-"use client"
-
-import { WarningCircle } from "@phosphor-icons/react"
+import { WarningCircle } from "@phosphor-icons/react/dist/ssr"
 
 interface WarningCircleIconProps {
   size?: number

@@ -1,6 +1,4 @@
-"use client"
-
-import { Minus } from "@phosphor-icons/react"
+import { Minus } from "@phosphor-icons/react/dist/ssr"
 
 interface MinusIconProps {
   size?: number

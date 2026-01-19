@@ -1,6 +1,4 @@
-"use client"
-
-import { Moon } from "@phosphor-icons/react"
+import { Moon } from "@phosphor-icons/react/dist/ssr"
 
 interface MoonIconProps {
   size?: number

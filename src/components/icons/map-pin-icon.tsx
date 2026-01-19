@@ -1,6 +1,4 @@
-"use client"
-
-import { MapPin } from "@phosphor-icons/react"
+import { MapPin } from "@phosphor-icons/react/dist/ssr"
 
 interface MapPinIconProps {
   size?: number

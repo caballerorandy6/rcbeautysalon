@@ -1,6 +1,4 @@
-"use client"
-
-import { SignOut } from "@phosphor-icons/react"
+import { SignOut } from "@phosphor-icons/react/dist/ssr"
 
 interface LogoutIconProps {
   size?: number

@@ -1,6 +1,4 @@
-"use client"
-
-import { Plus } from "@phosphor-icons/react"
+import { Plus } from "@phosphor-icons/react/dist/ssr"
 
 interface PlusIconProps {
   size?: number

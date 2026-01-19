@@ -1,6 +1,4 @@
-"use client"
-
-import { Sparkle } from "@phosphor-icons/react"
+import { Sparkle } from "@phosphor-icons/react/dist/ssr"
 
 interface SparkleIconProps {
   size?: number

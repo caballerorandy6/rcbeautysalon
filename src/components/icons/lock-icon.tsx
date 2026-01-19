@@ -1,6 +1,4 @@
-"use client"
-
-import { Lock } from "@phosphor-icons/react"
+import { Lock } from "@phosphor-icons/react/dist/ssr"
 
 interface LockIconProps {
   size?: number

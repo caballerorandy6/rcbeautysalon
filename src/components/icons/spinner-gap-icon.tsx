@@ -1,6 +1,4 @@
-"use client"
-
-import { SpinnerGap } from "@phosphor-icons/react"
+import { SpinnerGap } from "@phosphor-icons/react/dist/ssr"
 
 interface SpinnerGapIconProps {
   size?: number

@@ -1,6 +1,4 @@
-"use client"
-
-import { SquaresFour } from "@phosphor-icons/react"
+import { SquaresFour } from "@phosphor-icons/react/dist/ssr"
 
 interface LayoutDashboardIconProps {
   size?: number

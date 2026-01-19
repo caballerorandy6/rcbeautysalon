@@ -1,6 +1,4 @@
-"use client"
-
-import { Receipt } from "@phosphor-icons/react"
+import { Receipt } from "@phosphor-icons/react/dist/ssr"
 
 interface ReceiptIconProps {
   size?: number

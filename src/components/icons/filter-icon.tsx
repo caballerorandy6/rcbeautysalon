@@ -1,6 +1,4 @@
-"use client"
-
-import { Funnel } from "@phosphor-icons/react"
+import { Funnel } from "@phosphor-icons/react/dist/ssr"
 
 interface FilterIconProps {
   size?: number

@@ -1,6 +1,4 @@
-"use client"
-
-import { Scissors } from "@phosphor-icons/react"
+import { Scissors } from "@phosphor-icons/react/dist/ssr"
 
 interface ScissorsIconProps {
   size?: number

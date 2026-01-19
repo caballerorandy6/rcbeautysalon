@@ -1,6 +1,4 @@
-"use client"
-
-import { Desktop } from "@phosphor-icons/react"
+import { Desktop } from "@phosphor-icons/react/dist/ssr"
 
 interface DesktopIconProps {
   size?: number

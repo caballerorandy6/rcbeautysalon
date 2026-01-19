@@ -1,6 +1,4 @@
-"use client"
-
-import { CircleNotch } from "@phosphor-icons/react"
+import { CircleNotch } from "@phosphor-icons/react/dist/ssr"
 
 interface SpinnerIconProps {
   size?: number

@@ -1,6 +1,4 @@
-"use client"
-
-import { CalendarBlank } from "@phosphor-icons/react"
+import { CalendarBlank } from "@phosphor-icons/react/dist/ssr"
 
 interface CalendarIconProps {
   size?: number

@@ -1,6 +1,4 @@
-"use client"
-
-import { Camera } from "@phosphor-icons/react"
+import { Camera } from "@phosphor-icons/react/dist/ssr"
 
 interface CameraIconProps {
   size?: number

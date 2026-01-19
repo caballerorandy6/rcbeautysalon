@@ -1,6 +1,4 @@
-"use client"
-
-import { Package } from "@phosphor-icons/react"
+import { Package } from "@phosphor-icons/react/dist/ssr"
 
 interface PackageIconProps {
   size?: number

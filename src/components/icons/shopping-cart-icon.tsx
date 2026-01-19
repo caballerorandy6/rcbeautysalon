@@ -1,6 +1,4 @@
-"use client"
-
-import { ShoppingCart } from "@phosphor-icons/react"
+import { ShoppingCart } from "@phosphor-icons/react/dist/ssr"
 
 interface ShoppingCartIconProps {
   size?: number

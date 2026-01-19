@@ -1,6 +1,4 @@
-"use client"
-
-import { CaretRight } from "@phosphor-icons/react"
+import { CaretRight } from "@phosphor-icons/react/dist/ssr"
 
 interface CaretRightIconProps {
   size?: number

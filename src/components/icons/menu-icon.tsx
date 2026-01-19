@@ -1,6 +1,4 @@
-"use client"
-
-import { List } from "@phosphor-icons/react"
+import { List } from "@phosphor-icons/react/dist/ssr"
 
 interface MenuIconProps {
   size?: number

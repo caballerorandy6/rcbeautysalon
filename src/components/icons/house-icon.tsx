@@ -1,6 +1,4 @@
-"use client"
-
-import { House } from "@phosphor-icons/react"
+import { House } from "@phosphor-icons/react/dist/ssr"
 
 interface HouseIconProps {
   size?: number

@@ -1,6 +1,4 @@
-"use client"
-
-import { Tote } from "@phosphor-icons/react"
+import { Tote } from "@phosphor-icons/react/dist/ssr"
 
 interface ToteIconProps {
   size?: number

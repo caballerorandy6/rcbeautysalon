@@ -1,6 +1,4 @@
-"use client"
-
-import { XCircle } from "@phosphor-icons/react"
+import { XCircle } from "@phosphor-icons/react/dist/ssr"
 
 interface XCircleIconProps {
   size?: number

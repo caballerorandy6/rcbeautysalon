@@ -1,6 +1,4 @@
-"use client"
-
-import { Bell } from "@phosphor-icons/react"
+import { Bell } from "@phosphor-icons/react/dist/ssr"
 
 interface BellIconProps {
   size?: number

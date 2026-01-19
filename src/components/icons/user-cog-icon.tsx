@@ -1,6 +1,4 @@
-"use client"
-
-import { UserGear } from "@phosphor-icons/react"
+import { UserGear } from "@phosphor-icons/react/dist/ssr"
 
 interface UserCogIconProps {
   size?: number

@@ -1,6 +1,4 @@
-"use client"
-
-import { Sun } from "@phosphor-icons/react"
+import { Sun } from "@phosphor-icons/react/dist/ssr"
 
 interface SunIconProps {
   size?: number

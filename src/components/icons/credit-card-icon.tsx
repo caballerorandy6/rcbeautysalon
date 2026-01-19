@@ -1,6 +1,4 @@
-"use client"
-
-import { CreditCard } from "@phosphor-icons/react"
+import { CreditCard } from "@phosphor-icons/react/dist/ssr"
 
 interface CreditCardIconProps {
   size?: number

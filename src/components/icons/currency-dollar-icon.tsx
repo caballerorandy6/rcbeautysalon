@@ -1,6 +1,4 @@
-"use client"
-
-import { CurrencyDollar } from "@phosphor-icons/react"
+import { CurrencyDollar } from "@phosphor-icons/react/dist/ssr"
 
 interface CurrencyDollarIconProps {
   size?: number

@@ -1,6 +1,4 @@
-"use client"
-
-import { Envelope } from "@phosphor-icons/react"
+import { Envelope } from "@phosphor-icons/react/dist/ssr"
 
 interface EnvelopeIconProps {
   size?: number

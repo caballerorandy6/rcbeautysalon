@@ -1,6 +1,4 @@
-"use client"
-
-import { X } from "@phosphor-icons/react"
+import { X } from "@phosphor-icons/react/dist/ssr"
 
 interface CloseIconProps {
   size?: number

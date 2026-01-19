@@ -1,6 +1,4 @@
-"use client"
-
-import { StarHalf } from "@phosphor-icons/react"
+import { StarHalf } from "@phosphor-icons/react/dist/ssr"
 
 interface StarHalfIconProps {
   size?: number

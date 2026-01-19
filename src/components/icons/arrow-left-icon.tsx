@@ -1,6 +1,4 @@
-"use client"
-
-import { ArrowLeft } from "@phosphor-icons/react"
+import { ArrowLeft } from "@phosphor-icons/react/dist/ssr"
 
 interface ArrowLeftIconProps {
   size?: number

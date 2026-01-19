@@ -1,6 +1,4 @@
-"use client"
-
-import { Storefront } from "@phosphor-icons/react"
+import { Storefront } from "@phosphor-icons/react/dist/ssr"
 
 interface StorefrontIconProps {
   size?: number

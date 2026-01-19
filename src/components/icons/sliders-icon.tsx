@@ -1,6 +1,4 @@
-"use client"
-
-import { Sliders } from "@phosphor-icons/react"
+import { Sliders } from "@phosphor-icons/react/dist/ssr"
 
 interface SlidersIconProps {
   size?: number

@@ -1,6 +1,4 @@
-"use client"
-
-import { PencilSimple } from "@phosphor-icons/react"
+import { PencilSimple } from "@phosphor-icons/react/dist/ssr"
 
 interface PencilIconProps {
   size?: number
