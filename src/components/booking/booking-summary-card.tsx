@@ -139,18 +139,18 @@ export function BookingSummaryCard({
 
           {/* Non-refundable warning - only show for non-employees */}
           {!isEmployee ? (
-            <div className="rounded-xl border-2 border-red-300 bg-red-50 p-4 dark:border-red-800 dark:bg-red-950/40">
+            <div className="rounded-xl border-2 border-amber-400 bg-white p-4 dark:border-amber-600 dark:!bg-amber-950/40">
               <div className="flex gap-3">
                 <WarningCircleIcon
                   size={32}
                   weight="fill"
-                  className="shrink-0 text-red-500 dark:text-red-400"
+                  className="shrink-0 text-amber-700 dark:text-amber-400"
                 />
                 <div className="space-y-1">
-                  <p className="text-base font-bold text-red-700 dark:text-red-300">
+                  <p className="text-base font-bold text-amber-950 dark:text-amber-300">
                     Non-Refundable Deposit
                   </p>
-                  <p className="text-sm text-red-600 dark:text-red-400">
+                  <p className="text-sm text-amber-900 dark:text-amber-400">
                     The ${salonConfig.bookingDeposit.toFixed(2)} deposit is
                     required to secure your appointment and is{" "}
                     <strong className="font-bold">non-refundable</strong>.
