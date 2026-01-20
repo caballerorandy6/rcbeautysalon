@@ -284,7 +284,7 @@ export function HomeContent({ featuredServices, featuredProducts, featuredStaff 
                   <ProductCard
                     id={product.id}
                     name={product.name}
-                    price={`$${product.price.toFixed(2)}`}
+                    price={product.price}
                     category={product.category?.name || "Products"}
                     image={product.images?.[0] || null}
                   />

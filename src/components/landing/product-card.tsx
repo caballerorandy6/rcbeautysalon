@@ -1,3 +1,5 @@
+"use client"
+
 import {
   Card,
   CardContent,
@@ -6,19 +8,36 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import Link from "next/link"
 import Image from "next/image"
 import { ToteIcon } from "@/components/icons"
+import { useCartStore } from "@/store/cart-store"
 
 interface ProductCardProps {
   id: string
   name: string
-  price: string
+  price: number
   category: string
   image?: string | null
 }
 
 export function ProductCard({ id, name, price, category, image }: ProductCardProps) {
+  const addItem = useCartStore((state) => state.addItem)
+
+  const handleAddToCart = () => {
+    addItem({
+      productId: id,
+      name,
+      image: image ?? null,
+      price,
+    })
+  }
+
   return (
     <Card className="group border-primary/10 overflow-hidden transition-all duration-300 hover:shadow-xl">
       <div className="bg-muted/30 relative aspect-square overflow-hidden">
@@ -43,7 +62,7 @@ export function ProductCard({ id, name, price, category, image }: ProductCardPro
       <CardHeader>
         <CardTitle className="text-lg group-hover:text-accent transition-colors">{name}</CardTitle>
         <CardDescription className="text-primary text-xl font-bold group-hover:text-accent transition-colors">
-          {price}
+          ${price.toFixed(2)}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -56,9 +75,19 @@ export function ProductCard({ id, name, price, category, image }: ProductCardPro
               See Details
             </Button>
           </Link>
-          <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
-            <ToteIcon size={16} />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={handleAddToCart}
+                className="bg-primary hover:bg-primary/90 text-primary-foreground"
+              >
+                <ToteIcon size={16} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Add to Cart</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
       </CardContent>
     </Card>
