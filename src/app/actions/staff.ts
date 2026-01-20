@@ -37,17 +37,17 @@ export const getActiveServicesForStaff = async () => {
 }
 
 //Get Featured Staff for Homepage
-export const getFeaturedStaff = async () => {
+export const getFeaturedStaff = cache(async () => {
   const staffMembers = await prisma.staff.findMany({
     where: { isActive: true },
     take: 4,
     orderBy: { name: "asc" },
   })
   return staffMembers
-}
+})
 
 //Get Staff Member
-export const getStaffMembers = async () => {
+export const getStaffMembers = cache(async () => {
   const staffMembers = await prisma.staff.findMany({
     where: {
       isActive: true,
@@ -79,7 +79,7 @@ export const getStaffMembers = async () => {
       },
     })),
   }))
-}
+})
 
 //Get Staff Member by Slug
 // Cached to avoid duplicate fetches in generateMetadata + page component

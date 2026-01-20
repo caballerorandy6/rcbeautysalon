@@ -8,7 +8,7 @@ import { CreateProductInput } from "@/lib/interfaces"
 export type UpdateProductInput = Partial<CreateProductInput>
 
 // Get featured products for homepage
-export async function getFeaturedProducts() {
+export const getFeaturedProducts = cache(async () => {
   const products = await prisma.product.findMany({
     where: { isActive: true, isFeatured: true },
     include: { category: true },
@@ -21,10 +21,10 @@ export async function getFeaturedProducts() {
     price: p.price.toNumber(),
     compareAtPrice: p.compareAtPrice?.toNumber() ?? null,
   }))
-}
+})
 
 // Get all products for shop page
-export async function getShopProducts() {
+export const getShopProducts = cache(async () => {
   const products = await prisma.product.findMany({
     where: { isActive: true },
     orderBy: [{ isFeatured: "desc" }, { name: "asc" }],
@@ -35,7 +35,7 @@ export async function getShopProducts() {
     price: product.price.toNumber(),
     compareAtPrice: product.compareAtPrice?.toNumber() ?? null,
   }))
-}
+})
 
 // Admin: Get all products with counts
 export async function getAdminProducts(search?: string) {

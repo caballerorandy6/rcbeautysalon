@@ -40,7 +40,7 @@ export async function getCurrentUserStaffId(): Promise<string | null> {
 }
 
 // Get salon configuration
-export async function getSalonConfig() {
+export const getSalonConfig = cache(async () => {
   const config = await prisma.salonConfig.findUnique({
     where: { id: "salon_config" },
     select: {
@@ -66,7 +66,7 @@ export async function getSalonConfig() {
     ...config,
     bookingDeposit: config.bookingDeposit.toNumber(),
   }
-}
+})
 
 //Get available staff for a service
 export async function getAvailableStaff(

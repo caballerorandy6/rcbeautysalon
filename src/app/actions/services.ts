@@ -10,7 +10,7 @@ import { CreateServiceInput } from "@/lib/interfaces"
 export type UpdateServiceInput = Partial<CreateServiceInput>
 
 // Get featured services for homepage display
-export async function getFeaturedServices() {
+export const getFeaturedServices = cache(async () => {
   const featuredServices = await prisma.service.findMany({
     where: {
       isFeatured: true,
@@ -41,7 +41,7 @@ export async function getFeaturedServices() {
     ...service,
     price: service.price.toNumber(),
   }))
-}
+})
 
 // Get all active services grouped by category for /services page
 export async function getAllServicesGroupedByCategory() {
@@ -122,7 +122,7 @@ export async function getAllServiceSlugs() {
 }
 
 // Get categories with count of active services for sidebar display
-export async function getCategoriesWithCount() {
+export const getCategoriesWithCount = cache(async () => {
   return await prisma.category.findMany({
     orderBy: { name: "asc" },
     include: {
@@ -135,7 +135,7 @@ export async function getCategoriesWithCount() {
       },
     },
   })
-}
+})
 
 // Get related services by category (for "You might also like" section)
 export async function getRelatedServices(
@@ -335,7 +335,7 @@ export async function filterServices(filters: ServiceFilters) {
 }
 
 // Get all active staff for filter dropdown
-export async function getAllActiveStaff() {
+export const getAllActiveStaff = cache(async () => {
   return await prisma.staff.findMany({
     where: { isActive: true },
     select: {
@@ -344,10 +344,10 @@ export async function getAllActiveStaff() {
     },
     orderBy: { name: "asc" },
   })
-}
+})
 
 // Get all categories for filter dropdown
-export async function getAllCategories() {
+export const getAllCategories = cache(async () => {
   const categories = await prisma.category.findMany({
     select: {
       id: true,
@@ -356,7 +356,7 @@ export async function getAllCategories() {
     orderBy: { name: "asc" },
   })
   return categories
-}
+})
 
 // Get Active Services for Booking
 export async function getActiveServicesForBooking() {
