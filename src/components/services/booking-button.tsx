@@ -14,8 +14,8 @@ interface BookingButtonProps {
 export function BookingButton({
   href = "/booking",
   size = "lg",
-  variant = "secondary",
-  className = "bg-foreground text-background hover:bg-foreground/90"
+  variant = "default",
+  className = "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg"
 }: BookingButtonProps) {
   return (
     <Link href={href}>
