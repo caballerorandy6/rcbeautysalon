@@ -16,7 +16,7 @@ export function NavCartButton() {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <Link href="/shop">
+        <Link href="/cart">
           <Button
             variant="ghost"
             size="icon"
@@ -32,7 +32,7 @@ export function NavCartButton() {
         </Link>
       </TooltipTrigger>
       <TooltipContent>
-        <p>Shop</p>
+        <p>Cart</p>
       </TooltipContent>
     </Tooltip>
   )
