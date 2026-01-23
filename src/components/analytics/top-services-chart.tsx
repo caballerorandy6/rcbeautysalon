@@ -1,7 +1,15 @@
 "use client"
 
-import { Card, Title, Text, BarList, Flex } from "@tremor/react"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { BarList } from "@tremor/react"
 import { TopService } from "@/lib/interfaces"
+import { ScissorsIcon } from "@/components/icons"
 
 interface TopServicesChartProps {
   data: TopService[]
@@ -11,44 +19,49 @@ export function TopServicesChart({ data }: TopServicesChartProps) {
   const chartData = data.map((service) => ({
     name: service.name,
     value: service.bookings,
-    revenue: service.revenue,
   }))
 
   return (
-    <Card className="h-full p-4 sm:p-6">
-      <Title>Top Services</Title>
-      <Text className="text-muted-foreground">By number of bookings</Text>
-
-      {data.length > 0 ? (
-        <>
-          <Flex className="mt-6 border-b border-border pb-2">
-            <Text className="font-medium">Service</Text>
-            <Text className="font-medium">Bookings</Text>
-          </Flex>
-          <BarList
-            data={chartData}
-            className="mt-4"
-            color="rose"
-            showAnimation
-          />
-          <div className="mt-6 space-y-2">
-            {data.map((service) => (
-              <Flex key={service.name} justifyContent="between">
-                <Text className="truncate text-sm text-muted-foreground">
-                  {service.name}
-                </Text>
-                <Text className="text-sm font-medium">
-                  ${service.revenue.toLocaleString()}
-                </Text>
-              </Flex>
-            ))}
+    <Card className="flex h-full flex-col">
+      <CardHeader>
+        <div className="flex items-center gap-2">
+          <div className="rounded-lg bg-rose-100 p-2 dark:bg-rose-900/30">
+            <ScissorsIcon size={18} className="text-rose-600 dark:text-rose-400" />
           </div>
-        </>
-      ) : (
-        <div className="mt-8 flex h-32 items-center justify-center">
-          <Text className="text-muted-foreground">No data available</Text>
+          <div>
+            <CardTitle className="text-base">Top Services</CardTitle>
+            <CardDescription>By number of bookings</CardDescription>
+          </div>
         </div>
-      )}
+      </CardHeader>
+      <CardContent className="flex-1">
+        {data.length > 0 ? (
+          <div className="space-y-6">
+            <BarList
+              data={chartData}
+              color="rose"
+              showAnimation
+            />
+            <div className="space-y-2 border-t pt-4">
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Revenue</p>
+              {data.map((service) => (
+                <div key={service.name} className="flex items-center justify-between text-sm">
+                  <span className="truncate text-muted-foreground pr-2">
+                    {service.name}
+                  </span>
+                  <span className="font-semibold tabular-nums">
+                    ${service.revenue.toLocaleString()}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="flex h-48 items-center justify-center rounded-lg border border-dashed">
+            <p className="text-muted-foreground text-sm">No services data available</p>
+          </div>
+        )}
+      </CardContent>
     </Card>
   )
 }

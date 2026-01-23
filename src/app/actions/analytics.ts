@@ -268,6 +268,8 @@ export async function getRevenueChartData(period: PeriodType = "30d"): Promise<R
 
   // Agrupar por intervalo
   const result: RevenueDataPoint[] = intervals.map((intervalStart) => {
+
+
     let intervalEnd: Date
 
     if (period === "7d" || period === "30d") {

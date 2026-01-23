@@ -1,7 +1,15 @@
 "use client"
 
-import { Card, Title, Text, BarList, Flex } from "@tremor/react"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { BarList } from "@tremor/react"
 import { TopProduct } from "@/lib/interfaces"
+import { PackageIcon } from "@/components/icons"
 
 interface TopProductsChartProps {
   data: TopProduct[]
@@ -11,44 +19,49 @@ export function TopProductsChart({ data }: TopProductsChartProps) {
   const chartData = data.map((product) => ({
     name: product.name,
     value: product.sales,
-    revenue: product.revenue,
   }))
 
   return (
-    <Card className="h-full p-4 sm:p-6">
-      <Title>Top Products</Title>
-      <Text className="text-muted-foreground">By units sold</Text>
-
-      {data.length > 0 ? (
-        <>
-          <Flex className="mt-6 border-b border-border pb-2">
-            <Text className="font-medium">Product</Text>
-            <Text className="font-medium">Units Sold</Text>
-          </Flex>
-          <BarList
-            data={chartData}
-            className="mt-4"
-            color="amber"
-            showAnimation
-          />
-          <div className="mt-6 space-y-2">
-            {data.map((product) => (
-              <Flex key={product.name} justifyContent="between">
-                <Text className="truncate text-sm text-muted-foreground">
-                  {product.name}
-                </Text>
-                <Text className="text-sm font-medium">
-                  ${product.revenue.toLocaleString()}
-                </Text>
-              </Flex>
-            ))}
+    <Card className="flex h-full flex-col">
+      <CardHeader>
+        <div className="flex items-center gap-2">
+          <div className="rounded-lg bg-amber-100 p-2 dark:bg-amber-900/30">
+            <PackageIcon size={18} className="text-amber-600 dark:text-amber-400" />
           </div>
-        </>
-      ) : (
-        <div className="mt-8 flex h-32 items-center justify-center">
-          <Text className="text-muted-foreground">No data available</Text>
+          <div>
+            <CardTitle className="text-base">Top Products</CardTitle>
+            <CardDescription>By units sold</CardDescription>
+          </div>
         </div>
-      )}
+      </CardHeader>
+      <CardContent className="flex-1">
+        {data.length > 0 ? (
+          <div className="space-y-6">
+            <BarList
+              data={chartData}
+              color="amber"
+              showAnimation
+            />
+            <div className="space-y-2 border-t pt-4">
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Revenue</p>
+              {data.map((product) => (
+                <div key={product.name} className="flex items-center justify-between text-sm">
+                  <span className="truncate text-muted-foreground pr-2">
+                    {product.name}
+                  </span>
+                  <span className="font-semibold tabular-nums">
+                    ${product.revenue.toLocaleString()}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="flex h-48 items-center justify-center rounded-lg border border-dashed">
+            <p className="text-muted-foreground text-sm">No products data available</p>
+          </div>
+        )}
+      </CardContent>
     </Card>
   )
 }

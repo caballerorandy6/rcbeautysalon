@@ -1,6 +1,5 @@
 "use client"
 
-import { Title, Text } from "@tremor/react"
 import { KPICards } from "./kpi-cards"
 import { RevenueChart } from "./revenue-chart"
 import { TopServicesChart } from "./top-services-chart"
@@ -36,10 +35,10 @@ export function AnalyticsDashboard({ data, period }: AnalyticsDashboardProps) {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <Title className="text-2xl font-bold sm:text-3xl">Analytics</Title>
-          <Text className="text-muted-foreground">
-            Business performance overview
-          </Text>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Analytics</h1>
+          <p className="text-muted-foreground">
+            Monitor your business performance and trends
+          </p>
         </div>
         <PeriodSelector value={period} />
       </div>
@@ -50,11 +49,13 @@ export function AnalyticsDashboard({ data, period }: AnalyticsDashboardProps) {
       {/* Revenue Chart - Full Width */}
       <RevenueChart data={data.revenue} />
 
-      {/* Middle Row - 3 columns on desktop */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      {/* Middle Row - 3 columns on desktop, stack on mobile */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
         <TopServicesChart data={data.topServices} />
         <TopProductsChart data={data.topProducts} />
-        <AppointmentsStatusChart data={data.appointmentsStatus} />
+        <div className="md:col-span-2 xl:col-span-1">
+          <AppointmentsStatusChart data={data.appointmentsStatus} />
+        </div>
       </div>
 
       {/* Staff Performance - Full Width */}

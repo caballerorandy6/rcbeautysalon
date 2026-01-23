@@ -1,8 +1,15 @@
 "use client"
 
 import { useRouter, useSearchParams } from "next/navigation"
-import { Select, SelectItem } from "@tremor/react"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { PeriodType } from "@/lib/interfaces"
+import { CalendarIcon } from "@/components/icons"
 
 interface PeriodSelectorProps {
   value: PeriodType
@@ -25,17 +32,21 @@ export function PeriodSelector({ value }: PeriodSelectorProps) {
     router.push(`?${params.toString()}`)
   }
 
+  const currentLabel = periods.find(p => p.value === value)?.label || "Last 30 days"
+
   return (
-    <Select
-      value={value}
-      onValueChange={handleChange}
-      className="w-full sm:w-44"
-    >
-      {periods.map((period) => (
-        <SelectItem key={period.value} value={period.value}>
-          {period.label}
-        </SelectItem>
-      ))}
+    <Select value={value} onValueChange={handleChange}>
+      <SelectTrigger className="w-full sm:w-48">
+        <CalendarIcon size={16} className="mr-2 text-muted-foreground" />
+        <SelectValue placeholder={currentLabel} />
+      </SelectTrigger>
+      <SelectContent>
+        {periods.map((period) => (
+          <SelectItem key={period.value} value={period.value}>
+            {period.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
     </Select>
   )
 }
