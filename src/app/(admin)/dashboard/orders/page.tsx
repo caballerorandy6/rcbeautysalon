@@ -1,12 +1,10 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  ShoppingBagIcon,
-  EyeIcon,
-} from "@/components/icons"
+import { EyeIcon } from "@/components/icons"
 import { getAdminOrders, getOrderStats } from "@/app/actions/orders"
 import { OrderSearch } from "@/components/dashboard/order-search"
+import { ExportOrdersButton } from "@/components/dashboard/export-orders-button"
 
 const statusColors: Record<string, string> = {
   PENDING: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
@@ -31,15 +29,17 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Shop Orders</h1>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+            Shop{" "}
+            <span className="from-primary to-accent bg-linear-to-r bg-clip-text text-transparent">
+              Orders
+            </span>
+          </h1>
           <p className="text-muted-foreground">
             Manage product orders and fulfillment
           </p>
         </div>
-        <Button variant="outline">
-          <ShoppingBagIcon size={16} className="mr-2" />
-          Export Orders
-        </Button>
+        <ExportOrdersButton orders={orders} />
       </div>
 
       {/* Stats Cards */}

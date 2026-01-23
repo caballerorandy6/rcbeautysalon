@@ -2,12 +2,10 @@ import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  UsersIcon,
-  EnvelopeIcon,
-} from "@/components/icons"
+import { EnvelopeIcon } from "@/components/icons"
 import { getAdminUsers, getUserStats } from "@/app/actions/users"
 import { UserSearch } from "@/components/dashboard/user-search"
+import { ExportUsersButton } from "@/components/dashboard/export-users-button"
 
 interface UsersPageProps {
   searchParams: Promise<{ search?: string }>
@@ -24,15 +22,17 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Customers</h1>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+            Manage{" "}
+            <span className="from-primary to-accent bg-linear-to-r bg-clip-text text-transparent">
+              Customers
+            </span>
+          </h1>
           <p className="text-muted-foreground">
             Manage your customer database
           </p>
         </div>
-        <Button>
-          <UsersIcon size={16} className="mr-2" />
-          Export List
-        </Button>
+        <ExportUsersButton users={users} />
       </div>
 
       {/* Stats Cards */}

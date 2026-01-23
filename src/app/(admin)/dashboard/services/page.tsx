@@ -37,7 +37,12 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Services</h1>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+            Manage{" "}
+            <span className="from-primary to-accent bg-linear-to-r bg-clip-text text-transparent">
+              Services
+            </span>
+          </h1>
           <p className="text-muted-foreground">Manage your salon services</p>
         </div>
         <Link href="/dashboard/services/new">
