@@ -26,7 +26,7 @@ import {
 } from "date-fns"
 
 // Helper function to get date ranges based on period type
-export function getAnalyticsPeriod(period: PeriodType): AnalyticsPeriod {
+function getAnalyticsPeriod(period: PeriodType): AnalyticsPeriod {
   const now = new Date()
   const endDate = endOfDay(now)
 
