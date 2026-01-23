@@ -139,7 +139,7 @@ export function BookingSummaryCard({
 
           {/* Non-refundable warning - only show for non-employees */}
           {!isEmployee ? (
-            <div className="rounded-xl border-2 border-amber-400 bg-white p-4 dark:border-amber-600 dark:!bg-amber-950/40">
+            <div className="rounded-xl border-2 border-amber-400 bg-white p-4 dark:border-amber-600 dark:bg-amber-950/40!">
               <div className="flex gap-3">
                 <WarningCircleIcon
                   size={32}

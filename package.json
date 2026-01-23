@@ -38,6 +38,7 @@
     "@radix-ui/react-tooltip": "^1.2.8",
     "@react-email/components": "^1.0.1",
     "@stripe/stripe-js": "^8.4.0",
+    "@tremor/react": "^3.18.7",
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.8.0",

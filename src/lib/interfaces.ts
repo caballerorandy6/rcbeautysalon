@@ -644,3 +644,7 @@ export interface StaffAppointmentFilters {
     | "NO_SHOW"
   search?: string //customer name
 }
+
+
+// Analytics interfaces
+export * from "./interfaces/analytics"

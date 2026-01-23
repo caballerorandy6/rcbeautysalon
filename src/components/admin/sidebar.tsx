@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 import { Logo } from "@/components/ui/logo"
 import {
   LayoutDashboardIcon,
+  ChartBarIcon,
   CalendarIcon,
   UsersIcon,
   ScissorsIcon,
@@ -17,6 +18,7 @@ import {
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboardIcon },
+  { name: "Analytics", href: "/dashboard/analytics", icon: ChartBarIcon },
   { name: "Appointments", href: "/dashboard/appointments", icon: CalendarIcon },
   { name: "Customers", href: "/dashboard/users", icon: UsersIcon },
   { name: "Services", href: "/dashboard/services", icon: ScissorsIcon },

@@ -60,6 +60,7 @@ export { SettingsIcon } from "./settings-icon"
 export { BellIcon } from "./bell-icon"
 export { CurrencyDollarIcon } from "./currency-dollar-icon"
 export { TrendingUpIcon } from "./trending-up-icon"
+export { ChartBarIcon } from "./chart-bar-icon"
 export { ScissorsIcon } from "./scissors-icon"
 
 // Theme
