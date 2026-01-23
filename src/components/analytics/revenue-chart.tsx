@@ -23,7 +23,12 @@ export function RevenueChart({ data }: RevenueChartProps) {
       <CardHeader>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <CardTitle>Revenue Overview</CardTitle>
+            <CardTitle>
+              Revenue{" "}
+              <span className="from-primary to-accent bg-linear-to-r bg-clip-text text-transparent">
+                Overview
+              </span>
+            </CardTitle>
             <CardDescription>
               Track your income from appointments and product sales
             </CardDescription>
@@ -46,7 +51,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
       </CardHeader>
       <CardContent>
         {data.length > 0 ? (
-          <div className="[&_.recharts-cartesian-axis-tick-value]:fill-muted-foreground [&_.recharts-cartesian-grid-horizontal_line]:stroke-border [&_.recharts-cartesian-grid-vertical_line]:stroke-border">
+          <div className="[&_.recharts-cartesian-axis-tick-value]:fill-muted-foreground [&_.recharts-cartesian-grid_line]:stroke-border/50">
             <AreaChart
               className="h-72"
               data={data}

@@ -24,12 +24,17 @@ export function TopServicesChart({ data }: TopServicesChartProps) {
   return (
     <Card className="flex h-full flex-col">
       <CardHeader>
-        <div className="flex items-center gap-2">
-          <div className="rounded-lg bg-rose-100 p-2 dark:bg-rose-900/30">
-            <ScissorsIcon size={18} className="text-rose-600 dark:text-rose-400" />
+        <div className="flex items-center gap-3">
+          <div className="rounded-lg bg-rose-100 p-2.5 dark:bg-rose-900/30">
+            <ScissorsIcon size={20} className="text-rose-600 dark:text-rose-400" />
           </div>
           <div>
-            <CardTitle className="text-base">Top Services</CardTitle>
+            <CardTitle className="text-base">
+              Top{" "}
+              <span className="from-primary to-accent bg-linear-to-r bg-clip-text text-transparent">
+                Services
+              </span>
+            </CardTitle>
             <CardDescription>By number of bookings</CardDescription>
           </div>
         </div>
@@ -37,7 +42,7 @@ export function TopServicesChart({ data }: TopServicesChartProps) {
       <CardContent className="flex-1">
         {data.length > 0 ? (
           <div className="space-y-6">
-            <div className="[&_[data-tremor-element=bar-name]]:text-foreground [&_[data-tremor-element=bar-value]]:text-foreground">
+            <div className="[&_p]:text-foreground">
               <BarList
                 data={chartData}
                 color="rose"

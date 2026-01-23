@@ -29,12 +29,17 @@ export function StaffPerformanceChart({ data }: StaffPerformanceChartProps) {
     <Card>
       <CardHeader>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div className="flex items-center gap-2">
-            <div className="rounded-lg bg-purple-100 p-2 dark:bg-purple-900/30">
-              <UserCogIcon size={18} className="text-purple-600 dark:text-purple-400" />
+          <div className="flex items-center gap-3">
+            <div className="rounded-lg bg-purple-100 p-2.5 dark:bg-purple-900/30">
+              <UserCogIcon size={20} className="text-purple-600 dark:text-purple-400" />
             </div>
             <div>
-              <CardTitle className="text-base">Staff Performance</CardTitle>
+              <CardTitle className="text-base">
+                Staff{" "}
+                <span className="from-primary to-accent bg-linear-to-r bg-clip-text text-transparent">
+                  Performance
+                </span>
+              </CardTitle>
               <CardDescription>Completed appointments and revenue by staff member</CardDescription>
             </div>
           </div>
@@ -56,7 +61,7 @@ export function StaffPerformanceChart({ data }: StaffPerformanceChartProps) {
       </CardHeader>
       <CardContent>
         {data.length > 0 ? (
-          <div className="[&_.recharts-cartesian-axis-tick-value]:fill-muted-foreground [&_.recharts-cartesian-grid-horizontal_line]:stroke-border [&_.recharts-cartesian-grid-vertical_line]:stroke-border">
+          <div className="[&_.recharts-cartesian-axis-tick-value]:fill-muted-foreground [&_.recharts-cartesian-grid_line]:stroke-border/50">
             <BarChart
               className="h-72"
               data={chartData}

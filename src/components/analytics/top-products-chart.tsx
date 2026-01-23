@@ -24,12 +24,17 @@ export function TopProductsChart({ data }: TopProductsChartProps) {
   return (
     <Card className="flex h-full flex-col">
       <CardHeader>
-        <div className="flex items-center gap-2">
-          <div className="rounded-lg bg-amber-100 p-2 dark:bg-amber-900/30">
-            <PackageIcon size={18} className="text-amber-600 dark:text-amber-400" />
+        <div className="flex items-center gap-3">
+          <div className="rounded-lg bg-amber-100 p-2.5 dark:bg-amber-900/30">
+            <PackageIcon size={20} className="text-amber-600 dark:text-amber-400" />
           </div>
           <div>
-            <CardTitle className="text-base">Top Products</CardTitle>
+            <CardTitle className="text-base">
+              Top{" "}
+              <span className="from-primary to-accent bg-linear-to-r bg-clip-text text-transparent">
+                Products
+              </span>
+            </CardTitle>
             <CardDescription>By units sold</CardDescription>
           </div>
         </div>
@@ -37,7 +42,7 @@ export function TopProductsChart({ data }: TopProductsChartProps) {
       <CardContent className="flex-1">
         {data.length > 0 ? (
           <div className="space-y-6">
-            <div className="[&_[data-tremor-element=bar-name]]:text-foreground [&_[data-tremor-element=bar-value]]:text-foreground">
+            <div className="[&_p]:text-foreground">
               <BarList
                 data={chartData}
                 color="amber"

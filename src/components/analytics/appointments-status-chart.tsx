@@ -39,12 +39,17 @@ export function AppointmentsStatusChart({ data }: AppointmentsStatusChartProps) 
   return (
     <Card className="flex h-full flex-col">
       <CardHeader>
-        <div className="flex items-center gap-2">
-          <div className="rounded-lg bg-blue-100 p-2 dark:bg-blue-900/30">
-            <CalendarCheckIcon size={18} className="text-blue-600 dark:text-blue-400" />
+        <div className="flex items-center gap-3">
+          <div className="rounded-lg bg-blue-100 p-2.5 dark:bg-blue-900/30">
+            <CalendarCheckIcon size={20} className="text-blue-600 dark:text-blue-400" />
           </div>
           <div>
-            <CardTitle className="text-base">Appointments Status</CardTitle>
+            <CardTitle className="text-base">
+              Appointments{" "}
+              <span className="from-primary to-accent bg-linear-to-r bg-clip-text text-transparent">
+                Status
+              </span>
+            </CardTitle>
             <CardDescription>Distribution overview</CardDescription>
           </div>
         </div>

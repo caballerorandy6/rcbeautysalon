@@ -35,7 +35,12 @@ export function AnalyticsDashboard({ data, period }: AnalyticsDashboardProps) {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Analytics</h1>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+            Business{" "}
+            <span className="from-primary to-accent bg-linear-to-r bg-clip-text text-transparent">
+              Analytics
+            </span>
+          </h1>
           <p className="text-muted-foreground">
             Monitor your business performance and trends
           </p>

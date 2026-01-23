@@ -73,10 +73,10 @@ function SidebarNav({ onNavigate }: SidebarNavProps) {
 
 export function AdminSidebar() {
   return (
-    <aside className="hidden w-64 shrink-0 border-r bg-card lg:block">
+    <aside className="hidden w-64 shrink-0 bg-card shadow-sm lg:block">
       <div className="flex h-full flex-col">
         {/* Logo */}
-        <div className="flex h-16 items-center border-b px-6">
+        <div className="flex h-16 items-center px-6">
           <Link href="/dashboard" className="flex items-center gap-2">
             <Logo variant="sidebar" />
           </Link>
@@ -88,7 +88,7 @@ export function AdminSidebar() {
         </ScrollArea>
 
         {/* Footer */}
-        <div className="border-t p-4">
+        <div className="p-4">
           <p className="text-center text-xs text-muted-foreground">
             RC Beauty Salon Admin
           </p>
@@ -107,7 +107,7 @@ export function MobileSidebar({ open, onOpenChange }: MobileSidebarProps) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="left" className="w-72 p-0">
-        <SheetHeader className="flex h-16 flex-row items-center justify-between border-b px-4">
+        <SheetHeader className="flex h-16 flex-row items-center justify-between px-4">
           <SheetTitle className="flex items-center gap-2">
             <Logo variant="sidebar" />
           </SheetTitle>

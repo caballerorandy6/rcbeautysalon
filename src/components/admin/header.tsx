@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useSession, signOut } from "next-auth/react"
-import { usePathname, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import {
   MenuIcon,
   BellIcon,
@@ -25,36 +25,8 @@ import {
 } from "@/components/icons"
 import { MobileSidebar } from "./sidebar"
 
-// Page title mapping
-const pageTitles: Record<string, string> = {
-  "/dashboard": "Dashboard",
-  "/dashboard/analytics": "Analytics",
-  "/dashboard/appointments": "Appointments",
-  "/dashboard/users": "Customers",
-  "/dashboard/services": "Services",
-  "/dashboard/products": "Products",
-  "/dashboard/orders": "Shop Orders",
-  "/dashboard/staff": "Staff",
-  "/dashboard/settings": "Settings",
-}
-
-function getPageTitle(pathname: string): string {
-  // Check for exact match first
-  if (pageTitles[pathname]) return pageTitles[pathname]
-
-  // Check for partial match (for nested routes)
-  for (const [path, title] of Object.entries(pageTitles)) {
-    if (pathname.startsWith(path) && path !== "/dashboard") {
-      return title
-    }
-  }
-
-  return "Dashboard"
-}
-
 export function AdminHeader() {
   const router = useRouter()
-  const pathname = usePathname()
   const { data: session } = useSession()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
@@ -85,14 +57,12 @@ export function AdminHeader() {
     }
   }
 
-  const pageTitle = getPageTitle(pathname)
-
   return (
     <>
-      <header className="sticky top-0 z-40 shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="sticky top-0 z-40 shrink-0 bg-card shadow-sm">
         <div className="flex h-16 items-center justify-between px-4 sm:px-6">
-          {/* Left side - Mobile menu + Page title */}
-          <div className="flex items-center gap-3">
+          {/* Left side - Mobile menu */}
+          <div className="flex items-center">
             <Button
               variant="ghost"
               size="icon"
@@ -102,9 +72,6 @@ export function AdminHeader() {
               <MenuIcon size={20} />
               <span className="sr-only">Open menu</span>
             </Button>
-            <div className="hidden sm:block">
-              <h1 className="text-lg font-semibold">{pageTitle}</h1>
-            </div>
           </div>
 
           {/* Right side - Actions */}
