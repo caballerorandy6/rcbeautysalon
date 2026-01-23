@@ -56,17 +56,19 @@ export function StaffPerformanceChart({ data }: StaffPerformanceChartProps) {
       </CardHeader>
       <CardContent>
         {data.length > 0 ? (
-          <BarChart
-            className="h-72"
-            data={chartData}
-            index="name"
-            categories={["Appointments", "Revenue"]}
-            colors={["rose", "amber"]}
-            yAxisWidth={60}
-            showAnimation
-            showGridLines
-            valueFormatter={(value: number) => value.toLocaleString()}
-          />
+          <div className="[&_.recharts-cartesian-axis-tick-value]:fill-muted-foreground [&_.recharts-cartesian-grid-horizontal_line]:stroke-border [&_.recharts-cartesian-grid-vertical_line]:stroke-border">
+            <BarChart
+              className="h-72"
+              data={chartData}
+              index="name"
+              categories={["Appointments", "Revenue"]}
+              colors={["rose", "amber"]}
+              yAxisWidth={60}
+              showAnimation
+              showGridLines
+              valueFormatter={(value: number) => value.toLocaleString()}
+            />
+          </div>
         ) : (
           <div className="flex h-72 items-center justify-center rounded-lg border border-dashed">
             <p className="text-muted-foreground">No staff performance data available</p>

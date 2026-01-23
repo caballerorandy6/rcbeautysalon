@@ -37,11 +37,13 @@ export function TopProductsChart({ data }: TopProductsChartProps) {
       <CardContent className="flex-1">
         {data.length > 0 ? (
           <div className="space-y-6">
-            <BarList
-              data={chartData}
-              color="amber"
-              showAnimation
-            />
+            <div className="[&_[data-tremor-element=bar-name]]:text-foreground [&_[data-tremor-element=bar-value]]:text-foreground">
+              <BarList
+                data={chartData}
+                color="amber"
+                showAnimation
+              />
+            </div>
             <div className="space-y-2 border-t pt-4">
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Revenue</p>
               {data.map((product) => (
@@ -49,7 +51,7 @@ export function TopProductsChart({ data }: TopProductsChartProps) {
                   <span className="truncate text-muted-foreground pr-2">
                     {product.name}
                   </span>
-                  <span className="font-semibold tabular-nums">
+                  <span className="font-semibold tabular-nums text-foreground">
                     ${product.revenue.toLocaleString()}
                   </span>
                 </div>

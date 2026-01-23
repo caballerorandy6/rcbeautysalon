@@ -67,7 +67,7 @@ export function AppointmentsStatusChart({ data }: AppointmentsStatusChartProps) 
                 <div key={item.name} className="flex items-center gap-2 text-sm">
                   <div className={`h-2.5 w-2.5 rounded-full ${statusConfig[item.status]?.dotColor || "bg-gray-500"}`} />
                   <span className="text-muted-foreground">{item.name}</span>
-                  <span className="ml-auto font-semibold tabular-nums">{item.value}</span>
+                  <span className="ml-auto font-semibold tabular-nums text-foreground">{item.value}</span>
                 </div>
               ))}
             </div>

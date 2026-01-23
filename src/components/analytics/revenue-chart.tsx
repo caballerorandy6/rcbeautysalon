@@ -46,20 +46,22 @@ export function RevenueChart({ data }: RevenueChartProps) {
       </CardHeader>
       <CardContent>
         {data.length > 0 ? (
-          <AreaChart
-            className="h-72"
-            data={data}
-            index="date"
-            categories={["appointments", "products"]}
-            colors={["rose", "amber"]}
-            valueFormatter={(value) => `$${value.toLocaleString()}`}
-            showLegend={false}
-            showAnimation
-            curveType="monotone"
-            showGridLines={true}
-            showXAxis={true}
-            showYAxis={true}
-          />
+          <div className="[&_.recharts-cartesian-axis-tick-value]:fill-muted-foreground [&_.recharts-cartesian-grid-horizontal_line]:stroke-border [&_.recharts-cartesian-grid-vertical_line]:stroke-border">
+            <AreaChart
+              className="h-72"
+              data={data}
+              index="date"
+              categories={["appointments", "products"]}
+              colors={["rose", "amber"]}
+              valueFormatter={(value) => `$${value.toLocaleString()}`}
+              showLegend={false}
+              showAnimation
+              curveType="monotone"
+              showGridLines={true}
+              showXAxis={true}
+              showYAxis={true}
+            />
+          </div>
         ) : (
           <div className="flex h-72 items-center justify-center rounded-lg border border-dashed">
             <p className="text-muted-foreground">No revenue data available for this period</p>

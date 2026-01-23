@@ -37,11 +37,13 @@ export function TopServicesChart({ data }: TopServicesChartProps) {
       <CardContent className="flex-1">
         {data.length > 0 ? (
           <div className="space-y-6">
-            <BarList
-              data={chartData}
-              color="rose"
-              showAnimation
-            />
+            <div className="[&_[data-tremor-element=bar-name]]:text-foreground [&_[data-tremor-element=bar-value]]:text-foreground">
+              <BarList
+                data={chartData}
+                color="rose"
+                showAnimation
+              />
+            </div>
             <div className="space-y-2 border-t pt-4">
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Revenue</p>
               {data.map((service) => (
@@ -49,7 +51,7 @@ export function TopServicesChart({ data }: TopServicesChartProps) {
                   <span className="truncate text-muted-foreground pr-2">
                     {service.name}
                   </span>
-                  <span className="font-semibold tabular-nums">
+                  <span className="font-semibold tabular-nums text-foreground">
                     ${service.revenue.toLocaleString()}
                   </span>
                 </div>
